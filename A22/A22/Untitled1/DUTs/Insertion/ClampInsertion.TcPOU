@@ -2,7 +2,7 @@
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
   <POU Name="ClampInsertion" Id="{a8054870-0722-4545-9a54-faef9caca0df}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK ClampInsertion
-VAR_INPUT
+VAR_INPUT CONSTANT
 	enable : BOOL;
 END_VAR
 VAR_OUTPUT
@@ -15,10 +15,15 @@ VAR_OUTPUT
 	home : BOOL;
 	busy : BOOL;
 	error : BOOL;
+	
+	sliderPos : LREAL;
+	screwPos : LREAL;
 END_VAR
 (*
 this FB encapsulates a ServoECAT and TeknicEIP into a 2D insertion machine
 normal operation should only use this FB's methods, but attributes and methods of the 2 components remain visible
+
+RETURN VALUES FOR THE METHODS ARE MEANINGLESS, USE OUTPUT VARS TO CHECK IF COMMAND IS COMPLETE
 *)]]></Declaration>
     <Implementation>
       <ST><![CDATA[slider(
@@ -29,17 +34,22 @@ normal operation should only use this FB's methods, but attributes and methods o
 	ready=> , 
 	busy=> , 
 	error=> , 
-	homeSet=> );
+	homeSet=> , 
+	position=> sliderPos);
 	
 screw(
 	bEnable:= enable, 
+	contact=> contact, 
 	home=> , 
 	outerLimit=> , 
 	innerLimit=> , 
 	done=> , 
-	contact=> contact, 
-	homeSet=> );
+	homeSet=> , 
+	busy=> , 
+	error=> , 
+	position=> screwPos);
 
+	
 home := screw.home AND slider.home;
 busy := slider.busy OR screw.busy;
 error := slider.error OR screw.error;]]></ST>
@@ -51,7 +61,7 @@ VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[alignTarget := slider.moveAbsolute(position:= targetPos, fault=> );]]></ST>
+        <ST><![CDATA[alignTarget := slider.moveAbsolute(targetPos:= targetPos, fault=> );]]></ST>
       </Implementation>
     </Method>
     <Method Name="homingSequence" Id="{3e0fa2d6-3807-446a-a1fe-017650352eb9}">
@@ -76,7 +86,7 @@ VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[screw.traverse(direction := FALSE);]]></ST>
+        <ST><![CDATA[press := screw.traverse(direction := FALSE);]]></ST>
       </Implementation>
     </Method>
     <Method Name="release" Id="{b125690b-923b-41e3-80da-f27e24ac2b0c}">
@@ -93,11 +103,22 @@ VAR_INPUT
 	direction : BOOL; //direction (F = inwards, T = outwards)
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[slideContinuous := slider.moveContinuous(direction);]]></ST>
+        <ST><![CDATA[IF direction THEN
+	slider.moveContinuous(direction := MC_Positive_Direction);
+ELSE
+	slider.moveContinuous(direction := MC_negative_Direction);
+END_IF]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="ClampInsertion">
-      <LineId Id="140" Count="20" />
+      <LineId Id="186" Count="8" />
+      <LineId Id="185" Count="0" />
+      <LineId Id="149" Count="0" />
+      <LineId Id="197" Count="9" />
+      <LineId Id="195" Count="0" />
+      <LineId Id="208" Count="0" />
+      <LineId Id="207" Count="0" />
+      <LineId Id="159" Count="1" />
       <LineId Id="74" Count="0" />
     </LineIds>
     <LineIds Name="ClampInsertion.alignTarget">
@@ -114,7 +135,8 @@ END_VAR]]></Declaration>
       <LineId Id="5" Count="0" />
     </LineIds>
     <LineIds Name="ClampInsertion.slideContinuous">
-      <LineId Id="5" Count="0" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="11" Count="3" />
     </LineIds>
   </POU>
 </TcPlcObject>

@@ -2,7 +2,7 @@
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
   <POU Name="PneumaticInsertion" Id="{b81c5df3-3bac-4f9d-9b77-7bbeccd1dc76}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK PneumaticInsertion
-VAR_INPUT
+VAR_INPUT CONSTANT
 	enable : BOOL;
 END_VAR
 VAR_OUTPUT

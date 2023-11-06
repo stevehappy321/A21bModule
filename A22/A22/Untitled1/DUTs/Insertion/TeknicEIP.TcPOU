@@ -36,7 +36,7 @@ VAR_STAT CONSTANT
 	distancePerPulse : INT := 5; //5mm per revolution
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[enable := bEnable;
+      <ST><![CDATA[//enable := bEnable;
 IF NOT bEnable THEN
 	RETURN;
 END_IF

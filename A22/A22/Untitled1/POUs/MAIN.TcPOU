@@ -23,14 +23,17 @@ VAR_OUTPUT
 	innerSuctions, outerSuctions : ARRAY[Surface.TOP_LEFT..Surface.BOTTOM_RIGHT] OF SuctionPad;
 END_VAR
 VAR
-	robotLeftOutputs, robotRightOutputs : ARRAY[1..50] OF INT;
 	demoPairCAR : PositionMaterials;
 	demoPairCOR : PositionMaterials;
 	demoHeight : REAL := 600; //600mm, 60cm
+
+	robotLeftOutputs, robotRightOutputs : ARRAY[1..50] OF INT;
 	
 	sectionID : SectionEnum := SectionEnum.CARDBOARD_CORNERGUARD;
 	
 	step : (IDLE, LOAD_CORNERS, LOAD_FLATS, PUSH, RUN_TO_WRAP_POSITION, WRAP_AND_RELEASE, COMPLETE := 1050);
+	i : INT;
+	
 	ready : BOOL;
 	
 	loadSet : INT;
@@ -89,17 +92,16 @@ CASE step OF
 			IF manualMode AND_THEN NOT execute THEN
 				RETURN;
 			END_IF
-		
+			
 			step := PUSH;
 		END_IF
 		
 	PUSH:
 		insertionBottom.traverse(direction := FALSE);
-		IF NOT insertionLeft.alignTarget(demoHeight/2) OR insertionRight.alignTarget(demoHeight/2) THEN
+		IF NOT insertionLeft.alignTarget(demoHeight/2) OR NOT insertionRight.alignTarget(demoHeight/2) THEN
 			RETURN;
 		END_IF
 		
-		insertionBottom.traverse(direction := FALSE);
 		insertionLeft.press();
 		insertionRight.press();
 		
@@ -127,8 +129,10 @@ CASE step OF
 		END_IF
 		
 		IF releaseDelayTimer.Q THEN
-			MEMSET(ADR(innerSuctions), 0, SIZEOF(innerSuctions));
-			MEMSET(ADR(outerSuctions), 0, SIZEOF(outerSuctions));
+			FOR i:=Surface.TOP_LEFT TO Surface.BOTTOM_RIGHT BY 1 DO
+				innerSuctions[i].enable := FALSE;
+				outerSuctions[i].enable := FALSE;
+			END_FOR
 		
 			IF NOT insertionLeft.home THEN
 				insertionLeft.alignTarget(0);
@@ -139,7 +143,7 @@ CASE step OF
 				insertionRight.alignTarget(0);
 				insertionRight.release();
 			END_IF
-		END_IF		
+		END_IF
 		
 		IF wrapper.done AND insertionLeft.home AND insertionRight.home (*AND insertionBottom.home*) THEN
 			releaseDelayTimer.IN := FALSE;
@@ -199,8 +203,8 @@ insertionRight();
 insertionBottom();]]></ST>
       </Implementation>
     </Method>
-    <Method Name="leftRobotCornersSequence" Id="{08bffef9-e349-4b7d-9ae3-92f5a7d8876a}" FolderPath="Cardboard (Corner)\">
-      <Declaration><![CDATA[METHOD PROTECTED leftRobotCornersSequence : BOOL
+    <Method Name="leftRobotSequence" Id="{08bffef9-e349-4b7d-9ae3-92f5a7d8876a}" FolderPath="Cardboard (Corner)\">
+      <Declaration><![CDATA[METHOD PROTECTED leftRobotSequence : BOOL
 VAR_IN_OUT
 	actingRobot : Robot;
 	skid : MaterialStorage;
@@ -223,7 +227,7 @@ VAR
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[IF materialID = '' THEN
-	leftRobotCornersSequence := TRUE;
+	leftRobotSequence := TRUE;
 	RETURN;
 END_IF
 
@@ -279,8 +283,11 @@ CASE loadStep OF
 		END_IF
 	
 	COMPLETE:
-		//turn on suction
-		leftRobotCornersSequence := TRUE;
+		IF surfaceID = Surface.TOP_LEFT OR surfaceID = Surface.BOTTOM_LEFT THEN
+			innerSuctions[surfaceID].enable := TRUE;
+		END_IF
+		
+		leftRobotSequence := TRUE;
 	
 END_CASE]]></ST>
       </Implementation>
@@ -329,7 +336,7 @@ END_VAR]]></Declaration>
 END_IF
 
 IF
-	leftRobotCornersSequence(
+	leftRobotSequence(
 		actingRobot:= robotLeft, 
 		skid:= skidLeft, 
 		surfaceID:= cornerSetLeft,
@@ -368,7 +375,7 @@ IF cornerSetRight = 0 THEN //RIGHT SIDE
 END_IF
 
 IF
-	rightRobotCornersSequence(
+	rightRobotSequence(
 		actingRobot:= robotRight, 
 		skid:= skidRight, 
 		loadStep:= loadStepRight, 
@@ -637,8 +644,8 @@ CASE actingLoadStep OF
 END_CASE]]></ST>
       </Implementation>
     </Method>
-    <Method Name="rightRobotCornersSequence" Id="{879cd7f3-c4e8-4979-a4c5-8a1bacb14790}" FolderPath="Cardboard (Corner)\">
-      <Declaration><![CDATA[METHOD PROTECTED rightRobotCornersSequence : BOOL
+    <Method Name="rightRobotSequence" Id="{879cd7f3-c4e8-4979-a4c5-8a1bacb14790}" FolderPath="Cardboard (Corner)\">
+      <Declaration><![CDATA[METHOD PROTECTED rightRobotSequence : BOOL
 VAR_IN_OUT
 	actingRobot : Robot;
 	skid : MaterialStorage;
@@ -661,7 +668,7 @@ VAR
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[IF materialID = '' THEN
-	rightRobotCornersSequence := TRUE;
+	rightRobotSequence := TRUE;
 	RETURN;
 END_IF
 
@@ -691,8 +698,8 @@ CASE loadStep OF
 		END_IF
 	
 	COMPLETE:
-		//turn on suction
-		rightRobotCornersSequence := TRUE;
+		outerSuctions[surfaceID].enable := TRUE;
+		rightRobotSequence := TRUE;
 	
 END_CASE]]></ST>
       </Implementation>
@@ -706,7 +713,10 @@ END_CASE]]></ST>
       <LineId Id="222" Count="4" />
       <LineId Id="2" Count="0" />
       <LineId Id="240" Count="15" />
-      <LineId Id="265" Count="23" />
+      <LineId Id="265" Count="5" />
+      <LineId Id="459" Count="0" />
+      <LineId Id="272" Count="8" />
+      <LineId Id="282" Count="6" />
       <LineId Id="330" Count="0" />
       <LineId Id="384" Count="1" />
       <LineId Id="387" Count="0" />
@@ -720,8 +730,10 @@ END_CASE]]></ST>
       <LineId Id="407" Count="0" />
       <LineId Id="349" Count="1" />
       <LineId Id="391" Count="0" />
-      <LineId Id="409" Count="0" />
-      <LineId Id="411" Count="0" />
+      <LineId Id="505" Count="0" />
+      <LineId Id="511" Count="0" />
+      <LineId Id="513" Count="0" />
+      <LineId Id="512" Count="0" />
       <LineId Id="410" Count="0" />
       <LineId Id="399" Count="2" />
       <LineId Id="393" Count="0" />
@@ -764,8 +776,10 @@ END_CASE]]></ST>
       <LineId Id="29" Count="0" />
       <LineId Id="7" Count="0" />
     </LineIds>
-    <LineIds Name="MAIN.leftRobotCornersSequence">
-      <LineId Id="1581" Count="59" />
+    <LineIds Name="MAIN.leftRobotSequence">
+      <LineId Id="1681" Count="57" />
+      <LineId Id="1741" Count="2" />
+      <LineId Id="1739" Count="1" />
       <LineId Id="946" Count="0" />
     </LineIds>
     <LineIds Name="MAIN.load">
@@ -790,7 +804,7 @@ END_CASE]]></ST>
       <LineId Id="438" Count="0" />
     </LineIds>
     <LineIds Name="MAIN.loadCornerCardboards">
-      <LineId Id="108" Count="74" />
+      <LineId Id="189" Count="74" />
       <LineId Id="5" Count="0" />
     </LineIds>
     <LineIds Name="MAIN.loadCornerGuards">
@@ -841,7 +855,7 @@ END_CASE]]></ST>
       <LineId Id="29" Count="0" />
       <LineId Id="5" Count="0" />
     </LineIds>
-    <LineIds Name="MAIN.rightRobotCornersSequence">
+    <LineIds Name="MAIN.rightRobotSequence">
       <LineId Id="315" Count="33" />
       <LineId Id="5" Count="0" />
     </LineIds>

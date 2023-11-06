@@ -2,7 +2,7 @@
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
   <POU Name="ServoECAT" Id="{f939ae28-30bd-4997-8b95-af50702e8d64}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK ServoECAT
-VAR_IN_OUT CONSTANT
+VAR_INPUT CONSTANT
 	bEnable : BOOL;
 END_VAR
 VAR_OUTPUT
@@ -14,9 +14,13 @@ VAR_OUTPUT
 	busy : BOOL;
 	error : BOOL;
 	homeSet : BOOL;
+	
+	position : LREAL;
 END_VAR
 VAR
 	axis : AXIS_REF;
+	
+	mcReadPosition : MC_ReadActualPosition;
 	
 	mcPower : MC_Power;
 	mcMoveAbsolute : MC_MoveAbsolute;
@@ -28,11 +32,21 @@ VAR
 	
 	step : Homing;
 END_VAR
-VAR
-	
+VAR_STAT CONSTANT
+	targetingVelocity : INT := 500;
+	continuousVelocity : INT := 200;
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[mcReset(
+      <ST><![CDATA[mcReadPosition(
+	Axis:= axis, 
+	Enable:= TRUE, 
+	Valid=> , 
+	Busy=> , 
+	Error=> , 
+	ErrorID=> , 
+	Position=> position);
+
+mcReset(
 	Axis:= axis, 
 	Execute:= , 
 	Done=> , 
@@ -40,7 +54,7 @@ END_VAR]]></Declaration>
 	Error=> , 
 	ErrorID=> );
 
-IF mcReset.Execute AND mcReset.Done THEN
+IF mcReset.Done THEN
 	mcReset.Execute := FALSE;
 END_IF
 
@@ -62,7 +76,7 @@ mcMoveAbsolute(
 	Axis:= axis, 
 	Execute:= , 
 	Position:= , 
-	Velocity:= 500, 
+	Velocity:= targetingVelocity, 
 	Acceleration:= , 
 	Deceleration:= , 
 	Jerk:= , 
@@ -74,12 +88,16 @@ mcMoveAbsolute(
 	CommandAborted=> , 
 	Error=> , 
 	ErrorID=> );
+	
+IF mcMoveAbsolute.Done THEN
+	mcMoveAbsolute.Execute := FALSE;
+END_IF
 	
 mcMoveRelative(
 	Axis:= axis, 
 	Execute:= , 
 	Distance:= ,
-	Velocity:= 500, 
+	Velocity:= targetingVelocity, 
 	Acceleration:= , 
 	Deceleration:= , 
 	Jerk:= , 
@@ -92,10 +110,14 @@ mcMoveRelative(
 	Error=> , 
 	ErrorID=> );
 	
-mcMoveVelocity(
+IF mcMoveRelative.Done THEN
+	mcMoveRelative.Execute := FALSE;
+END_IF
+	
+mcMoveVelocity( //stopped with stop();
 	Axis:= axis, 
 	Execute:= , 
-	Velocity:= 200, 
+	Velocity:= continuousVelocity, 
 	Acceleration:= , 
 	Deceleration:= , 
 	Jerk:= , 
@@ -108,6 +130,12 @@ mcMoveVelocity(
 	CommandAborted=> , 
 	Error=> , 
 	ErrorID=> );
+	
+mcMoveVelocity.Execute := FALSE;
+
+IF home OR outerLimit OR innerLimit THEN
+	stop();
+END_IF
 
 busy := mcMoveAbsolute.Busy OR mcMoveRelative.Busy OR mcMoveVelocity.Busy OR mcSetPosition.Busy OR mcReset.Busy OR mcStop.Busy OR step <> 0;
 error := mcMoveAbsolute.Error OR mcMoveRelative.Error OR mcMoveVelocity.Error OR mcSetPosition.Error OR mcReset.Error OR mcStop.Error OR step <> 0;
@@ -165,32 +193,50 @@ END_CASE]]></ST>
     <Method Name="moveAbsolute" Id="{9a0c1523-e496-48d2-89d9-d71629c86307}">
       <Declaration><![CDATA[METHOD moveAbsolute : BOOL
 VAR_INPUT
-	position : LREAL;
+	targetPos : LREAL;
 END_VAR
 VAR_OUTPUT
 	fault : BOOL;
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[IF NOT busy AND NOT error THEN
-	mcMoveAbsolute.Position := position;
+	mcMoveAbsolute.Position := targetPos;
+	mcMoveAbsolute.Execute := TRUE;
 END_IF
-moveAbsolute := mcMoveAbsolute.Done;]]></ST>
+
+moveAbsolute := (*mcMoveAbsolute.Done AND mcMoveAbsolute.Active;*)
+	position = targetPos;]]></ST>
       </Implementation>
     </Method>
     <Method Name="moveContinuous" Id="{c1bd97e2-f7e7-45ed-bf81-7afd3b7c53ff}">
       <Declaration><![CDATA[METHOD moveContinuous : BOOL
 VAR_INPUT
-	direction : BOOL; //direction (F = inwards, T = outwards)
+	//direction : BOOL; //direction (F = inwards, T = outwards)
+	direction : MC_Direction;
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[IF direction THEN
+        <ST><![CDATA[(*
+IF mcMoveVelocity.Active THEN
+	stop();
+END_IF
+
+IF NOT mcStop.Done THEN
+	RETURN;
+END_IF
+*)
+(*
+IF direction THEN
 	mcMoveVelocity.Direction := MC_Positive_Direction;
 ELSE
 	mcMoveVelocity.Direction := MC_Negative_Direction;
 END_IF
+*)
+mcMoveVelocity.Direction := direction;
 
-mcMoveVelocity.Execute := TRUE;
-moveContinuous := TRUE;]]></ST>
+IF NOT mcMoveVelocity.Error THEN
+	mcMoveVelocity.Execute := TRUE;
+	moveContinuous := TRUE;
+END_IF]]></ST>
       </Implementation>
     </Method>
     <Method Name="moveRelative" Id="{a4516e41-c115-4d38-aa54-f9462db8dc0d}">
@@ -222,24 +268,16 @@ VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[]]></ST>
+        <ST><![CDATA[mcStop.Execute := TRUE;]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="ServoECAT">
-      <LineId Id="26" Count="6" />
-      <LineId Id="85" Count="0" />
-      <LineId Id="34" Count="32" />
-      <LineId Id="9" Count="0" />
-      <LineId Id="68" Count="1" />
-      <LineId Id="71" Count="13" />
-      <LineId Id="70" Count="0" />
-      <LineId Id="96" Count="0" />
-      <LineId Id="100" Count="14" />
-      <LineId Id="97" Count="0" />
-      <LineId Id="140" Count="0" />
-      <LineId Id="98" Count="0" />
-      <LineId Id="167" Count="0" />
-      <LineId Id="164" Count="1" />
+      <LineId Id="301" Count="94" />
+      <LineId Id="401" Count="0" />
+      <LineId Id="400" Count="0" />
+      <LineId Id="402" Count="1" />
+      <LineId Id="396" Count="3" />
+      <LineId Id="165" Count="0" />
     </LineIds>
     <LineIds Name="ServoECAT.homingSequence">
       <LineId Id="259" Count="1" />
@@ -256,16 +294,26 @@ END_VAR
       <LineId Id="7" Count="0" />
     </LineIds>
     <LineIds Name="ServoECAT.moveAbsolute">
-      <LineId Id="36" Count="0" />
-      <LineId Id="32" Count="0" />
-      <LineId Id="28" Count="0" />
-      <LineId Id="27" Count="0" />
+      <LineId Id="58" Count="5" />
+      <LineId Id="51" Count="0" />
     </LineIds>
     <LineIds Name="ServoECAT.moveContinuous">
+      <LineId Id="37" Count="0" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="30" Count="1" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="36" Count="0" />
+      <LineId Id="35" Count="0" />
+      <LineId Id="28" Count="1" />
       <LineId Id="11" Count="0" />
       <LineId Id="13" Count="3" />
-      <LineId Id="18" Count="1" />
-      <LineId Id="17" Count="0" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="39" Count="1" />
+      <LineId Id="18" Count="0" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="25" Count="0" />
     </LineIds>
     <LineIds Name="ServoECAT.moveRelative">
       <LineId Id="8" Count="1" />
@@ -277,7 +325,7 @@ END_VAR
       <LineId Id="18" Count="0" />
     </LineIds>
     <LineIds Name="ServoECAT.stop">
-      <LineId Id="5" Count="0" />
+      <LineId Id="9" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>
