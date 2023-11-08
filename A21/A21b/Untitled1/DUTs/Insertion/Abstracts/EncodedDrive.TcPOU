@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="EncodedDrive" Id="{caa7332e-f27e-4d9e-a2f6-47f54869698f}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ABSTRACT EncodedDrive EXTENDS Drive
+VAR_OUTPUT
+	position : LREAL;
+	targetPos : LREAL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="moveAbsolute" Id="{83083c7a-48ec-46dd-9173-7415bee385a6}">
+      <Declaration><![CDATA[METHOD ABSTRACT moveAbsolute : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="EncodedDrive">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="EncodedDrive.moveAbsolute">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

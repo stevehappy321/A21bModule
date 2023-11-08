@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="ContinuousDrive" Id="{cae9604f-13b9-413a-a13e-3ee322a28517}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ABSTRACT ContinuousDrive EXTENDS Drive]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="moveContinuous" Id="{9368f197-cd84-4fc5-91f0-a34190040adf}">
+      <Declaration><![CDATA[METHOD ABSTRACT moveContinuous : BOOL
+VAR_INPUT
+	direction : MC_Direction;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="ContinuousDrive">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="ContinuousDrive.moveContinuous">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

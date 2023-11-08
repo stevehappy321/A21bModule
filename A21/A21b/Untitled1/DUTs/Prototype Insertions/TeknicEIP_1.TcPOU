@@ -1,0 +1,287 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="TeknicEIP_1" Id="{42407246-d72c-4964-abda-6b872b500445}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK TeknicEIP_1
+VAR_INPUT CONSTANT
+	bEnable : BOOL;
+END_VAR
+VAR_OUTPUT
+	enable AT %Q* : BOOL; //enable + pulses
+	A AT %Q* : BOOL; //direction (F = inwards, T = outwards)
+	B AT %Q* : BOOL; //home bit
+	brakeRelease AT %Q* : BOOL;
+	
+	contact AT %I* : BOOL;
+	
+	home AT %I* : BOOL;
+	outerLimit AT %I* : BOOL;
+	innerLimit AT %I* : BOOL;
+	done AT %I* : BOOL;	
+	
+	homeSet : BOOL;
+	busy : BOOL;
+	error : BOOL;
+	
+	position : REAL;
+	targetPos : REAL;
+END_VAR
+VAR
+	mode : (HOLD, TARGET, CONTINUOUS);
+	
+	resetTimer : TP;
+	pulser : TON;
+	requestedPulses : INT;
+	
+	step : Homing;//(IDLE, HOME_UP, HOME_FINAL, DOWN, REDO_HOME, HOME_DONE);
+END_VAR
+VAR_STAT CONSTANT
+	resetTime : TIME := T#1000MS;
+	pulseWidth : TIME := T#25MS;
+	unitsPerPulse : INT := 800; //800 Teknic units per revolution
+	distancePerPulse : INT := 5; //5mm per revolution
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF NOT bEnable THEN
+	RETURN;
+END_IF
+
+resetTimer(IN:= , PT:= resetTime, Q=> , ET=> );
+IF resetTimer.Q THEN
+	brakeRelease := FALSE;
+	enable := FALSE;
+	RETURN;
+END_IF
+resetTimer.IN := FALSE;
+
+
+CASE mode OF
+	HOLD:
+		//
+	
+	TARGET:
+		IF WithinTolerance(position, target, unitsPerPulse) THEN
+			requestedPulses := 0;
+			mode := HOLD;
+			
+		ELSIF position < target THEN
+			A := TRUE;
+			requestPulses(1);
+		ELSIF position > target THEN
+			A := FALSE;
+			requestPulses(1);
+		END_IF
+
+	CONTINUOUS:
+		requestPulses(1);
+		
+END_CASE
+
+IF home OR innerLimit OR outerLimit THEN
+	requestedPulses := 0;
+	mode := HOLD;
+END_IF
+
+sequence();]]></ST>
+    </Implementation>
+    <Method Name="homingSequence" Id="{069736f0-1354-47aa-85e7-aacd071ba882}">
+      <Declaration><![CDATA[METHOD homingSequence : BOOL]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE step OF
+	Homing.IDLE:
+		enable := FALSE;
+		A := FALSE;
+		B := FALSE;
+		brakeRelease := TRUE;
+		
+		homeSet := FALSE;
+		step := Homing.REDO;
+		
+	Homing.REDO: //let insertion drop to inner limit before homing
+		enable := FALSE;
+		A := FALSE;
+		B := FALSE;
+		brakeRelease := TRUE;
+		
+		IF NOT innerLimit THEN
+			enable := TRUE;
+			step := Homing.HOME_OUT;
+		END_IF
+	
+	Homing.HOME_OUT:
+		enable := TRUE;
+		A := FALSE;
+		B := TRUE;
+		brakeRelease := TRUE;
+		
+		IF NOT home THEN
+			B := FALSE;
+			step := Homing.DONE;
+		END_IF
+		
+	Homing.DONE:
+		enable := TRUE;
+		A := FALSE;
+		B := FALSE;
+		brakeRelease := TRUE;
+		
+		position := 0;
+		homeSet := TRUE;
+		homingSequence := TRUE;
+		step := Homing.IDLE;
+	
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="moveAbsolute" Id="{2951a85d-0878-40c9-9f63-8b121802e04e}">
+      <Declaration><![CDATA[METHOD moveAbsolute : BOOL
+VAR_INPUT
+	targetPos : REAL;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[targetPos := target;
+mode := TARGET;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="moveContinuous" Id="{fa9cc319-e0ea-4586-b08a-eeba7ee23e95}">
+      <Declaration><![CDATA[METHOD moveContinuous : BOOL
+VAR_INPUT
+	//direction : BOOL; //direction (F = inwards, T = outwards)
+	direction : MC_Direction;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF direction = MC_Negative_Direction THEN
+	A := FALSE;
+ELSIF direction = MC_Positive_Direction THEN
+	A := TRUE;
+END_IF
+
+mode := CONTINUOUS;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="requestPulses" Id="{4654df91-e368-4c83-bd46-167092e07900}">
+      <Declaration><![CDATA[METHOD PRIVATE requestPulses : BOOL
+VAR_INPUT
+	request : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF (done OR requestedPulses = 0) AND request > 0 THEN
+	requestedPulses := request;
+	
+	requestPulses := TRUE;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="reset" Id="{238e4f99-33d9-4895-9871-61561d84c3f6}">
+      <Declaration><![CDATA[METHOD reset : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[resetTimer.IN := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="sequence" Id="{aad0b3f6-57ee-4475-b25b-2a2f062f6409}">
+      <Declaration><![CDATA[METHOD sequence : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[pulser(IN:= , PT:= pulseWidth, Q=> , ET=> ); //when timer is enabled, this toggles enable every <pulseWidth>
+
+IF requestedPulses = 0 THEN
+	busy := FALSE;
+	
+	enable := TRUE;
+	pulser.IN := FALSE;
+	RETURN;
+END_IF
+
+busy := TRUE;
+pulser.IN := TRUE;
+
+IF pulser.Q THEN
+	pulser.IN := FALSE;
+	enable := NOT enable;
+	
+	IF enable THEN //enable is TRUE after toggle
+		requestedPulses := requestedPulses - 1;
+		
+		IF A THEN
+			position := position + distancePerPulse;
+		ELSE
+			position := position - distancePerPulse;
+		END_IF
+	END_IF
+	
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="TeknicEIP_1">
+      <LineId Id="1002" Count="2" />
+      <LineId Id="1262" Count="0" />
+      <LineId Id="1261" Count="0" />
+      <LineId Id="1263" Count="0" />
+      <LineId Id="1278" Count="0" />
+      <LineId Id="1264" Count="0" />
+      <LineId Id="1268" Count="0" />
+      <LineId Id="1265" Count="0" />
+      <LineId Id="1274" Count="1" />
+      <LineId Id="1191" Count="5" />
+      <LineId Id="1218" Count="1" />
+      <LineId Id="1223" Count="0" />
+      <LineId Id="1221" Count="0" />
+      <LineId Id="1220" Count="0" />
+      <LineId Id="1198" Count="4" />
+      <LineId Id="1205" Count="0" />
+      <LineId Id="1207" Count="7" />
+      <LineId Id="1222" Count="0" />
+      <LineId Id="1190" Count="0" />
+      <LineId Id="1216" Count="0" />
+      <LineId Id="1215" Count="0" />
+    </LineIds>
+    <LineIds Name="TeknicEIP_1.homingSequence">
+      <LineId Id="98" Count="8" />
+      <LineId Id="146" Count="0" />
+      <LineId Id="148" Count="0" />
+      <LineId Id="161" Count="2" />
+      <LineId Id="160" Count="0" />
+      <LineId Id="164" Count="0" />
+      <LineId Id="155" Count="1" />
+      <LineId Id="158" Count="0" />
+      <LineId Id="147" Count="0" />
+      <LineId Id="107" Count="1" />
+      <LineId Id="167" Count="2" />
+      <LineId Id="166" Count="0" />
+      <LineId Id="111" Count="3" />
+      <LineId Id="118" Count="0" />
+      <LineId Id="127" Count="1" />
+      <LineId Id="171" Count="2" />
+      <LineId Id="170" Count="0" />
+      <LineId Id="174" Count="1" />
+      <LineId Id="129" Count="4" />
+    </LineIds>
+    <LineIds Name="TeknicEIP_1.moveAbsolute">
+      <LineId Id="9" Count="0" />
+      <LineId Id="8" Count="0" />
+    </LineIds>
+    <LineIds Name="TeknicEIP_1.moveContinuous">
+      <LineId Id="20" Count="0" />
+      <LineId Id="23" Count="4" />
+      <LineId Id="15" Count="0" />
+    </LineIds>
+    <LineIds Name="TeknicEIP_1.requestPulses">
+      <LineId Id="81" Count="0" />
+      <LineId Id="83" Count="0" />
+      <LineId Id="141" Count="0" />
+      <LineId Id="140" Count="0" />
+      <LineId Id="131" Count="0" />
+    </LineIds>
+    <LineIds Name="TeknicEIP_1.reset">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="TeknicEIP_1.sequence">
+      <LineId Id="6" Count="26" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

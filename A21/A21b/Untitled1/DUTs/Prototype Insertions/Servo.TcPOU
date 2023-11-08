@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="Servo" Id="{7c0cb4a8-1f86-45e8-a8fe-962ba57ecc76}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ABSTRACT Servo
+VAR_INPUT CONSTANT
+	bEnable : BOOL;
+END_VAR
+VAR_OUTPUT
+	homeSet : BOOL;
+	busy : BOOL;
+	error : BOOL;
+	
+	position : REAL;
+	targetPos : REAL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <LineIds Name="Servo">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
