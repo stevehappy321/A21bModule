@@ -38,21 +38,22 @@ insertion.stop();
 	
 IF in THEN
 	insertion.press();
-	in := FALSE;
+	out := FALSE;
 END_IF
 
 IF out THEN
 	insertion.release();
+	in := FALSE;
 END_IF
 
 IF up THEN
 	insertion.slideContinuous(direction:= MC_Positive_Direction);
-	up := FALSE;
+	down := FALSE;
 END_IF
 
 IF down THEN
 	insertion.slideContinuous(direction:= MC_Negative_Direction);
-	down := FALSE;
+	up := FALSE;
 END_IF
 
 IF enableAllSuction THEN
@@ -71,19 +72,22 @@ END_IF]]></ST>
       <LineId Id="63" Count="0" />
       <LineId Id="31" Count="1" />
       <LineId Id="35" Count="0" />
-      <LineId Id="33" Count="1" />
+      <LineId Id="92" Count="0" />
+      <LineId Id="34" Count="0" />
       <LineId Id="37" Count="0" />
       <LineId Id="36" Count="0" />
-      <LineId Id="38" Count="1" />
+      <LineId Id="38" Count="0" />
+      <LineId Id="93" Count="0" />
+      <LineId Id="39" Count="0" />
       <LineId Id="41" Count="0" />
       <LineId Id="40" Count="0" />
       <LineId Id="42" Count="0" />
-      <LineId Id="44" Count="0" />
+      <LineId Id="94" Count="0" />
       <LineId Id="43" Count="0" />
       <LineId Id="46" Count="0" />
       <LineId Id="45" Count="0" />
       <LineId Id="47" Count="0" />
-      <LineId Id="49" Count="0" />
+      <LineId Id="95" Count="0" />
       <LineId Id="48" Count="0" />
       <LineId Id="69" Count="0" />
       <LineId Id="68" Count="0" />
