@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
   <POU Name="MAIN" Id="{b80a0c4b-c6af-42e3-9ea6-1e5c8f9c9f0a}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM MAIN
 VAR
@@ -45,8 +45,8 @@ END_IF
 
 CASE step OF	
 	SETUP:
-		reset := NOT reset;
-		enable := NOT enable;
+		//reset := NOT reset;
+		//enable := NOT enable;
 		
 		IF NOT error THEN
 			reset := FALSE;
@@ -57,6 +57,9 @@ CASE step OF
 				step := STRAP;
 			END_IF
 			
+		ELSE
+			reset := NOT reset;
+			enable := NOT enable;
 		END_IF
 	
 	STRAP:
@@ -84,7 +87,11 @@ END_CASE]]></ST>
     <LineIds Name="MAIN">
       <LineId Id="520" Count="21" />
       <LineId Id="590" Count="0" />
-      <LineId Id="542" Count="11" />
+      <LineId Id="542" Count="3" />
+      <LineId Id="619" Count="0" />
+      <LineId Id="621" Count="0" />
+      <LineId Id="620" Count="0" />
+      <LineId Id="546" Count="7" />
       <LineId Id="589" Count="0" />
       <LineId Id="572" Count="1" />
       <LineId Id="575" Count="0" />
