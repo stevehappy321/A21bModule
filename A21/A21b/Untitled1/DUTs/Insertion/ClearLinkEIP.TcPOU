@@ -1,0 +1,349 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="ClearLinkEIP" Id="{1d47033b-d774-42fe-b022-c8ddd8488a6f}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ClearLinkEIP
+VAR_INPUT
+	bEnable : BOOL;
+END_VAR
+VAR_OUTPUT
+	pulse AT %Q* : INT; //num pulses
+	outputRegister AT %Q* : INT;
+	brakeRelease AT %Q* : BOOL;
+	
+	A : BOOL; //direction (F = inwards, T = outwards)
+	B : BOOL; //home bit
+	clear : BOOL;
+	
+	contact AT %I* : BOOL;
+	home AT %I* : BOOL;
+	outerLimit AT %I* : BOOL;
+	innerLimit AT %I* : BOOL;
+	
+	hlfb AT %I* : REAL;
+	
+	homeSet : BOOL;
+	busy : BOOL;
+	error : BOOL;
+	
+	position : LREAL;
+	targetPos : LREAL;
+END_VAR
+VAR
+	test : BOOL;
+	pulseRequest : INT;
+	
+	pulser : TON;
+	//pulseSeparator : TOF;
+	
+	minHoming : TON;
+	resetTimer : TP;
+	
+	step : Homing; //(IDLE, HOME_UP, HOME_FINAL, DOWN, REDO_HOME, HOME_DONE);
+	mode : (DISABLE, HOLD, TARGET, CONTINUOUS, RESET_ERR);
+END_VAR
+VAR_STAT CONSTANT
+	resetTime : TIME := T#1000MS;
+	pulseWidth : TIME := T#40MS;
+	pulseSeparation : TIME := T#40MS;
+	unitsPerPulse : INT := 800; //800 Teknic units per revolution
+	distancePerPulse : INT := 5; //5mm per revolution
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF NOT bEnable THEN
+	mode := DISABLE;
+END_IF
+
+
+outputRegister.0 := bEnable;
+outputRegister.1 := A;
+outputRegister.2 := B;
+outputRegister.3 := clear;
+
+resetTimer(IN:= , PT:= resetTime, Q=> clear, ET=> );
+//pulseSeparator(IN:= busy, PT:= pulseSeparation, Q=> , ET=> );
+
+//set the bool outputs, all are listed for readability
+homeSet := homeSet;
+busy := hlfb <> -9999;
+error := error;
+
+CASE mode OF
+	DISABLE:
+		//bEnable := FALSE;
+		pulse := 0;
+		pulseRequest := 0;
+		
+	HOLD:
+		pulse := 0;
+		pulseRequest := 0;
+	
+	TARGET:	
+		test := WithinTolerance(position, targetPos, distancePerPulse);
+		IF WithinTolerance(position, targetPos, distancePerPulse) THEN
+			pulseRequest := 0;
+			mode := HOLD;
+			
+		ELSIF NOT busy THEN
+			//test := TRUE;
+			A :=  position < targetPos;
+			pulseRequest := TO_INT(ABS(position - targetPos)/distancePerPulse); //pulseAll();
+			//pulseRequest := 1; //pulseSingle();
+			
+		END_IF
+		
+	CONTINUOUS:
+		pulseRequest := 1;
+		
+	RESET_ERR:
+		pulse := 0;
+		pulseRequest := 0;
+		resetTimer.IN := TRUE;
+		
+		IF resetTimer.Q THEN
+			resetTimer.IN := FALSE;
+			mode := HOLD;
+		END_IF
+		
+END_CASE
+
+IF home AND_THEN A THEN //block outwards motion
+	position := 0;
+	pulse := 0;
+	pulseRequest := 0;
+	mode := HOLD;
+	
+ELSIF outerLimit AND_THEN A THEN //block outwards motion
+	pulse := 0;
+	pulseRequest := 0;
+	mode := HOLD;
+
+ELSIF innerLimit AND_THEN NOT A THEN //block inwards motion
+	pulse := 0;
+	pulseRequest := 0;
+	mode := HOLD;
+	
+END_IF
+
+sequence();]]></ST>
+    </Implementation>
+    <Folder Name="Public Methods" Id="{d29c5c5d-14f1-4972-8db5-81b3764b5246}" />
+    <Method Name="homingSequence" Id="{925d6ae9-57fa-4c20-b488-bf8b58e8f70a}" FolderPath="Public Methods\">
+      <Declaration><![CDATA[METHOD homingSequence : BOOL]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[minHoming(IN:= , PT:= T#1S, Q=> , ET=> );
+
+IF NOT bEnable THEN
+	mode := DISABLE;
+	RETURN;
+END_IF
+
+CASE step OF
+	Homing.IDLE:
+		A := FALSE;
+		B := FALSE;
+		brakeRelease := TRUE;
+		
+		homeSet := FALSE;
+		step := Homing.REDO;
+		
+	Homing.REDO: //let insertion drop to inner limit before homing
+		A := FALSE;
+		B := FALSE;
+		brakeRelease := TRUE;
+		
+		IF NOT innerLimit THEN
+			mode := CONTINUOUS;
+			step := Homing.HOME_OUT;
+		END_IF
+	
+	Homing.HOME_OUT:
+		mode := CONTINUOUS;
+	
+		A := FALSE;
+		B := TRUE;
+		brakeRelease := TRUE;
+		
+		minHoming.IN := TRUE;
+		
+		IF NOT home AND minHoming.Q THEN
+			minHoming.IN := FALSE;
+			
+			mode := HOLD;
+			step := Homing.DONE;
+		END_IF
+		
+	Homing.DONE:
+		pulse := 0;
+		A := FALSE;
+		B := FALSE;
+		brakeRelease := TRUE;
+		
+		position := 0;
+		homeSet := TRUE;
+		homingSequence := TRUE;
+		
+		mode := HOLD;
+		step := Homing.IDLE;
+	
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="moveAbsolute" Id="{48d9973d-9fcb-433c-b03e-e671dd2fbe37}" FolderPath="Public Methods\">
+      <Declaration><![CDATA[METHOD moveAbsolute : BOOL
+VAR_INPUT
+	newTarget : LREAL;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[targetPos := newTarget;
+mode := TARGET;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="moveContinuous" Id="{32b5f905-3046-435e-bedb-532126f570d4}" FolderPath="Public Methods\">
+      <Declaration><![CDATA[METHOD moveContinuous : BOOL
+VAR_INPUT
+	direction : MC_Direction;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF direction = MC_Negative_Direction THEN
+	A := FALSE;
+ELSIF direction = MC_Positive_Direction THEN
+	A := TRUE;
+END_IF
+
+mode := CONTINUOUS;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="reset" Id="{a54fb6bd-1435-4800-ad76-8a72a5bacf80}" FolderPath="Public Methods\">
+      <Declaration><![CDATA[METHOD reset : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[mode := RESET_ERR;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="sequence" Id="{4fdb4002-c74d-4629-b33e-bcb75c287ea7}">
+      <Declaration><![CDATA[METHOD sequence : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF hlfb > -9999 THEN //is busy
+	IF A THEN //positive
+		position := position + (distancePerPulse * pulse);
+	ELSE
+		position := position - (distancePerPulse * pulse);
+	END_IF
+	pulse := 0;
+	RETURN;
+END_IF
+
+//is free to accept new request
+IF pulse = 0 (*AND NOT pulseSeparator.Q*) THEN
+	pulse := pulseRequest;
+	//pulseRequest := 0;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="stop" Id="{93d5c5d8-8608-4ab9-806f-64dab48570ea}" FolderPath="Public Methods\">
+      <Declaration><![CDATA[METHOD stop : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[mode := HOLD;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="ClearLinkEIP">
+      <LineId Id="2025" Count="0" />
+      <LineId Id="2028" Count="1" />
+      <LineId Id="2026" Count="1" />
+      <LineId Id="1781" Count="5" />
+      <LineId Id="2037" Count="0" />
+      <LineId Id="1969" Count="0" />
+      <LineId Id="1808" Count="1" />
+      <LineId Id="1811" Count="3" />
+      <LineId Id="1850" Count="0" />
+      <LineId Id="1854" Count="0" />
+      <LineId Id="1852" Count="0" />
+      <LineId Id="2032" Count="0" />
+      <LineId Id="1853" Count="0" />
+      <LineId Id="1815" Count="1" />
+      <LineId Id="2033" Count="0" />
+      <LineId Id="1817" Count="1" />
+      <LineId Id="2021" Count="0" />
+      <LineId Id="1819" Count="0" />
+      <LineId Id="2035" Count="0" />
+      <LineId Id="1826" Count="2" />
+      <LineId Id="2023" Count="0" />
+      <LineId Id="1920" Count="0" />
+      <LineId Id="1972" Count="0" />
+      <LineId Id="1829" Count="0" />
+      <LineId Id="1831" Count="4" />
+      <LineId Id="1855" Count="0" />
+      <LineId Id="1857" Count="0" />
+      <LineId Id="1865" Count="0" />
+      <LineId Id="2034" Count="0" />
+      <LineId Id="1859" Count="4" />
+      <LineId Id="1856" Count="0" />
+      <LineId Id="1836" Count="1" />
+      <LineId Id="1846" Count="0" />
+      <LineId Id="1867" Count="1" />
+      <LineId Id="2095" Count="1" />
+      <LineId Id="1869" Count="2" />
+      <LineId Id="2097" Count="1" />
+      <LineId Id="1872" Count="2" />
+      <LineId Id="2099" Count="1" />
+      <LineId Id="1875" Count="1" />
+      <LineId Id="1845" Count="0" />
+      <LineId Id="1838" Count="1" />
+    </LineIds>
+    <LineIds Name="ClearLinkEIP.homingSequence">
+      <LineId Id="227" Count="0" />
+      <LineId Id="234" Count="0" />
+      <LineId Id="233" Count="0" />
+      <LineId Id="240" Count="0" />
+      <LineId Id="235" Count="1" />
+      <LineId Id="228" Count="0" />
+      <LineId Id="176" Count="1" />
+      <LineId Id="179" Count="7" />
+      <LineId Id="188" Count="4" />
+      <LineId Id="246" Count="0" />
+      <LineId Id="194" Count="3" />
+      <LineId Id="244" Count="1" />
+      <LineId Id="199" Count="2" />
+      <LineId Id="229" Count="1" />
+      <LineId Id="202" Count="1" />
+      <LineId Id="231" Count="0" />
+      <LineId Id="238" Count="0" />
+      <LineId Id="237" Count="0" />
+      <LineId Id="239" Count="0" />
+      <LineId Id="206" Count="2" />
+      <LineId Id="241" Count="0" />
+      <LineId Id="210" Count="6" />
+      <LineId Id="225" Count="1" />
+      <LineId Id="217" Count="1" />
+      <LineId Id="133" Count="0" />
+    </LineIds>
+    <LineIds Name="ClearLinkEIP.moveAbsolute">
+      <LineId Id="16" Count="0" />
+      <LineId Id="8" Count="0" />
+    </LineIds>
+    <LineIds Name="ClearLinkEIP.moveContinuous">
+      <LineId Id="20" Count="0" />
+      <LineId Id="23" Count="4" />
+      <LineId Id="15" Count="0" />
+    </LineIds>
+    <LineIds Name="ClearLinkEIP.reset">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="ClearLinkEIP.sequence">
+      <LineId Id="110" Count="12" />
+      <LineId Id="132" Count="0" />
+      <LineId Id="48" Count="0" />
+    </LineIds>
+    <LineIds Name="ClearLinkEIP.stop">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

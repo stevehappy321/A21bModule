@@ -4,7 +4,7 @@
     <Declaration><![CDATA[TYPE SuctionPad :
 STRUCT
 	enable AT %Q* : BOOL;
-	readback AT %I* : BOOL;
+	occupied AT %I* : BOOL;
 END_STRUCT
 END_TYPE]]></Declaration>
   </DUT>

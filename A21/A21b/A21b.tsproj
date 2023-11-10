@@ -88,7 +88,7 @@
 			</ArrayInfo>
 		</DataType>
 	</DataTypes>
-	<Project ProjectGUID="{715FD16F-423F-4414-81A1-4AA380D95379}" ShowHideConfigurations="#x106">
+	<Project ProjectGUID="{715FD16F-423F-4414-81A1-4AA380D95379}" Target64Bit="true" ShowHideConfigurations="#x106">
 		<System>
 			<Tasks>
 				<Task Id="3" Priority="20" CycleTime="100000" AmsPort="350" AdtTasks="true">
@@ -101,7 +101,7 @@
 		</System>
 		<Plc>
 			<Project GUID="{E9571829-45C8-446A-8EB4-A7C28CCAD583}" Name="Untitled1" PrjFilePath="Untitled1\Untitled1.plcproj" TmcFilePath="Untitled1\Untitled1.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{352D8BF9-305E-D23A-76A3-53B85FE9C8C8}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{472D877B-C1B4-EAD3-7B51-B2C58C0CC323}">
 					<Name>Untitled1 Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
@@ -187,14 +187,6 @@
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.bottomSuction[1].readback</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.bottomSuction[2].readback</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
 							<Name>MAIN.insertionLeft.slider.contact</Name>
 							<Type>BOOL</Type>
 						</Var>
@@ -211,8 +203,8 @@
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.insertionLeft.slider.done</Name>
-							<Type>BOOL</Type>
+							<Name>MAIN.insertionLeft.slider.hlfb</Name>
+							<Type>REAL</Type>
 						</Var>
 						<Var>
 							<Name>MAIN.insertionLeft.screw.contact</Name>
@@ -243,8 +235,8 @@
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.insertionRight.slider.done</Name>
-							<Type>BOOL</Type>
+							<Name>MAIN.insertionRight.slider.hlfb</Name>
+							<Type>REAL</Type>
 						</Var>
 						<Var>
 							<Name>MAIN.insertionRight.screw.contact</Name>
@@ -271,47 +263,55 @@
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.topSuction[1].readback</Name>
+							<Name>MAIN.topSuction[1].occupied</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.topSuction[2].readback</Name>
+							<Name>MAIN.topSuction[2].occupied</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.topSuction[3].readback</Name>
+							<Name>MAIN.topSuction[3].occupied</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.leftSuction[1].readback</Name>
+							<Name>MAIN.leftSuction[1].occupied</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.leftSuction[2].readback</Name>
+							<Name>MAIN.leftSuction[2].occupied</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.leftSuction[3].readback</Name>
+							<Name>MAIN.leftSuction[3].occupied</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.leftSuction[4].readback</Name>
+							<Name>MAIN.leftSuction[4].occupied</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.rightSuction[1].readback</Name>
+							<Name>MAIN.rightSuction[1].occupied</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.rightSuction[2].readback</Name>
+							<Name>MAIN.rightSuction[2].occupied</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.rightSuction[3].readback</Name>
+							<Name>MAIN.rightSuction[3].occupied</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.rightSuction[4].readback</Name>
+							<Name>MAIN.rightSuction[4].occupied</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.bottomSuction[1].occupied</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.bottomSuction[2].occupied</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
@@ -430,27 +430,13 @@
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.bottomSuction[1].enable</Name>
-							<Type>BOOL</Type>
+							<Name>MAIN.insertionLeft.slider.pulse</Name>
+							<Comment><![CDATA[num pulses]]></Comment>
+							<Type>INT</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.bottomSuction[2].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionLeft.slider.enable</Name>
-							<Comment><![CDATA[enable + pulses]]></Comment>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionLeft.slider.A</Name>
-							<Comment><![CDATA[direction (F = inwards, T = outwards)]]></Comment>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionLeft.slider.B</Name>
-							<Comment><![CDATA[home bit]]></Comment>
-							<Type>BOOL</Type>
+							<Name>MAIN.insertionLeft.slider.outputRegister</Name>
+							<Type>INT</Type>
 						</Var>
 						<Var>
 							<Name>MAIN.insertionLeft.slider.brakeRelease</Name>
@@ -465,19 +451,13 @@
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.insertionRight.slider.enable</Name>
-							<Comment><![CDATA[enable + pulses]]></Comment>
-							<Type>BOOL</Type>
+							<Name>MAIN.insertionRight.slider.pulse</Name>
+							<Comment><![CDATA[num pulses]]></Comment>
+							<Type>INT</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.insertionRight.slider.A</Name>
-							<Comment><![CDATA[direction (F = inwards, T = outwards)]]></Comment>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionRight.slider.B</Name>
-							<Comment><![CDATA[home bit]]></Comment>
-							<Type>BOOL</Type>
+							<Name>MAIN.insertionRight.slider.outputRegister</Name>
+							<Type>INT</Type>
 						</Var>
 						<Var>
 							<Name>MAIN.insertionRight.slider.brakeRelease</Name>
@@ -541,6 +521,14 @@
 						</Var>
 						<Var>
 							<Name>MAIN.rightSuction[4].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.bottomSuction[1].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.bottomSuction[2].enable</Name>
 							<Type>BOOL</Type>
 						</Var>
 					</Vars>

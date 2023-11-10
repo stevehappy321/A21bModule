@@ -88,7 +88,7 @@
 			</ArrayInfo>
 		</DataType>
 	</DataTypes>
-	<Project ProjectGUID="{715FD16F-423F-4414-81A1-4AA380D95379}" ShowHideConfigurations="#x106">
+	<Project ProjectGUID="{715FD16F-423F-4414-81A1-4AA380D95379}" Target64Bit="true" ShowHideConfigurations="#x106">
 		<System>
 			<Tasks>
 				<Task Id="3" Priority="20" CycleTime="100000" AmsPort="350" AdtTasks="true">
@@ -101,11 +101,23 @@
 		</System>
 		<Plc>
 			<Project GUID="{E9571829-45C8-446A-8EB4-A7C28CCAD583}" Name="Untitled1" PrjFilePath="Untitled1\Untitled1.plcproj" TmcFilePath="Untitled1\Untitled1.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{CE2A5050-3D0D-5525-9EB5-AAB6528B896B}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{B2842EB2-3CA2-9566-1ECB-6E294DA859EE}">
 					<Name>Untitled1 Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
 						<Name>PlcTask Inputs</Name>
+						<Var>
+							<Name>MAIN.topSuction[1].occupied</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.topSuction[2].occupied</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.topSuction[3].occupied</Name>
+							<Type>BOOL</Type>
+						</Var>
 						<Var>
 							<Name>MAIN.robotLeft.inputs</Name>
 							<Type GUID="{FF46E77C-A1C9-160B-C563-9524E562D7F4}">ARRAY [1..20] OF INT</Type>
@@ -187,14 +199,6 @@
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.bottomSuction[1].readback</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.bottomSuction[2].readback</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
 							<Name>MAIN.insertionLeft.slider.contact</Name>
 							<Type>BOOL</Type>
 						</Var>
@@ -271,47 +275,43 @@
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.topSuction[1].readback</Name>
+							<Name>MAIN.leftSuction[1].occupied</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.topSuction[2].readback</Name>
+							<Name>MAIN.leftSuction[2].occupied</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.topSuction[3].readback</Name>
+							<Name>MAIN.leftSuction[3].occupied</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.leftSuction[1].readback</Name>
+							<Name>MAIN.leftSuction[4].occupied</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.leftSuction[2].readback</Name>
+							<Name>MAIN.rightSuction[1].occupied</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.leftSuction[3].readback</Name>
+							<Name>MAIN.rightSuction[2].occupied</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.leftSuction[4].readback</Name>
+							<Name>MAIN.rightSuction[3].occupied</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.rightSuction[1].readback</Name>
+							<Name>MAIN.rightSuction[4].occupied</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.rightSuction[2].readback</Name>
+							<Name>MAIN.bottomSuction[1].occupied</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.rightSuction[3].readback</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.rightSuction[4].readback</Name>
+							<Name>MAIN.bottomSuction[2].occupied</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
@@ -370,6 +370,18 @@
 					<Vars VarGrpType="2" AreaNo="1">
 						<Name>PlcTask Outputs</Name>
 						<Var>
+							<Name>MAIN.topSuction[1].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.topSuction[2].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.topSuction[3].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
 							<Name>MAIN.robotLeft.forceStop</Name>
 							<Type>BOOL</Type>
 						</Var>
@@ -427,14 +439,6 @@
 						</Var>
 						<Var>
 							<Name>MAIN.strapper.bottomSuction</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.bottomSuction[1].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.bottomSuction[2].enable</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
@@ -500,18 +504,6 @@
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.topSuction[1].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.topSuction[2].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.topSuction[3].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
 							<Name>MAIN.leftSuction[1].enable</Name>
 							<Type>BOOL</Type>
 						</Var>
@@ -541,6 +533,14 @@
 						</Var>
 						<Var>
 							<Name>MAIN.rightSuction[4].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.bottomSuction[1].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.bottomSuction[2].enable</Name>
 							<Type>BOOL</Type>
 						</Var>
 					</Vars>

@@ -41,28 +41,22 @@
     <Compile Include="DUTs\Enums\WoodBunk.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\Insertion\Abstracts\ContinuousDrive.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DUTs\Insertion\Abstracts\Drive.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DUTs\Insertion\Abstracts\EncodedDrive.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DUTs\Insertion\Abstracts\Insertion.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="DUTs\Insertion\AirPiston.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Insertion\ClearLinkEIP.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DUTs\Insertion\PneumaticInsertion.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DUTs\Insertion\PneumaticInsertionEIP.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="DUTs\Insertion\SuctionPad.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\Insertion\TeknicEIP.TcPOU">
+    <Compile Include="DUTs\Insertion\TeknicHardWire.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DUTs\Machines\Robot.TcPOU">
@@ -80,17 +74,14 @@
     <Compile Include="DUTs\PositionMaterials.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\Prototype Insertions\Servo.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DUTs\Prototype Insertions\TeknicEIP_1.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="GVLs\GVL.TcGVL">
       <SubType>Code</SubType>
       <LinkAlways>true</LinkAlways>
     </Compile>
     <Compile Include="PlcTask.TcTTO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\CEILING.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\WithinTolerance.TcPOU">
@@ -104,10 +95,8 @@
     <Folder Include="DUTs" />
     <Folder Include="DUTs\Insertion" />
     <Folder Include="DUTs\Enums" />
-    <Folder Include="DUTs\Insertion\Abstracts" />
     <Folder Include="DUTs\Material Holders" />
     <Folder Include="DUTs\Machines" />
-    <Folder Include="DUTs\Prototype Insertions" />
     <Folder Include="GVLs" />
     <Folder Include="VISUs" />
     <Folder Include="POUs" />

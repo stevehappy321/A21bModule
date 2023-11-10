@@ -15,7 +15,7 @@ VAR_OUTPUT
 	
 	strapper : StrapMachine;
 	
-	insertionLeft, insertionRight : PneumaticInsertion;	
+	insertionLeft, insertionRight : PneumaticInsertionEIP;	
 	insertionBottom : AirPiston;
 	topSuction : ARRAY[1..3] OF SuctionPad;
 	leftSuction, rightSuction : ARRAY[1..4] OF SuctionPad;

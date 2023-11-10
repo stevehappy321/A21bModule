@@ -20,9 +20,10 @@ VAR_OUTPUT
 	homeSet : BOOL;
 END_VAR
 VAR
-	step : Homing;
+	reversalBrakeTrig : R_TRIG;
 	
-	direction : (HOLD, IN, OUT);
+	step : Homing;
+	mode : (HOLD, IN, OUT);
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[IF NOT bEnable THEN
@@ -32,10 +33,13 @@ END_VAR]]></Declaration>
 END_IF
 
 IF home OR innerLimit THEN
-	direction := HOLD;
+	mode := HOLD;
 END_IF
 
-CASE direction OF
+reversalBrakeTrig(CLK:= , Q=> valveOut); //short brake, Q does not change until the scan after CLK is set
+reversalBrakeTrig.CLK := FALSE;
+
+CASE mode OF
 	HOLD:
 		valveIn := FALSE;
 		valveOut := FALSE;
@@ -43,6 +47,14 @@ CASE direction OF
 	IN:
 		valveIn := TRUE;
 		valveOut := FALSE;
+		
+		IF reversalBrakeTrig.Q THEN //brake triggered
+			mode := HOLD;
+			
+		ELSIF contact THEN
+			valveIn := FALSE;
+			reversalBrakeTrig.CLK := TRUE; //trigger brake
+		END_IF
 		
 	OUT:
 		valveIn := FALSE;
@@ -97,7 +109,7 @@ VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[direction := IN;
+        <ST><![CDATA[mode := IN;
 
 slideIn := TRUE;]]></ST>
       </Implementation>
@@ -108,7 +120,7 @@ VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[direction := OUT;
+        <ST><![CDATA[mode := OUT;
 
 slideOut := TRUE;]]></ST>
       </Implementation>
@@ -121,22 +133,13 @@ END_VAR
       <Implementation>
         <ST><![CDATA[valveIn := FALSE;
 valveOut := FALSE;
-direction := HOLD;
+mode := HOLD;
 
 stop := TRUE;]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="AirPiston">
-      <LineId Id="55" Count="0" />
-      <LineId Id="57" Count="0" />
-      <LineId Id="59" Count="1" />
-      <LineId Id="58" Count="0" />
-      <LineId Id="56" Count="0" />
-      <LineId Id="35" Count="2" />
-      <LineId Id="40" Count="0" />
-      <LineId Id="39" Count="0" />
-      <LineId Id="41" Count="0" />
-      <LineId Id="44" Count="10" />
+      <LineId Id="159" Count="33" />
       <LineId Id="42" Count="0" />
     </LineIds>
     <LineIds Name="AirPiston.homingSequence">
