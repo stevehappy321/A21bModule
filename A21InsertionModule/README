@@ -1,0 +1,22 @@
+README
+
+Insertions require an encodable slider and a continuous screw
+This project contains the software module for a 2D insertion comprising of a ClearLink-Teknic/THK slider and SMC pneumatic screw, + 4 suction pads
+
+There are 4 BOOLs and 1 REAL to control motion of the insertion:
+  up : BOOL
+  down : BOOL
+  in : BOOL
+  out : BOOL
+  target : REAL (default value = -1)
+
+the 4 directional BOOLs control continuous motion
+target commands the slider to a position >= 0
+
+the 4 suction pads can be turned on individually or all at once
+
+All drives have at least 3 modes - HOLD, IN, OUT - to store their direction of continuous motion
+Encodable drives have an additional mode - TARGET - to store a target position
+
+calling the methods of a drive changes its mode (and if applicable, its target position)
+the drive will perform its task concurrently with the rest of the program
