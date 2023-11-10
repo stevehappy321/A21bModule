@@ -20,3 +20,4 @@ Encodable drives have an additional mode - TARGET - to store a target position
 
 calling the methods of a drive changes its mode (and if applicable, its target position)
 the drive will perform its task concurrently with the rest of the program
+
