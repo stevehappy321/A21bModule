@@ -15,6 +15,8 @@ VAR_OUTPUT
 	ready : BOOL;
 	busy : BOOL;
 	error : BOOL;
+	
+	sliderPos : LREAL;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[slider(
@@ -33,13 +35,13 @@ END_VAR]]></Declaration>
 	homeSet=> , 
 	busy=> , 
 	error=> , 
-	position=> , 
+	position=> sliderPos, 
 	targetPos=> );
 
 screw(
 	bEnable:= enable,
-	valveIn=> , 
-	valveOut=> , 
+	valveExtend=> , 
+	valveRetract=> , 
 	contact=> , 
 	home=> , 
 	innerLimit=> , 
@@ -55,11 +57,16 @@ error := slider.error OR screw.error;]]></ST>
     <Method Name="homingSequence" Id="{74aa10a4-d54f-4feb-b7ba-b023029d51d3}">
       <Declaration><![CDATA[METHOD homingSequence : BOOL]]></Declaration>
       <Implementation>
-        <ST><![CDATA[IF NOT screw.homeSet THEN
+        <ST><![CDATA[(*
+IF NOT slider.homeSet THEN
+	slider.homingSequence();
+END_IF
+*)
+IF NOT screw.homeSet THEN
 	screw.homingSequence();
 END_IF
 
-homingSequence := slider.homeSet (*AND screw.homeSet*);]]></ST>
+homingSequence := (*slider.homeSet AND*) screw.homeSet;]]></ST>
       </Implementation>
     </Method>
     <Method Name="press" Id="{6d696dd3-7676-4d35-8862-76ab2dec8fa9}">
@@ -70,7 +77,7 @@ VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[press := screw.slideIn();]]></ST>
+        <ST><![CDATA[press := screw.extend();]]></ST>
       </Implementation>
     </Method>
     <Method Name="release" Id="{df15fb9e-4c1d-4296-8fe1-9b7e99ff36b4}">
@@ -78,7 +85,7 @@ END_VAR
 VAR_INPUT
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[release := screw.slideOut();]]></ST>
+        <ST><![CDATA[release := screw.retract();]]></ST>
       </Implementation>
     </Method>
     <Method Name="slideAbsolute" Id="{7157da18-36ff-410d-8d76-ea3b77265589}">
@@ -101,14 +108,16 @@ END_VAR]]></Declaration>
       </Implementation>
     </Method>
     <LineIds Name="PneumaticInsertionEIP">
-      <LineId Id="265" Count="16" />
-      <LineId Id="264" Count="0" />
-      <LineId Id="210" Count="2" />
-      <LineId Id="214" Count="11" />
+      <LineId Id="296" Count="32" />
       <LineId Id="74" Count="0" />
     </LineIds>
     <LineIds Name="PneumaticInsertionEIP.homingSequence">
-      <LineId Id="31" Count="3" />
+      <LineId Id="39" Count="0" />
+      <LineId Id="31" Count="2" />
+      <LineId Id="36" Count="0" />
+      <LineId Id="35" Count="0" />
+      <LineId Id="37" Count="1" />
+      <LineId Id="34" Count="0" />
       <LineId Id="5" Count="0" />
     </LineIds>
     <LineIds Name="PneumaticInsertionEIP.press">

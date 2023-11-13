@@ -4,12 +4,14 @@
     <Declaration><![CDATA[PROGRAM MAIN
 VAR_INPUT
 	execute : BOOL;
-	manualMode : BOOL;
+	manualMode : BOOL := TRUE;
 END_VAR
 VAR_OUTPUT
 	robotLeft, robotRight : Robot;
 	
 	skidLeft, skidRight : MaterialStorage;
+	
+	stagingTemplateLeft, stagingTemplateRight : WoodBunkTable;
 	stagingTableLeft, stagingTableRight : WoodBunkTable;
 	magazineLeft, magazineRight : MaterialStorage;
 	
@@ -17,16 +19,20 @@ VAR_OUTPUT
 	
 	insertionLeft, insertionRight : PneumaticInsertionEIP;	
 	insertionBottom : AirPiston;
+	
 	topSuction : ARRAY[1..3] OF SuctionPad;
-	leftSuction, rightSuction : ARRAY[1..4] OF SuctionPad;
+	leftSuction : ARRAY[1..4] OF SuctionPad;
+	rightSuction : ARRAY[1..4] OF SuctionPad; 
 	bottomSuction : ARRAY[1..2] OF SuctionPad;
 	
-	toolStorageLeft : A21ToolStorage;
-	toolStorageRight : A21ToolStorage;
-	
-	stagingTemplateLeft, stagingTemplateRight : WoodBunkTable;
+	toolStorageLeft, toolStorageRight : A21ToolStorage;
 END_VAR
 VAR
+	//these latches are only temporary to prevent SMC sliders from overshooting the inner limit sensor
+	//to be removed when replaced with pressure sensors
+	latchLeft, latchRight, latchBottom : BOOL;
+	manualSuctionEnable : BOOL;
+	
 	robotLeftOutputs, robotRightOutputs : ARRAY[1..50] OF INT;
 	
 	demoPairWB : PositionMaterials := (
@@ -45,7 +51,7 @@ VAR
 	
 	sectionID : SectionEnum := SectionEnum.WOOD_BUNK;
 	
-	step : (IDLE, STAGING, LOAD_CIP, LOAD_WB, PUSH, STRAP, RELEASE, COMPLETE := 1050);
+	step : (IDLE, LOAD_CIP, STAGING, LOAD_WB, PUSH, STRAP, RELEASE, COMPLETE := 1050);
 	ready : BOOL;
 	
 	loadSet : INT;
@@ -54,6 +60,8 @@ VAR
 	stageSet : INT;	
 	stageStepLeft, stageStepRight : INT;
 	iStagingSlotLeft, iStagingSlotRight : INT;
+	
+	i : INT;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[setup();
@@ -62,79 +70,137 @@ hardwareCall();
 IF NOT ready THEN
 	ready :=
 		insertionLeft.homingSequence() AND
-		insertionRight.homingSequence() AND
-		insertionBottom.homingSequence();
+		insertionRight.homingSequence(); //AND
+		//insertionBottom.homingSequence();
+	RETURN;
 END_IF
 
 
 CASE step OF
-	IDLE:
+	IDLE:	
 		IF execute THEN
 			execute := FALSE;
-			step := LOAD_CIP;
+			step := LOAD_WB;
 		END_IF
 	
 	LOAD_CIP:
 		IF loadCIP(pair:= demoPairWB) THEN
-			IF manualMode AND_THEN NOT execute THEN
-				RETURN;
-			END_IF
+			step := STAGING;
+		END_IF
 		
+		IF manualMode AND_THEN execute THEN
+			execute := FALSE;
 			step := STAGING;
 		END_IF
 		
 	STAGING:
-		IF stage() THEN
-			IF manualMode AND_THEN NOT execute THEN
-				RETURN;
-			END_IF
-			
+		IF stage() THEN			
 			step := LOAD_CIP;
+		END_IF
+		
+		IF manualMode AND_THEN execute THEN
+			execute := FALSE;
+			step := LOAD_WB;
 		END_IF
 		
 	LOAD_WB:
 		IF loadWB(pair := demoPairWB) THEN
-			IF manualMode AND_THEN NOT execute THEN
-				RETURN;
-			END_IF
-		
 			step := STRAP;
 		END_IF
 		
-	PUSH:
-		IF NOT (insertionLeft.slideAbsolute(demoHeight/2) AND insertionRight.slideAbsolute(demoHeight/2)) THEN
-			RETURN;
+		IF manualSuctionEnable THEN
+			EnableSuctions(topSuction);
+			EnableSuctions(leftSuction);
+			EnableSuctions(rightSuction);
+			//EnableSuctions(bottomSuction);
 		END_IF
 		
+		IF manualSuctionEnable AND manualMode AND_THEN execute THEN
+			manualSuctionEnable := FALSE;
+			
+			execute := FALSE;
+			step := PUSH;
+		END_IF
+		
+	PUSH:
+		IF 
+			insertionLeft.sliderPos <> demoHeight/2 OR 
+			insertionRight.sliderPos <> demoHeight/2 //OR 
+			//NOT insertionBottom.contact
+		THEN
+			insertionLeft.slideAbsolute(demoHeight/2);
+			insertionRight.slideAbsolute(demoHeight/2);
+			RETURN;
+		END_IF
+		(*
 		insertionLeft.press();
 		insertionRight.press();
-		insertionBottom.slideIn();
+		//insertionBottom.extend();
+		*)
+		IF NOT latchLeft THEN //stop pressing if inner limit pulsed
+			insertionLeft.press();
+		ELSIF insertionLeft.screw.innerLimit THEN
+			latchLeft := TRUE;
+		END_IF
+		
+		IF NOT latchRight THEN //stop pressing if inner limit pulsed
+			insertionRight.press();
+		ELSIF insertionRight.screw.innerLimit THEN
+			latchRight := TRUE;
+		END_IF
+		
+		(*
+		IF NOT latchBottom THEN //stop pressing if inner limit pulsed
+			insertionBottom.extend();
+		ELSIF insertionBottom.innerLimit THEN
+			latchBottom := TRUE;
+		END_IF
+		*)
 		
 		IF insertionBottom.contact AND insertionLeft.contact AND insertionRight.contact THEN
 			step := STRAP;
 		END_IF
 		
+		IF manualMode AND_THEN execute THEN
+			latchLeft := FALSE;
+			execute := FALSE;
+			step := STRAP;
+		END_IF
+		
 	STRAP:
 		//possible requirement - release left, right, bottom suction here
-		IF strapper.ready OR (NOT strapper.busy AND NOT strapper.error) THEN
+		DisableSuctions(leftSuction);
+		DisableSuctions(rightSuction);
+		DisableSuctions(bottomSuction);
+		
+		IF strapper.done THEN
+			step := RELEASE;
+			RETURN;
+		END_IF
+		
+		IF NOT strapper.busy AND NOT strapper.error THEN
 			strapper.strap();
 		END_IF
 		
-		IF strapper.done THEN
-			IF manualMode AND_THEN NOT execute THEN
-				RETURN;
-			END_IF
-			
+		(*
+		IF manualMode AND_THEN execute THEN
+			execute := FALSE;
 			step := RELEASE;
 		END_IF
+		*)
 		
 	RELEASE: //release command
-		//if suction not released before strap, release here
-		MEMSET(ADR(topSuction), 0, SIZEOF(topSuction));
-		MEMSET(ADR(leftSuction), 0, SIZEOF(leftSuction));
-		MEMSET(ADR(rightSuction), 0, SIZEOF(rightSuction));
-		MEMSET(ADR(bottomSuction), 0, SIZEOF(bottomSuction));
+		DisableSuctions(topSuction);
 		
+		insertionLeft.release();
+		insertionRight.release();
+		//insertionBottom.retract();
+		
+		insertionLeft.slideAbsolute(0);
+		insertionRight.slideAbsolute(0);
+		insertionBottom.retract();
+		
+		(*
 		IF NOT insertionLeft.home THEN
 			insertionLeft.slideAbsolute(0);
 			insertionLeft.release();
@@ -148,12 +214,15 @@ CASE step OF
 		IF NOT insertionBottom.home THEN
 			insertionBottom.slideOut();
 		END_IF
-		
+		*)
+		(*
 		IF insertionLeft.home AND insertionRight.home AND insertionBottom.home THEN
-			IF manualMode AND_THEN NOT execute THEN
-				RETURN;
-			END_IF
-			
+			step := COMPLETE;
+		END_IF
+		*)
+		
+		IF insertionLeft.screw.home (*AND_THEN manualMode AND_THEN execute*) THEN
+			execute := FALSE;
 			step := COMPLETE;
 		END_IF
 	
@@ -824,7 +893,6 @@ END_VAR
 VAR
 	finished : BOOL;
 	slot : INT;
-	templateArr : POINTER TO STRING;
 END_VAR
 VAR CONSTANT
 	WIP : INT := 0;
@@ -834,17 +902,14 @@ END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[IF
 	table.isFull() OR actingStagingSlot > 10 OR //table full
-	MEMCMP(ADR(table.slots), templateArr, SIZEOF(table.slots)) = 0 //table matches template
-	//MEMCMP(table.getSlotsAsArray(), templateArr, SIZEOF(templateArr)) = 0
+	MEMCMP(ADR(table.slots), ADR(template.slots), SIZEOF(table.slots)) = 0 //table matches template
 THEN
 	stagingSequence := TRUE;
 	RETURN;
 END_IF
 
-templateArr := ADR(template.slots);
-
 //follow the template as is
-IF NOT magazine.findSlot(materialID:= templateArr[actingStagingSlot], atSlot => slot) THEN
+IF NOT magazine.findSlot(materialID:= template.slots[actingStagingSlot], atSlot => slot) THEN
 	fail := TRUE;
 	RETURN;
 END_IF
@@ -873,17 +938,35 @@ END_CASE]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="MAIN">
-      <LineId Id="982" Count="45" />
-      <LineId Id="1029" Count="3" />
-      <LineId Id="1034" Count="2" />
-      <LineId Id="1198" Count="0" />
-      <LineId Id="1037" Count="4" />
-      <LineId Id="1134" Count="0" />
-      <LineId Id="1042" Count="12" />
-      <LineId Id="1135" Count="0" />
-      <LineId Id="1055" Count="13" />
-      <LineId Id="1199" Count="3" />
-      <LineId Id="1069" Count="12" />
+      <LineId Id="1621" Count="61" />
+      <LineId Id="1796" Count="0" />
+      <LineId Id="1684" Count="7" />
+      <LineId Id="1797" Count="0" />
+      <LineId Id="1693" Count="5" />
+      <LineId Id="1784" Count="0" />
+      <LineId Id="1786" Count="3" />
+      <LineId Id="1798" Count="1" />
+      <LineId Id="1804" Count="0" />
+      <LineId Id="1800" Count="3" />
+      <LineId Id="1785" Count="0" />
+      <LineId Id="1699" Count="0" />
+      <LineId Id="1783" Count="0" />
+      <LineId Id="1701" Count="2" />
+      <LineId Id="1705" Count="8" />
+      <LineId Id="1715" Count="3" />
+      <LineId Id="1806" Count="0" />
+      <LineId Id="1721" Count="6" />
+      <LineId Id="1729" Count="8" />
+      <LineId Id="1807" Count="0" />
+      <LineId Id="1743" Count="3" />
+      <LineId Id="1809" Count="1" />
+      <LineId Id="1747" Count="0" />
+      <LineId Id="1812" Count="1" />
+      <LineId Id="1748" Count="14" />
+      <LineId Id="1814" Count="0" />
+      <LineId Id="1763" Count="2" />
+      <LineId Id="1815" Count="0" />
+      <LineId Id="1767" Count="9" />
       <LineId Id="167" Count="0" />
     </LineIds>
     <LineIds Name="MAIN.changeRobotsEOAT">
@@ -1042,9 +1125,9 @@ END_CASE]]></ST>
       <LineId Id="6" Count="0" />
       <LineId Id="85" Count="0" />
       <LineId Id="88" Count="0" />
-      <LineId Id="86" Count="0" />
       <LineId Id="84" Count="0" />
-      <LineId Id="7" Count="26" />
+      <LineId Id="7" Count="2" />
+      <LineId Id="12" Count="21" />
       <LineId Id="58" Count="1" />
       <LineId Id="61" Count="0" />
       <LineId Id="87" Count="0" />

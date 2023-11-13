@@ -21,8 +21,6 @@ VAR_OUTPUT
 END_VAR
 (*
 this FB encapsulates a ServoECAT and TeknicEIP into a 2D insertion machine
-normal operation should only use this FB's methods, but attributes and methods of the 2 components remain visible
-
 RETURN VALUES FOR THE METHODS ARE MEANINGLESS, USE OUTPUT VARS TO CHECK IF COMMAND IS COMPLETE
 *)]]></Declaration>
     <Implementation>

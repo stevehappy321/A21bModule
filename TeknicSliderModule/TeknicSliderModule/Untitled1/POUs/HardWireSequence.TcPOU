@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="HardWireSequence" Id="{feb96b66-ea9e-4005-aefa-8ed7917004cc}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK HardWireSequence
+VAR
+	ready : BOOL;
+	contUp : BOOL;
+	contDown : BOOL;
+	target : REAL := -1;
+	
+	hardWiredSlider : TeknicHardWire;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[hardWiredSlider.bEnable := TRUE;
+
+IF NOT ready THEN
+	ready := hardWiredSlider.homingSequence();
+	RETURN;
+END_IF
+
+hardWiredSlider.stop();
+IF contUp THEN
+	hardWiredSlider.moveContinuous(direction := MC_Positive_Direction);
+	contDown := FALSE;
+END_IF
+
+IF contDown THEN
+	hardWiredSlider.moveContinuous(direction := MC_Negative_Direction);
+	contUp := FALSE;
+END_IF
+
+
+IF target >= 0 THEN
+	hardWiredSlider.moveAbsolute(newTarget := target);
+	//target := 0;
+END_IF
+
+
+IF hardWiredSlider.innerLimit THEN
+	contDown := FALSE;
+END_IF
+IF hardWiredSlider.home THEN
+	contUp := FALSE;
+END_IF
+
+
+hardWiredSlider();]]></ST>
+    </Implementation>
+    <LineIds Name="HardWireSequence">
+      <LineId Id="55" Count="32" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

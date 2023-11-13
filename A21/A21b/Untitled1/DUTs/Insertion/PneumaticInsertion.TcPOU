@@ -36,8 +36,8 @@ END_VAR]]></Declaration>
 	
 screw(
 	bEnable:= enable, 
-	valveIn=> , 
-	valveOut=> , 
+	valveExtend=> , 
+	valveRetract=> , 
 	contact=> , 
 	home=> , 
 	innerLimit=> , 
@@ -68,7 +68,7 @@ VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[press := screw.slideIn();]]></ST>
+        <ST><![CDATA[press := screw.extend();]]></ST>
       </Implementation>
     </Method>
     <Method Name="release" Id="{6735797f-0df0-46da-8234-935ba24cde58}">
@@ -76,7 +76,7 @@ END_VAR
 VAR_INPUT
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[release := screw.slideOut();]]></ST>
+        <ST><![CDATA[release := screw.retract();]]></ST>
       </Implementation>
     </Method>
     <Method Name="slideAbsolute" Id="{89be0205-36be-4635-bf1d-734fb40c3796}">

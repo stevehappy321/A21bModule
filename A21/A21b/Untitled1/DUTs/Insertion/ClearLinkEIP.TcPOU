@@ -12,7 +12,7 @@ VAR_OUTPUT
 	
 	A : BOOL; //direction (F = inwards, T = outwards)
 	B : BOOL; //home bit
-	clear : BOOL;
+	clear : BOOL; //clear error
 	
 	contact AT %I* : BOOL;
 	home AT %I* : BOOL;
@@ -29,30 +29,32 @@ VAR_OUTPUT
 	targetPos : LREAL;
 END_VAR
 VAR
-	test : BOOL;
 	pulseRequest : INT;
-	
 	pulser : TON;
-	//pulseSeparator : TOF;
 	
 	minHoming : TON;
 	resetTimer : TP;
+	errorTimer : TON;
 	
 	step : Homing; //(IDLE, HOME_UP, HOME_FINAL, DOWN, REDO_HOME, HOME_DONE);
 	mode : (DISABLE, HOLD, TARGET, CONTINUOUS, RESET_ERR);
 END_VAR
 VAR_STAT CONSTANT
 	resetTime : TIME := T#1000MS;
-	pulseWidth : TIME := T#40MS;
-	pulseSeparation : TIME := T#40MS;
+	errorTime : TIME := T#1000MS;
 	unitsPerPulse : INT := 800; //800 Teknic units per revolution
 	distancePerPulse : INT := 5; //5mm per revolution
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[IF NOT bEnable THEN
+      <ST><![CDATA[(*
+public motion methods should not directly access the motion variables
+they should only modify the mode, which this FB will then validate based on its internal parameters
+*)
+
+
+IF NOT bEnable THEN
 	mode := DISABLE;
 END_IF
-
 
 outputRegister.0 := bEnable;
 outputRegister.1 := A;
@@ -60,12 +62,32 @@ outputRegister.2 := B;
 outputRegister.3 := clear;
 
 resetTimer(IN:= , PT:= resetTime, Q=> clear, ET=> );
-//pulseSeparator(IN:= busy, PT:= pulseSeparation, Q=> , ET=> );
+errorTimer(IN:= , PT:= errorTime, Q=> error, ET=> );
 
 //set the bool outputs, all are listed for readability
 homeSet := homeSet;
 busy := hlfb <> -9999;
 error := error;
+
+IF home AND_THEN A THEN //block outwards motion
+	position := 0;
+	pulse := 0;
+	pulseRequest := 0;
+	mode := HOLD;
+(*
+ELSIF outerLimit AND_THEN A THEN //block outwards motion
+	mode := HOLD;
+
+ELSIF innerLimit AND_THEN NOT A THEN //block inwards motion
+	mode := HOLD;
+*)
+ELSIF
+	(outerLimit AND A) OR //block outwards motion
+	(innerLimit AND NOT A) //block inwards motion
+THEN
+	mode := HOLD;
+END_IF
+
 
 CASE mode OF
 	DISABLE:
@@ -77,17 +99,15 @@ CASE mode OF
 		pulse := 0;
 		pulseRequest := 0;
 	
-	TARGET:	
-		test := WithinTolerance(position, targetPos, distancePerPulse);
+	TARGET:
 		IF WithinTolerance(position, targetPos, distancePerPulse) THEN
 			pulseRequest := 0;
 			mode := HOLD;
 			
-		ELSIF NOT busy THEN
-			//test := TRUE;
+		ELSIF NOT busy THEN //pulseRequest is only taken if motor is not running, so requests > 1 should not stack
 			A :=  position < targetPos;
-			pulseRequest := TO_INT(ABS(position - targetPos)/distancePerPulse); //pulseAll();
-			//pulseRequest := 1; //pulseSingle();
+			pulseRequest := TO_INT(ABS(position - targetPos)/distancePerPulse);
+			//pulseRequest := 1;
 			
 		END_IF
 		
@@ -105,24 +125,6 @@ CASE mode OF
 		END_IF
 		
 END_CASE
-
-IF home AND_THEN A THEN //block outwards motion
-	position := 0;
-	pulse := 0;
-	pulseRequest := 0;
-	mode := HOLD;
-	
-ELSIF outerLimit AND_THEN A THEN //block outwards motion
-	pulse := 0;
-	pulseRequest := 0;
-	mode := HOLD;
-
-ELSIF innerLimit AND_THEN NOT A THEN //block inwards motion
-	pulse := 0;
-	pulseRequest := 0;
-	mode := HOLD;
-	
-END_IF
 
 sequence();]]></ST>
     </Implementation>
@@ -219,7 +221,8 @@ VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[mode := RESET_ERR;]]></ST>
+        <ST><![CDATA[mode := RESET_ERR;
+errorTimer.IN := FALSE;]]></ST>
       </Implementation>
     </Method>
     <Method Name="sequence" Id="{4fdb4002-c74d-4629-b33e-bcb75c287ea7}">
@@ -228,7 +231,11 @@ VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[IF hlfb > -9999 THEN //is busy
+        <ST><![CDATA[IF pulse > 0 AND hlfb = -9999 THEN //no response, start error timer
+	errorTimer.IN := TRUE;
+	
+ELSIF hlfb > -9999 THEN //pulses received
+	errorTimer.IN := FALSE;
 	IF A THEN //positive
 		position := position + (distancePerPulse * pulse);
 	ELSE
@@ -255,14 +262,30 @@ END_VAR
       </Implementation>
     </Method>
     <LineIds Name="ClearLinkEIP">
+      <LineId Id="2176" Count="0" />
+      <LineId Id="2180" Count="1" />
+      <LineId Id="2179" Count="0" />
+      <LineId Id="2177" Count="1" />
       <LineId Id="2025" Count="0" />
       <LineId Id="2028" Count="1" />
-      <LineId Id="2026" Count="1" />
+      <LineId Id="2027" Count="0" />
       <LineId Id="1781" Count="5" />
-      <LineId Id="2037" Count="0" />
+      <LineId Id="2174" Count="0" />
       <LineId Id="1969" Count="0" />
       <LineId Id="1808" Count="1" />
-      <LineId Id="1811" Count="3" />
+      <LineId Id="1811" Count="1" />
+      <LineId Id="2149" Count="7" />
+      <LineId Id="2159" Count="2" />
+      <LineId Id="2164" Count="0" />
+      <LineId Id="2167" Count="0" />
+      <LineId Id="2148" Count="0" />
+      <LineId Id="2168" Count="0" />
+      <LineId Id="2172" Count="0" />
+      <LineId Id="2169" Count="0" />
+      <LineId Id="2171" Count="0" />
+      <LineId Id="2170" Count="0" />
+      <LineId Id="2166" Count="0" />
+      <LineId Id="1813" Count="1" />
       <LineId Id="1850" Count="0" />
       <LineId Id="1854" Count="0" />
       <LineId Id="1852" Count="0" />
@@ -270,12 +293,9 @@ END_VAR
       <LineId Id="1853" Count="0" />
       <LineId Id="1815" Count="1" />
       <LineId Id="2033" Count="0" />
-      <LineId Id="1817" Count="1" />
-      <LineId Id="2021" Count="0" />
-      <LineId Id="1819" Count="0" />
+      <LineId Id="1817" Count="2" />
       <LineId Id="2035" Count="0" />
       <LineId Id="1826" Count="2" />
-      <LineId Id="2023" Count="0" />
       <LineId Id="1920" Count="0" />
       <LineId Id="1972" Count="0" />
       <LineId Id="1829" Count="0" />
@@ -286,17 +306,7 @@ END_VAR
       <LineId Id="2034" Count="0" />
       <LineId Id="1859" Count="4" />
       <LineId Id="1856" Count="0" />
-      <LineId Id="1836" Count="1" />
-      <LineId Id="1846" Count="0" />
-      <LineId Id="1867" Count="1" />
-      <LineId Id="2095" Count="1" />
-      <LineId Id="1869" Count="2" />
-      <LineId Id="2097" Count="1" />
-      <LineId Id="1872" Count="2" />
-      <LineId Id="2099" Count="1" />
-      <LineId Id="1875" Count="1" />
-      <LineId Id="1845" Count="0" />
-      <LineId Id="1838" Count="1" />
+      <LineId Id="1836" Count="3" />
     </LineIds>
     <LineIds Name="ClearLinkEIP.homingSequence">
       <LineId Id="227" Count="0" />
@@ -336,9 +346,15 @@ END_VAR
     </LineIds>
     <LineIds Name="ClearLinkEIP.reset">
       <LineId Id="5" Count="0" />
+      <LineId Id="9" Count="0" />
     </LineIds>
     <LineIds Name="ClearLinkEIP.sequence">
-      <LineId Id="110" Count="12" />
+      <LineId Id="136" Count="0" />
+      <LineId Id="139" Count="0" />
+      <LineId Id="142" Count="0" />
+      <LineId Id="110" Count="0" />
+      <LineId Id="141" Count="0" />
+      <LineId Id="111" Count="11" />
       <LineId Id="132" Count="0" />
       <LineId Id="48" Count="0" />
     </LineIds>

@@ -6,7 +6,7 @@ VAR_OUTPUT
 	error AT %I* : BOOL;
 	ready AT %I* : BOOL;
 	busy AT %I* : BOOL;
-	done (*AT %I**) : BOOL;
+	done AT %I* : BOOL;
 	home AT %I* : BOOL;
 	
 	execute AT %Q* : BOOL;
@@ -38,30 +38,42 @@ IF delay.Q THEN
 	delay.IN := FALSE;
 	timeout := TRUE;
 	busy := FALSE;
+	
+	start := FALSE;
 	step := SETUP;
 END_IF
+
+enable := TRUE;
 
 CASE step OF
 	SETUP:
 		busy := FALSE;
 		IF error THEN
 			reset := NOT reset;
-			enable := FALSE;//NOT enable;
-			
-		ELSE
-			reset := FALSE;
-			enable := TRUE;
-			
-			IF start THEN
-				start := FALSE;
-				step := RUN;
-			END_IF
-			
+			//enable := FALSE;//NOT enable;
+			RETURN;
 		END_IF
+		
+		reset := FALSE;
+		enable := TRUE;
+		
+		IF start THEN
+			start := FALSE;
+			step := RUN;
+		END_IF
+		
 	
 	RUN:
+		(*
+		IF NOT execute THEN
+			execute := TRUE;
+			RETURN;
+		END_IF
+		*)
 		execute := TRUE;
-		IF execute AND NOT home THEN
+		
+		//IF execute AND NOT home THEN
+		IF busy THEN
 			execute := FALSE;
 			step := WAIT;
 		END_IF
@@ -130,11 +142,13 @@ VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[IF ready AND NOT busy AND NOT error THEN
-	busy := TRUE;
-	start := TRUE;
-	strap := TRUE;
-END_IF]]></ST>
+        <ST><![CDATA[//IF ready AND NOT busy AND NOT error THEN
+	//busy := TRUE;
+	//start := TRUE;
+	//strap := TRUE;
+//END_IF
+
+step := RUN;]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="StrapMachine">
@@ -142,14 +156,19 @@ END_IF]]></ST>
       <LineId Id="551" Count="0" />
       <LineId Id="524" Count="0" />
       <LineId Id="609" Count="0" />
+      <LineId Id="643" Count="1" />
       <LineId Id="562" Count="0" />
-      <LineId Id="502" Count="2" />
+      <LineId Id="502" Count="0" />
+      <LineId Id="642" Count="0" />
+      <LineId Id="641" Count="0" />
+      <LineId Id="503" Count="1" />
       <LineId Id="527" Count="0" />
       <LineId Id="610" Count="0" />
       <LineId Id="539" Count="1" />
       <LineId Id="542" Count="0" />
       <LineId Id="544" Count="0" />
       <LineId Id="541" Count="0" />
+      <LineId Id="645" Count="0" />
       <LineId Id="535" Count="0" />
       <LineId Id="545" Count="0" />
       <LineId Id="577" Count="0" />
@@ -157,13 +176,22 @@ END_IF]]></ST>
       <LineId Id="575" Count="0" />
       <LineId Id="549" Count="0" />
       <LineId Id="548" Count="0" />
-      <LineId Id="538" Count="0" />
       <LineId Id="536" Count="0" />
       <LineId Id="532" Count="0" />
-      <LineId Id="553" Count="3" />
+      <LineId Id="553" Count="0" />
+      <LineId Id="679" Count="0" />
+      <LineId Id="646" Count="2" />
+      <LineId Id="554" Count="0" />
+      <LineId Id="649" Count="0" />
+      <LineId Id="680" Count="0" />
+      <LineId Id="686" Count="0" />
+      <LineId Id="555" Count="0" />
+      <LineId Id="678" Count="0" />
+      <LineId Id="556" Count="0" />
       <LineId Id="558" Count="0" />
       <LineId Id="557" Count="0" />
-      <LineId Id="559" Count="2" />
+      <LineId Id="685" Count="0" />
+      <LineId Id="560" Count="1" />
       <LineId Id="563" Count="0" />
       <LineId Id="565" Count="1" />
       <LineId Id="564" Count="0" />
@@ -199,6 +227,8 @@ END_IF]]></ST>
       <LineId Id="41" Count="0" />
       <LineId Id="45" Count="0" />
       <LineId Id="24" Count="0" />
+      <LineId Id="55" Count="0" />
+      <LineId Id="54" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>

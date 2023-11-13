@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="PistonOnly" Id="{d6a96585-c3b9-4bd2-bcab-43977d1dfb12}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM PistonOnly
+VAR_IN_OUT
+	smc : AirPiston;
+END_VAR
+VAR
+	ready : BOOL;
+	in : BOOL;
+	out : BOOL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[smc.bEnable := TRUE;
+
+smc();
+
+IF NOT ready THEN
+	ready := smc.homingSequence();
+	RETURN;
+END_IF
+
+
+//IF NOT (in OR out) THEN
+	//smc.stop();
+//END_IF
+
+IF in THEN
+	smc.extend();
+	out := FALSE;
+END_IF
+
+IF out THEN
+	smc.retract();
+	in := FALSE;
+END_IF
+
+IF smc.innerLimit THEN
+	in := FALSE;
+END_IF
+
+IF smc.home THEN
+	out := FALSE;
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="PistonOnly">
+      <LineId Id="38" Count="1" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="24" Count="1" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="34" Count="1" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="7" Count="7" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="41" Count="0" />
+      <LineId Id="40" Count="0" />
+      <LineId Id="42" Count="1" />
+      <LineId Id="45" Count="0" />
+      <LineId Id="44" Count="0" />
+      <LineId Id="46" Count="1" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

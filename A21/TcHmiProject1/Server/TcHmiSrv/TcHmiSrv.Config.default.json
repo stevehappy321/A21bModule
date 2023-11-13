@@ -325,6 +325,287 @@
             },
             "type": "object"
         },
+        "PLC1.ClearLinkEIP": {
+            "attributes": {
+                "contains_implicit_enum": "",
+                "generate_implicit_init_function": ""
+            },
+            "properties": {
+                "A": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "comment": "direction (F = inwards, T = outwards)",
+                            "propertyOrder": 5
+                        }
+                    ]
+                },
+                "B": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "comment": "home bit",
+                            "propertyOrder": 6
+                        }
+                    ]
+                },
+                "bEnable": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 1
+                        }
+                    ]
+                },
+                "brakeRelease": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "attributes": {
+                                "TcAddressType": "Output"
+                            },
+                            "propertyOrder": 4
+                        }
+                    ]
+                },
+                "busy": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 14
+                        }
+                    ]
+                },
+                "clear": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 7
+                        }
+                    ]
+                },
+                "contact": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "attributes": {
+                                "TcAddressType": "Input"
+                            },
+                            "propertyOrder": 8
+                        }
+                    ]
+                },
+                "error": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 15
+                        }
+                    ]
+                },
+                "hlfb": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/REAL"
+                        },
+                        {
+                            "attributes": {
+                                "TcAddressType": "Input"
+                            },
+                            "propertyOrder": 12
+                        }
+                    ]
+                },
+                "home": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "attributes": {
+                                "TcAddressType": "Input"
+                            },
+                            "propertyOrder": 9
+                        }
+                    ]
+                },
+                "homeSet": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 13
+                        }
+                    ]
+                },
+                "innerLimit": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "attributes": {
+                                "TcAddressType": "Input"
+                            },
+                            "propertyOrder": 11
+                        }
+                    ]
+                },
+                "minHoming": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc2_Standard.TON"
+                        },
+                        {
+                            "comment": "pulseSeparator : TOF;",
+                            "propertyOrder": 21
+                        }
+                    ]
+                },
+                "mode": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Implicit_Enum__ClearLinkEIP__mode"
+                        },
+                        {
+                            "attributes": {
+                                "implicit_enum_type": ""
+                            },
+                            "propertyOrder": 24
+                        }
+                    ]
+                },
+                "outerLimit": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "attributes": {
+                                "TcAddressType": "Input"
+                            },
+                            "propertyOrder": 10
+                        }
+                    ]
+                },
+                "outputRegister": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/INT"
+                        },
+                        {
+                            "attributes": {
+                                "TcAddressType": "Output"
+                            },
+                            "propertyOrder": 3
+                        }
+                    ]
+                },
+                "position": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/LREAL"
+                        },
+                        {
+                            "propertyOrder": 16
+                        }
+                    ]
+                },
+                "pulse": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/INT"
+                        },
+                        {
+                            "attributes": {
+                                "TcAddressType": "Output"
+                            },
+                            "comment": "num pulses",
+                            "propertyOrder": 2
+                        }
+                    ]
+                },
+                "pulseRequest": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/INT"
+                        },
+                        {
+                            "propertyOrder": 19
+                        }
+                    ]
+                },
+                "pulser": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc2_Standard.TON"
+                        },
+                        {
+                            "propertyOrder": 20
+                        }
+                    ]
+                },
+                "resetTimer": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc2_Standard.TP"
+                        },
+                        {
+                            "propertyOrder": 22
+                        }
+                    ]
+                },
+                "step": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Homing"
+                        },
+                        {
+                            "comment": "(IDLE, HOME_UP, HOME_FINAL, DOWN, REDO_HOME, HOME_DONE);",
+                            "propertyOrder": 23
+                        }
+                    ]
+                },
+                "targetPos": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/LREAL"
+                        },
+                        {
+                            "propertyOrder": 17
+                        }
+                    ]
+                },
+                "test": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 18
+                        }
+                    ]
+                }
+            },
+            "type": "object"
+        },
         "PLC1.Homing": {
             "attributes": {
                 "generate_implicit_init_function": "",
@@ -394,6 +675,42 @@
                 {
                     "label": "OUT",
                     "value": 2
+                }
+            ],
+            "type": "integer"
+        },
+        "PLC1.Implicit_Enum__ClearLinkEIP__mode": {
+            "attributes": {
+                "generate_implicit_init_function": "",
+                "qualified_only": ""
+            },
+            "enum": [
+                0,
+                1,
+                2,
+                3,
+                4
+            ],
+            "options": [
+                {
+                    "label": "DISABLE",
+                    "value": 0
+                },
+                {
+                    "label": "HOLD",
+                    "value": 1
+                },
+                {
+                    "label": "TARGET",
+                    "value": 2
+                },
+                {
+                    "label": "CONTINUOUS",
+                    "value": 3
+                },
+                {
+                    "label": "RESET_ERR",
+                    "value": 4
                 }
             ],
             "type": "integer"
@@ -627,6 +944,91 @@
                     "allOf": [
                         {
                             "$ref": "#/definitions/PLC1.TeknicHardWire"
+                        },
+                        {
+                            "propertyOrder": 2
+                        }
+                    ]
+                }
+            },
+            "type": "object"
+        },
+        "PLC1.PneumaticInsertionEIP": {
+            "properties": {
+                "busy": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 7
+                        }
+                    ]
+                },
+                "contact": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 4
+                        }
+                    ]
+                },
+                "enable": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 1
+                        }
+                    ]
+                },
+                "error": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 8
+                        }
+                    ]
+                },
+                "home": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 5
+                        }
+                    ]
+                },
+                "ready": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 6
+                        }
+                    ]
+                },
+                "screw": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.AirPiston"
+                        },
+                        {
+                            "propertyOrder": 3
+                        }
+                    ]
+                },
+                "slider": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.ClearLinkEIP"
                         },
                         {
                             "propertyOrder": 2
@@ -4306,7 +4708,7 @@
             "DYNAMIC": true,
             "MAPPING": "PLC1::MAIN::insertionLeft",
             "SCHEMA": {
-                "$ref": "tchmi:server#/definitions/PLC1.PneumaticInsertion"
+                "$ref": "tchmi:server#/definitions/PLC1.PneumaticInsertionEIP"
             },
             "USEMAPPING": true
         },
@@ -4316,7 +4718,7 @@
             "DYNAMIC": true,
             "MAPPING": "PLC1::MAIN::insertionRight",
             "SCHEMA": {
-                "$ref": "tchmi:server#/definitions/PLC1.PneumaticInsertion"
+                "$ref": "tchmi:server#/definitions/PLC1.PneumaticInsertionEIP"
             },
             "USEMAPPING": true
         },

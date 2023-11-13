@@ -63,7 +63,10 @@ CASE step OF
 		END_IF
 	
 	STRAP:
-		execute := TRUE;
+		IF NOT execute THEN
+			execute := TRUE;
+			RETURN;
+		END_IF
 		
 		IF execute AND NOT home THEN
 			execute := FALSE;
@@ -91,7 +94,12 @@ END_CASE]]></ST>
       <LineId Id="619" Count="0" />
       <LineId Id="621" Count="0" />
       <LineId Id="620" Count="0" />
-      <LineId Id="546" Count="7" />
+      <LineId Id="546" Count="1" />
+      <LineId Id="650" Count="0" />
+      <LineId Id="548" Count="0" />
+      <LineId Id="652" Count="0" />
+      <LineId Id="651" Count="0" />
+      <LineId Id="549" Count="4" />
       <LineId Id="589" Count="0" />
       <LineId Id="572" Count="1" />
       <LineId Id="575" Count="0" />

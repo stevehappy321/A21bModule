@@ -21,13 +21,14 @@ VAR
 	axis : AXIS_REF;
 	
 	mcReadPosition : MC_ReadActualPosition;
+	mcReset : MC_Reset;
 	
 	mcPower : MC_Power;
 	mcMoveAbsolute : MC_MoveAbsolute;
 	mcMoveRelative : MC_MoveRelative;
 	mcMoveVelocity : MC_MoveVelocity;
+	
 	mcSetPosition : MC_SetPosition;
-	mcReset : MC_Reset;
 	mcStop : MC_Stop;
 	
 	step : Homing;
@@ -148,45 +149,50 @@ ready := bEnable AND NOT busy AND homeSet;]]></ST>
       <Implementation>
         <ST><![CDATA[CASE step OF
 	Homing.IDLE:
-		mcStop.Execute := FALSE;
-		step := Homing.REDO;
+		IF bEnable THEN
+			step := Homing.REDO;
+		END_IF
 		
 	Homing.REDO:
+		IF mcMoveVelocity.Execute AND NOT innerLimit THEN
+			mcMoveVelocity.Execute := FALSE;
+			step := Homing.HOME_OUT;
+			RETURN;
+		END_IF
+		
 		mcMoveVelocity.Direction := MC_Negative_Direction;
 		mcMoveVelocity.Execute := TRUE;
 		
-		IF NOT innerLimit THEN
-			
+	Homing.HOME_OUT:
+		IF mcMoveVelocity.Execute AND NOT home THEN //if reached home
 			mcMoveVelocity.Execute := FALSE;
-			step := Homing.HOME_OUT;
+			step := Homing.STOP;
+			RETURN;
 		END_IF
 		
-	Homing.HOME_OUT:
 		mcMoveVelocity.Direction := MC_Positive_Direction;
 		mcMoveVelocity.Execute := TRUE;
 		
-		IF NOT homingSequence THEN //if reached home
-			mcMoveVelocity.Execute := FALSE;
-			step := Homing.STOP;
-		END_IF
-		
 	Homing.STOP:
-		mcStop.Execute := TRUE;
-		IF mcStop.Done THEN
+		IF mcStop.Execute AND mcStop.Done THEN
 			mcStop.Execute := FALSE;
 			step := Homing.SET;
+			RETURN;
 		END_IF
 		
+		mcStop.Execute := TRUE;
+		
 	Homing.SET:
+		IF mcSetPosition.Execute AND mcSetPosition.Done THEN
+			mcSetPosition.Execute := FALSE;
+			homingSequence := TRUE;
+			step := Homing.IDLE;
+			RETURN;
+		END_IF
+		
 		mcSetPosition.Position := 0;
 		mcSetPosition.Execute := TRUE;
 		
-		IF mcSetPosition.Done THEN
-			mcSetPosition.Execute := FALSE;
-			step := Homing.IDLE;
-		END_IF
-		
-	
 END_CASE]]></ST>
       </Implementation>
     </Method>
@@ -280,17 +286,7 @@ END_VAR
       <LineId Id="165" Count="0" />
     </LineIds>
     <LineIds Name="ServoECAT.homingSequence">
-      <LineId Id="259" Count="1" />
-      <LineId Id="264" Count="0" />
-      <LineId Id="266" Count="0" />
-      <LineId Id="317" Count="0" />
-      <LineId Id="319" Count="7" />
-      <LineId Id="318" Count="0" />
-      <LineId Id="268" Count="7" />
-      <LineId Id="280" Count="0" />
-      <LineId Id="327" Count="0" />
-      <LineId Id="291" Count="15" />
-      <LineId Id="315" Count="0" />
+      <LineId Id="329" Count="45" />
       <LineId Id="7" Count="0" />
     </LineIds>
     <LineIds Name="ServoECAT.moveAbsolute">

@@ -81,10 +81,16 @@
     <Compile Include="PlcTask.TcTTO">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\CEILING.TcPOU">
+    <Compile Include="POUs\EnableSuctions.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\WithinTolerance.TcPOU">
+    <Compile Include="POUs\DisableSuctions.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Utility Functions\CEILING.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Utility Functions\WithinTolerance.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\MAIN.TcPOU">
@@ -98,6 +104,7 @@
     <Folder Include="DUTs\Material Holders" />
     <Folder Include="DUTs\Machines" />
     <Folder Include="GVLs" />
+    <Folder Include="POUs\Utility Functions" />
     <Folder Include="VISUs" />
     <Folder Include="POUs" />
   </ItemGroup>
