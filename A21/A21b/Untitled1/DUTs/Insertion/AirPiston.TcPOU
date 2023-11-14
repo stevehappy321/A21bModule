@@ -42,7 +42,7 @@ IF home AND valveRetract THEN
 	mode := HOLD;
 	
 ELSIF (innerLimit OR contact) AND valveExtend THEN
-	//mode := REVERSAL;
+	//mode := BRAKE;
 	//RETURN;
 	
 	brakePulse.IN := TRUE; //start reversal to sensor inner limit

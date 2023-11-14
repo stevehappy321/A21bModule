@@ -15,10 +15,7 @@ VAR_OUTPUT
 	
 	timeout : BOOL;
 END_VAR
-VAR
-	topSuction AT %Q* : BOOL;
-	bottomSuction AT %Q* : BOOL;
-	
+VAR	
 	holdPost : TON;
 	delay : TON;
 	
