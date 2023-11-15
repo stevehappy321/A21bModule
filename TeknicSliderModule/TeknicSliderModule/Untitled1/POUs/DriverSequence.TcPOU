@@ -15,48 +15,63 @@ VAR_OUTPUT
 	position : REAL;
 END_VAR
 VAR
-	driverSlider : ClearLinkEIP;
+	servo : ClearLinkEIP;
 	
 	step : INT;
 	timer : TON;
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[driverSlider();
+      <ST><![CDATA[servo(
+	bEnable:= enable,
+	pulse=> , 
+	outputRegister=> , 
+	brakeRelease=> , 
+	A=> , 
+	B=> , 
+	clear=> , 
+	contact=> , 
+	home=> , 
+	outerLimit=> , 
+	innerLimit=> , 
+	hlfb=> , 
+	homeSet=> , 
+	busy=> , 
+	error=> , 
+	position=> , 
+	targetPos=> );
 
-IF NOT driverSlider.homeSet THEN
-	driverSlider.homingSequence();
+IF NOT servo.homeSet THEN
+	servo.homingSequence(); //homing will overwrite the bEnable input, but it must be true for homing to proceed
 	RETURN;
 END_IF
 
-driverSlider.bEnable := enable; //only confirm enable after home is set
-
-driverSlider.stop();
+servo.stop();
 IF contUp THEN
-	driverSlider.moveContinuous(direction := MC_Positive_Direction);
+	servo.moveContinuous(direction := MC_Positive_Direction);
 	contDown := FALSE;
 END_IF
 
 IF contDown THEN
-	driverSlider.moveContinuous(direction := MC_Negative_Direction);
+	servo.moveContinuous(direction := MC_Negative_Direction);
 	contUp := FALSE;
 END_IF
 
 
 IF target >= 0 THEN
-	driverSlider.moveAbsolute(newTarget := target);
+	servo.moveAbsolute(newTarget := target);
 	//target := 0;
 END_IF
 
 
-IF driverSlider.innerLimit THEN
+IF servo.innerLimit THEN
 	contDown := FALSE;
 END_IF
-IF driverSlider.home THEN
+IF servo.home THEN
 	contUp := FALSE;
 END_IF
 
-position := driverSlider.position;
-busy := driverSlider.busy;]]></ST>
+position := servo.position;
+busy := servo.busy;]]></ST>
     </Implementation>
     <Method Name="autoSequence" Id="{ca498a70-55ce-48ed-a3ae-c5c08cfeb800}">
       <Declaration><![CDATA[METHOD autoSequence : BOOL
@@ -134,16 +149,8 @@ END_CASE]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="DriverSequence">
-      <LineId Id="107" Count="0" />
-      <LineId Id="95" Count="0" />
-      <LineId Id="55" Count="1" />
-      <LineId Id="140" Count="0" />
-      <LineId Id="58" Count="0" />
-      <LineId Id="139" Count="0" />
-      <LineId Id="138" Count="0" />
-      <LineId Id="59" Count="24" />
-      <LineId Id="118" Count="0" />
-      <LineId Id="117" Count="0" />
+      <LineId Id="196" Count="17" />
+      <LineId Id="216" Count="31" />
       <LineId Id="119" Count="0" />
     </LineIds>
     <LineIds Name="DriverSequence.autoSequence">

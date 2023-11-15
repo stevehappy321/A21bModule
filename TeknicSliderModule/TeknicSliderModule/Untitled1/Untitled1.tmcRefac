@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Refactors>
+  <Renames>
+    <RenamedSymbol>
+      <Type guid="a3f9ba0a-2ad0-41b4-9a6e-1a63d7120b1c">DriverSequence</Type>
+      <From>driverSlider</From>
+      <To>servo</To>
+    </RenamedSymbol>
+  </Renames>
+</Refactors>

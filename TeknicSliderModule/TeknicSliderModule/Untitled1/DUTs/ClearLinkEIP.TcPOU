@@ -111,9 +111,13 @@ sequence();]]></ST>
       <Implementation>
         <ST><![CDATA[minHoming(IN:= , PT:= T#1S, Q=> , ET=> ); //IN and OUT should be held for at least 1 second - may be removed for deployment
 
+IF NOT bEnable THEN //homing does not begin until software enable
+	RETURN;
+END_IF
+
 CASE step OF
 	Homing.IDLE:
-		//bEnable := FALSE;
+		bEnable := FALSE;
 		A := FALSE;
 		B := FALSE;
 		brakeRelease := TRUE;
@@ -130,7 +134,6 @@ CASE step OF
 		minHoming.IN := TRUE;
 		
 		IF NOT innerLimit AND minHoming.Q THEN
-			mode := CONTINUOUS;
 			step := Homing.OUT;
 		END_IF
 	
@@ -144,8 +147,6 @@ CASE step OF
 		
 		IF NOT home AND minHoming.Q THEN
 			minHoming.IN := FALSE;
-			
-			mode := HOLD;
 			step := Homing.DONE;
 		END_IF
 		
@@ -303,6 +304,9 @@ END_VAR
     </LineIds>
     <LineIds Name="ClearLinkEIP.homingSequence">
       <LineId Id="227" Count="0" />
+      <LineId Id="256" Count="0" />
+      <LineId Id="255" Count="0" />
+      <LineId Id="257" Count="1" />
       <LineId Id="247" Count="0" />
       <LineId Id="176" Count="1" />
       <LineId Id="248" Count="0" />
@@ -311,15 +315,12 @@ END_VAR
       <LineId Id="188" Count="2" />
       <LineId Id="253" Count="1" />
       <LineId Id="191" Count="1" />
-      <LineId Id="246" Count="0" />
       <LineId Id="194" Count="3" />
       <LineId Id="245" Count="0" />
       <LineId Id="199" Count="2" />
       <LineId Id="229" Count="1" />
       <LineId Id="202" Count="1" />
       <LineId Id="231" Count="0" />
-      <LineId Id="238" Count="0" />
-      <LineId Id="237" Count="0" />
       <LineId Id="239" Count="0" />
       <LineId Id="206" Count="2" />
       <LineId Id="250" Count="0" />
