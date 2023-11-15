@@ -21,14 +21,14 @@ VAR
 	timer : TON;
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[driverSlider.bEnable := enable;
+      <ST><![CDATA[driverSlider();
 
-driverSlider();
-
-IF NOT ready THEN
-	ready := driverSlider.homingSequence();
+IF NOT driverSlider.homeSet THEN
+	driverSlider.homingSequence();
 	RETURN;
 END_IF
+
+driverSlider.bEnable := enable; //only confirm enable after home is set
 
 driverSlider.stop();
 IF contUp THEN
@@ -134,10 +134,14 @@ END_CASE]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="DriverSequence">
-      <LineId Id="53" Count="0" />
-      <LineId Id="106" Count="1" />
+      <LineId Id="107" Count="0" />
       <LineId Id="95" Count="0" />
-      <LineId Id="55" Count="28" />
+      <LineId Id="55" Count="1" />
+      <LineId Id="140" Count="0" />
+      <LineId Id="58" Count="0" />
+      <LineId Id="139" Count="0" />
+      <LineId Id="138" Count="0" />
+      <LineId Id="59" Count="24" />
       <LineId Id="118" Count="0" />
       <LineId Id="117" Count="0" />
       <LineId Id="119" Count="0" />

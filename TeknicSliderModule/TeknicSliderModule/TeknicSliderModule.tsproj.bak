@@ -10,7 +10,7 @@
 		</System>
 		<Plc>
 			<Project GUID="{4E01FD39-1AA4-45BE-86A3-BB6EB291811E}" Name="Untitled1" PrjFilePath="Untitled1\Untitled1.plcproj" TmcFilePath="Untitled1\Untitled1.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{1EB2D635-B75E-7D5C-333F-3BC819975E68}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{FE2922BF-DEE5-E3E0-95C8-67B141A1CDDD}">
 					<Name>Untitled1 Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
@@ -64,12 +64,12 @@
 							<Type>INT</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.m0.driverSlider.brakeRelease</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
 							<Name>MAIN.m0.driverSlider.outputRegister</Name>
 							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.m0.driverSlider.brakeRelease</Name>
+							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>MAIN.m1.driverSlider.pulse</Name>
@@ -77,12 +77,12 @@
 							<Type>INT</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.m1.driverSlider.brakeRelease</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
 							<Name>MAIN.m1.driverSlider.outputRegister</Name>
 							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.m1.driverSlider.brakeRelease</Name>
+							<Type>BOOL</Type>
 						</Var>
 					</Vars>
 					<Contexts>

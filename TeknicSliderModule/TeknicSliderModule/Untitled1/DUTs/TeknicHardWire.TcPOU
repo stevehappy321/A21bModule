@@ -114,9 +114,9 @@ CASE step OF
 		brakeRelease := TRUE;
 		
 		homeSet := FALSE;
-		step := Homing.REDO;
+		step := Homing.IN;
 		
-	Homing.REDO: //let insertion drop to inner limit before homing
+	Homing.IN: //let insertion drop to inner limit before homing
 		enable := FALSE;
 		A := FALSE;
 		B := FALSE;
@@ -124,10 +124,10 @@ CASE step OF
 		
 		IF NOT innerLimit THEN
 			enable := TRUE;
-			step := Homing.HOME_OUT;
+			step := Homing.OUT;
 		END_IF
 	
-	Homing.HOME_OUT:
+	Homing.OUT:
 		enable := TRUE;
 		A := FALSE;
 		B := TRUE;

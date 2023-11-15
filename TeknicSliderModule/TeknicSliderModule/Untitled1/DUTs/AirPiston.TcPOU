@@ -71,19 +71,19 @@ eliminating the possibility of reaching the outer limit while homing
       <Implementation>
         <ST><![CDATA[CASE step OF
 	Homing.IDLE:
-		step := Homing.REDO;
+		step := Homing.IN;
 		
-	Homing.REDO: //technically HOME_IN, towards travel limit
+	Homing.IN: //technically HOME_IN, towards travel limit
 		valveIn := TRUE;
 		valveOut := FALSE;
 		
 		IF NOT innerLimit THEN
 			valveIn := FALSE;
 			valveOut := FALSE;
-			step := Homing.HOME_OUT;
+			step := Homing.OUT;
 		END_IF
 		
-	Homing.HOME_OUT: //towards home
+	Homing.OUT: //towards home
 		valveIn := FALSE;
 		valveOut := TRUE;
 		
@@ -143,9 +143,7 @@ stop := TRUE;]]></ST>
       <LineId Id="42" Count="0" />
     </LineIds>
     <LineIds Name="AirPiston.homingSequence">
-      <LineId Id="342" Count="26" />
-      <LineId Id="371" Count="1" />
-      <LineId Id="369" Count="1" />
+      <LineId Id="408" Count="30" />
       <LineId Id="7" Count="0" />
     </LineIds>
     <LineIds Name="AirPiston.slideIn">
