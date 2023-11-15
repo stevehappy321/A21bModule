@@ -3,6 +3,7 @@
   <GVL Name="Hardware" Id="{72ad6a3a-e035-4ae1-b9b7-c68bdd948b2f}">
     <Declaration><![CDATA[//{attribute 'qualified_only'}
 VAR_GLOBAL
+	(*
 	robotLeft, robotRight : Robot;
 	
 	skidLeft, skidRight : MaterialStorage;
@@ -22,6 +23,8 @@ VAR_GLOBAL
 	bottomSuction : ARRAY[1..2] OF SuctionPad;
 	
 	toolStorageLeft, toolStorageRight : A21ToolStorage;
-END_VAR]]></Declaration>
+	*)
+END_VAR
+]]></Declaration>
   </GVL>
 </TcPlcObject>

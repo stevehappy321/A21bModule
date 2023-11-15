@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<TcLicenseInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2011/11/TcLicenseInfo">
+	<LicenseInfo>
+		<SystemId>{49E412C0-AF8D-B7D5-B29F-F42613EEF148}</SystemId>
+		<IssueTime>2023-11-14T20:44:00</IssueTime>
+		<ExpireTime>2023-11-22T00:00:00</ExpireTime>
+		<LicenseKey>8fa3e0ff5eae7e32e93529ade935b2fcb17ac5e4501655c6bc5cfda4536f3a72152ba6d896858adc274e2d866bba8ad8b6c07247717afddbe293c613640a7b98b06bb2f7bcf9c74e64a0b3fc2b8b2e50912090bd72734d364f9894735768b75a2f6cf0fe13465bda62972d4c6df4e545d190e84a34227516fdc6c16e27ba224d4635d089e9828f798de59e8fdcf326be58fd87ad577efc642aad01be11fc4e07308666adc5ae49d04f22cf0f6c176334577776c3e86834395f5f4534f1b9a51c234de23def61a10af41086879c545de5815eeee9f940ae75bea50c791b0a5f61de9649bcd0b6946093292a286274426e334882f094d911be91ad7601ded78fe3</LicenseKey>
+		<License>
+			<LicenseId>{AE83F222-BB78-448F-BDED-7494A70CD776}</LicenseId>
+			<Name>TC3 EtherNet/IP Adapter (Slave)</Name>
+			<OrderNo>TF6280</OrderNo>
+		</License>
+		<License>
+			<LicenseId>{081AC839-28D0-49CA-9792-72680E1F3249}</LicenseId>
+			<Name>TC3 TCP/UDP RT</Name>
+			<OrderNo>TF6311</OrderNo>
+		</License>
+		<License>
+			<LicenseId>{87DBEEFC-A548-4B37-9797-C9521D3A43A2}</LicenseId>
+			<Name>TC3 EtherNet/IP Scanner (Master)</Name>
+			<OrderNo>TF6281</OrderNo>
+			<Instances>1</Instances>
+		</License>
+		<License>
+			<LicenseId>{4C256767-E6E6-4AF5-BD68-9F7ABAD0C200}</LicenseId>
+			<Name>TC3 ADS</Name>
+			<OrderNo>TC1000</OrderNo>
+		</License>
+		<License>
+			<LicenseId>{66689887-CCBD-452C-AC9A-039D997C6E66}</LicenseId>
+			<Name>TC3 PLC</Name>
+			<OrderNo>TC1200</OrderNo>
+		</License>
+		<License>
+			<LicenseId>{3FF18E97-7754-401B-93FB-70544DE28A13}</LicenseId>
+			<Name>TC3 IO</Name>
+			<OrderNo>TC1100</OrderNo>
+		</License>
+	</LicenseInfo>
+</TcLicenseInfo>

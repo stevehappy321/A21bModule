@@ -84,42 +84,21 @@ END_VAR
       </Implementation>
     </Method>
     <Method Name="homingSequence" Id="{c3ff30f8-ced2-4f8e-b758-e21ca109ec69}">
-      <Declaration><![CDATA[METHOD homingSequence : BOOL
-(*
-this version of homing always traverses to the inner limit before returning to home,
-eliminating the possibility of reaching the outer limit while homing
-*)]]></Declaration>
+      <Declaration><![CDATA[METHOD homingSequence : BOOL]]></Declaration>
       <Implementation>
         <ST><![CDATA[CASE step OF
 	Homing.IDLE:
-		step := Homing.HOME_OUT;
+		step := Homing.OUT;
 		
-	Homing.REDO: //technically HOME_IN, towards travel limit
-		mode := IN;
-		valveExtend := TRUE;
-		valveRetract := FALSE;
-		
-		IF innerLimit THEN
-			valveExtend := FALSE;
-			valveRetract := FALSE;
-			step := Homing.HOME_OUT;
-		END_IF
-		
-	Homing.HOME_OUT: //towards home
+	Homing.OUT: //towards home
 		mode := OUT;
-		valveExtend := FALSE;
-		valveRetract := TRUE;
 		
 		IF home THEN //if reached home
-			valveExtend := FALSE;
-			valveRetract := FALSE;
 			step := Homing.DONE;
 		END_IF
 		
 	Homing.DONE:
 		mode := HOLD;
-		valveExtend := FALSE;
-		valveRetract := FALSE;
 		homeSet := TRUE;
 		
 		homingSequence := TRUE;		
@@ -155,13 +134,12 @@ mode := HOLD;]]></ST>
       <LineId Id="16" Count="0" />
     </LineIds>
     <LineIds Name="AirPiston.homingSequence">
-      <LineId Id="342" Count="4" />
-      <LineId Id="377" Count="0" />
-      <LineId Id="347" Count="9" />
+      <LineId Id="342" Count="3" />
+      <LineId Id="356" Count="0" />
       <LineId Id="378" Count="0" />
-      <LineId Id="357" Count="9" />
+      <LineId Id="359" Count="1" />
+      <LineId Id="363" Count="3" />
       <LineId Id="379" Count="0" />
-      <LineId Id="367" Count="1" />
       <LineId Id="371" Count="1" />
       <LineId Id="369" Count="1" />
       <LineId Id="7" Count="0" />

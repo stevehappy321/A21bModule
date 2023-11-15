@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <Itf Name="EncodedDrive" Id="{542dde8d-3f0e-453c-8c39-9501a69f7da7}">
+    <Declaration><![CDATA[INTERFACE EncodedDrive
+]]></Declaration>
+    <Method Name="moveAbsolute" Id="{2c02535f-adbe-4dfa-ac4b-ddfb412f57da}">
+      <Declaration><![CDATA[METHOD moveAbsolute : BOOL
+VAR_INPUT
+	newTarget : LREAL; 
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="moveRelative" Id="{83781e94-128b-41f5-8391-03ac83176760}">
+      <Declaration><![CDATA[METHOD moveRelative : BOOL
+VAR_INPUT
+	distance : LREAL;
+END_VAR]]></Declaration>
+    </Method>
+    <Property Name="Position" Id="{5fd6800f-0c34-471b-a53d-c6651be10b18}">
+      <Declaration><![CDATA[PROPERTY Position : LREAL]]></Declaration>
+      <Get Name="Get" Id="{909a548f-7b4d-4e90-9a92-b28803717256}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+      <Set Name="Set" Id="{c69dd791-2b1e-43cf-bdbc-401b895c70cd}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Set>
+    </Property>
+    <Property Name="TargetPosition" Id="{271e05ba-4585-4f4a-bb6c-097f79560249}">
+      <Declaration><![CDATA[PROPERTY TargetPosition : LREAL]]></Declaration>
+      <Get Name="Get" Id="{bf4acaac-8701-405d-be0c-eaf98075daeb}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+      <Set Name="Set" Id="{41973d7f-5019-4ad3-ab11-fe1316916a7d}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Set>
+    </Property>
+  </Itf>
+</TcPlcObject>

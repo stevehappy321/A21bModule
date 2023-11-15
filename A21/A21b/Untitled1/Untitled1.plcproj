@@ -23,9 +23,6 @@
     <Compile Include="DUTs\Enums\A21.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\Enums\AirMode.TcDUT">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="DUTs\Enums\Chipboard.TcDUT">
       <SubType>Code</SubType>
     </Compile>
@@ -39,6 +36,18 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DUTs\Enums\WoodBunk.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Insertion\Abstract\ContinuousDrive.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Insertion\Abstract\Drive.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Insertion\Abstract\EncodedDrive.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Insertion\Abstract\Insertion.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DUTs\Insertion\AirPiston.TcPOU">
@@ -63,6 +72,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DUTs\Machines\StrapMachine.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Machines\StrapMachine_1.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DUTs\Material Holders\MaterialStorage.TcPOU">
@@ -105,6 +117,7 @@
     <Folder Include="DUTs" />
     <Folder Include="DUTs\Insertion" />
     <Folder Include="DUTs\Enums" />
+    <Folder Include="DUTs\Insertion\Abstract" />
     <Folder Include="DUTs\Material Holders" />
     <Folder Include="DUTs\Machines" />
     <Folder Include="GVLs" />

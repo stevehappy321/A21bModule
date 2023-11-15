@@ -46,6 +46,13 @@ END_VAR]]></Declaration>
 END_IF
 
 resetTimer(IN:= , PT:= resetPulseWidth, Q=> , ET=> );
+resetTimer.IN := resetTimer.IN AND resetTimer.Q; //self-reset
+
+IF resetTimer.Q THEN
+	enable := FALSE;
+	mode := HOLD;
+END_IF
+(*
 IF resetTimer.Q THEN
 	resetTimer.IN := FALSE;	
 	mode := HOLD;
@@ -55,7 +62,7 @@ ELSIF resetTimer.IN THEN
 	mode := HOLD;
 	//RETURN;
 END_IF
-
+*)
 
 CASE mode OF
 	HOLD:
@@ -234,11 +241,22 @@ END_IF]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="TeknicHardWire">
-      <LineId Id="1716" Count="5" />
+      <LineId Id="1716" Count="4" />
+      <LineId Id="1908" Count="0" />
+      <LineId Id="1907" Count="0" />
+      <LineId Id="1903" Count="1" />
+      <LineId Id="1906" Count="0" />
+      <LineId Id="1905" Count="0" />
+      <LineId Id="1902" Count="0" />
+      <LineId Id="1721" Count="0" />
       <LineId Id="1723" Count="0" />
-      <LineId Id="1726" Count="2" />
+      <LineId Id="1726" Count="0" />
+      <LineId Id="1898" Count="0" />
+      <LineId Id="1728" Count="0" />
       <LineId Id="1730" Count="0" />
-      <LineId Id="1732" Count="6" />
+      <LineId Id="1732" Count="0" />
+      <LineId Id="1897" Count="0" />
+      <LineId Id="1734" Count="4" />
       <LineId Id="1789" Count="2" />
       <LineId Id="1740" Count="2" />
       <LineId Id="1765" Count="2" />

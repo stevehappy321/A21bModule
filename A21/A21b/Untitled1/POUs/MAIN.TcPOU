@@ -31,7 +31,7 @@ VAR
 	//these latches are only temporary to prevent SMC sliders from overshooting the inner limit sensor
 	//to be removed when replaced with pressure sensors
 	latchLeft, latchRight, latchBottom : BOOL;
-	manualSuctionEnable : BOOL;
+	suctionEnableLeft, suctionEnableTop : BOOL;
 	
 	robotLeftOutputs, robotRightOutputs : ARRAY[1..50] OF INT;
 	
@@ -69,8 +69,8 @@ hardwareCall();
 
 IF NOT ready THEN
 	ready :=
-		insertionLeft.homingSequence() AND
-		insertionRight.homingSequence(); //AND
+		insertionLeft.homingSequence(); //AND
+		//insertionRight.homingSequence(); //AND
 		//insertionBottom.homingSequence();
 	RETURN;
 END_IF
@@ -82,7 +82,7 @@ CASE step OF
 			execute := FALSE;
 			step := LOAD_WB;
 		END_IF
-	
+	(*
 	LOAD_CIP:
 		IF loadCIP(pair:= demoPairWB) THEN
 			step := STAGING;
@@ -102,65 +102,77 @@ CASE step OF
 			execute := FALSE;
 			step := LOAD_WB;
 		END_IF
-		
+	*)
 	LOAD_WB:
 		IF loadWB(pair := demoPairWB) THEN
 			step := STRAP;
 		END_IF
 		
-		IF manualSuctionEnable THEN
+		IF suctionEnableTop THEN
 			EnableSuctions(topSuction);
-			EnableSuctions(leftSuction);
-			EnableSuctions(rightSuction);
-			//EnableSuctions(bottomSuction);
 		END_IF
 		
-		IF manualSuctionEnable AND manualMode AND_THEN execute THEN
-			manualSuctionEnable := FALSE;
-			
+		IF suctionEnableLeft THEN
+			EnableSuctions(leftSuction);
+		END_IF
+		
+		IF manualMode AND_THEN execute THEN
 			execute := FALSE;
 			step := PUSH;
 		END_IF
 		
 	PUSH:
+		(*
 		IF 
-			insertionLeft.sliderPos <> demoHeight/2 OR 
-			insertionRight.sliderPos <> demoHeight/2 //OR 
+			insertionLeft.sliderPos <> demoHeight/2 //OR 
+			//insertionRight.sliderPos <> demoHeight/2 //OR 
 			//NOT insertionBottom.contact
 		THEN
 			insertionLeft.slideAbsolute(demoHeight/2);
-			insertionRight.slideAbsolute(demoHeight/2);
+			//insertionRight.slideAbsolute(demoHeight/2);
 			RETURN;
 		END_IF
-		(*
+		
 		insertionLeft.press();
 		insertionRight.press();
 		//insertionBottom.extend();
 		*)
+		
 		IF NOT latchLeft THEN //stop pressing if inner limit pulsed
 			insertionLeft.press();
-		ELSIF insertionLeft.screw.innerLimit THEN
+		END_IF
+		
+		IF insertionLeft.screw.innerLimit THEN
 			latchLeft := TRUE;
 		END_IF
 		
-		IF NOT latchRight THEN //stop pressing if inner limit pulsed
-			insertionRight.press();
-		ELSIF insertionRight.screw.innerLimit THEN
-			latchRight := TRUE;
+		IF insertionLeft.screw.innerLimit THEN
+			latchLeft := TRUE;
+		ELSIF NOT latchLeft THEN
+			insertionLeft.press();
 		END_IF
 		
 		(*
-		IF NOT latchBottom THEN //stop pressing if inner limit pulsed
-			insertionBottom.extend();
-		ELSIF insertionBottom.innerLimit THEN
-			latchBottom := TRUE;
+		IF insertionRight.screw.innerLimit THEN //stop pressing if inner limit pulsed
+			latchRight := TRUE;
+		ELSIF NOT latchRight THEN
+			insertionRight.press();
 		END_IF
 		*)
 		
-		IF insertionBottom.contact AND insertionLeft.contact AND insertionRight.contact THEN
+		(*
+		IF insertionBottom.innerLimit THEN //stop pressing if inner limit pulsed
+			latchBottom := TRUE;
+		ELSIF NOT latchBottom THEN
+			insertionBottom.extend();
+		END_IF
+		*)
+		
+		(*
+		IF (*insertionBottom.contact AND*) insertionLeft.contact (*AND insertionRight.contact*) THEN
 			step := STRAP;
 		END_IF
-		
+		*)
 		IF manualMode AND_THEN execute THEN
 			latchLeft := FALSE;
 			execute := FALSE;
@@ -168,37 +180,29 @@ CASE step OF
 		END_IF
 		
 	STRAP:
-		//possible requirement - release left, right, bottom suction here
 		DisableSuctions(leftSuction);
-		DisableSuctions(rightSuction);
-		DisableSuctions(bottomSuction);
+		//DisableSuctions(rightSuction);
+		//DisableSuctions(bottomSuction);
 		
 		IF strapper.done THEN
 			step := RELEASE;
 			RETURN;
 		END_IF
 		
-		IF NOT strapper.busy AND NOT strapper.error THEN
+		IF ready THEN
 			strapper.strap();
 		END_IF
-		
-		(*
-		IF manualMode AND_THEN execute THEN
-			execute := FALSE;
-			step := RELEASE;
-		END_IF
-		*)
 		
 	RELEASE: //release command
 		DisableSuctions(topSuction);
 		
 		insertionLeft.release();
-		insertionRight.release();
+		//insertionRight.release();
 		//insertionBottom.retract();
 		
 		insertionLeft.slideAbsolute(0);
-		insertionRight.slideAbsolute(0);
-		insertionBottom.retract();
+		//insertionRight.slideAbsolute(0);
+		//insertionBottom.retract();
 		
 		(*
 		IF NOT insertionLeft.home THEN
@@ -221,8 +225,7 @@ CASE step OF
 		END_IF
 		*)
 		
-		IF insertionLeft.screw.home (*AND_THEN manualMode AND_THEN execute*) THEN
-			execute := FALSE;
+		IF insertionLeft.screw.home THEN
 			step := COMPLETE;
 		END_IF
 	
@@ -234,7 +237,7 @@ END_CASE]]></ST>
     </Implementation>
     <Folder Name="Loading" Id="{6998e9bf-e2b9-4fd9-897f-fda9aa3bdaab}" />
     <Folder Name="Staging" Id="{df129403-abf4-453c-addd-f6dd4ee3c4b1}" />
-    <Folder Name="z_Obsolete" Id="{79b96cb1-e329-4a11-8a3d-4c45244160c4}" />
+    <Folder Name="x_Obsolete" Id="{79b96cb1-e329-4a11-8a3d-4c45244160c4}" />
     <Method Name="changeRobotsEOAT" Id="{71a414a6-260d-4ed7-9b91-4169239414f1}">
       <Declaration><![CDATA[METHOD changeRobotsEOAT : BOOL
 VAR_INPUT
@@ -349,12 +352,12 @@ VAR_OUTPUT
 	error : BOOL;
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[IF NOT robotLeft.operational AND NOT robotLeft.operational THEN
+        <ST><![CDATA[IF NOT robotLeft.operational AND NOT robotLeft.operational THEN //robots not operational
 	error := TRUE;
 	RETURN;
 END_IF
 
-IF NOT (robotLeft.reserve(SectionEnum.CHIPBOARD) AND robotRight.reserve(SectionEnum.CHIPBOARD)) THEN
+IF NOT (robotLeft.reserve(SectionEnum.CHIPBOARD) AND robotRight.reserve(SectionEnum.CHIPBOARD)) THEN //robots not reserved
 	RETURN;
 END_IF
 
@@ -362,7 +365,7 @@ IF NOT (robotLeft.tool = SectionEnum.CHIPBOARD AND robotRight.tool = SectionEnum
 	changeRobotsEOAT(SectionEnum.CHIPBOARD); //wait for robots to finish changing tools
 	RETURN;
 END_IF
-
+//robots ok
 
 CASE loadSet OF
 	0: //demo only - only top chipboard loaded by left robot
@@ -382,7 +385,7 @@ CASE loadSet OF
 		
 	10: //recovery
 		IF robotLeft.operational AND NOT robotRight.operational THEN //left ok, right fail
-			IF
+			IF //load bottom using left robot
 				loadingSequenceCIP(
 					actingRobot:= robotLeft, 
 					robotOutputs:= robotLeftOutputs, 
@@ -396,7 +399,7 @@ CASE loadSet OF
 			END_IF
 			
 		ELSIF NOT robotLeft.operational AND robotRight.operational THEN //left fail, right ok
-			IF
+			IF //load top using right robot
 				loadingSequenceCIP(
 					actingRobot:= robotRight, 
 					robotOutputs:= robotRightOutputs, 
@@ -649,6 +652,7 @@ END_FOR
 magazineLeft.setupSlots(slotsArr);
 magazineRight.setupSlots(slotsArr);
 
+
 FOR iChipboardSlot:=1 TO Chipboard.size-1 BY 1 DO
 	slotsArr[iChipboardSlot] := TO_STRING(iChipboardSlot);
 END_FOR
@@ -722,7 +726,7 @@ CASE stageSet OF
 END_CASE]]></ST>
       </Implementation>
     </Method>
-    <Method Name="stageLeft" Id="{3b8fe327-e7eb-4f4b-b513-70d48c9a8543}" FolderPath="z_Obsolete\">
+    <Method Name="stageLeft" Id="{3b8fe327-e7eb-4f4b-b513-70d48c9a8543}" FolderPath="x_Obsolete\">
       <Declaration><![CDATA[METHOD stageLeft : BOOL
 VAR_IN_OUT
 	template : WoodBunkTable;
@@ -782,7 +786,7 @@ END_CASE
 *)]]></ST>
       </Implementation>
     </Method>
-    <Method Name="stageRight" Id="{27442b6e-36aa-485b-84ba-8788912b7a2c}" FolderPath="z_Obsolete\">
+    <Method Name="stageRight" Id="{27442b6e-36aa-485b-84ba-8788912b7a2c}" FolderPath="x_Obsolete\">
       <Declaration><![CDATA[METHOD stageRight : BOOL
 VAR_IN_OUT
 	template : WoodBunkTable;
@@ -939,25 +943,44 @@ END_CASE]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="MAIN">
-      <LineId Id="1621" Count="61" />
+      <LineId Id="1621" Count="45" />
+      <LineId Id="1670" Count="0" />
+      <LineId Id="1879" Count="3" />
+      <LineId Id="1671" Count="1" />
+      <LineId Id="1675" Count="4" />
+      <LineId Id="1877" Count="0" />
+      <LineId Id="1680" Count="2" />
       <LineId Id="1796" Count="0" />
-      <LineId Id="1684" Count="7" />
-      <LineId Id="1797" Count="0" />
-      <LineId Id="1693" Count="5" />
+      <LineId Id="1684" Count="4" />
+      <LineId Id="1918" Count="0" />
+      <LineId Id="1920" Count="1" />
+      <LineId Id="1919" Count="0" />
+      <LineId Id="1913" Count="0" />
+      <LineId Id="1922" Count="0" />
+      <LineId Id="1694" Count="2" />
+      <LineId Id="1908" Count="3" />
+      <LineId Id="1884" Count="0" />
+      <LineId Id="1883" Count="0" />
+      <LineId Id="1697" Count="1" />
+      <LineId Id="1898" Count="1" />
+      <LineId Id="1905" Count="0" />
       <LineId Id="1784" Count="0" />
-      <LineId Id="1786" Count="3" />
+      <LineId Id="1786" Count="2" />
+      <LineId Id="1900" Count="0" />
       <LineId Id="1798" Count="1" />
+      <LineId Id="1906" Count="0" />
       <LineId Id="1804" Count="0" />
-      <LineId Id="1800" Count="3" />
+      <LineId Id="1901" Count="3" />
       <LineId Id="1785" Count="0" />
       <LineId Id="1699" Count="0" />
+      <LineId Id="1907" Count="0" />
       <LineId Id="1783" Count="0" />
       <LineId Id="1701" Count="2" />
-      <LineId Id="1705" Count="8" />
+      <LineId Id="1705" Count="7" />
       <LineId Id="1715" Count="3" />
       <LineId Id="1806" Count="0" />
       <LineId Id="1721" Count="6" />
-      <LineId Id="1729" Count="8" />
+      <LineId Id="1736" Count="1" />
       <LineId Id="1807" Count="0" />
       <LineId Id="1743" Count="3" />
       <LineId Id="1809" Count="1" />
@@ -967,7 +990,8 @@ END_CASE]]></ST>
       <LineId Id="1814" Count="0" />
       <LineId Id="1763" Count="2" />
       <LineId Id="1815" Count="0" />
-      <LineId Id="1767" Count="9" />
+      <LineId Id="1767" Count="1" />
+      <LineId Id="1770" Count="6" />
       <LineId Id="167" Count="0" />
     </LineIds>
     <LineIds Name="MAIN.changeRobotsEOAT">
@@ -1060,6 +1084,7 @@ END_CASE]]></ST>
     <LineIds Name="MAIN.setup">
       <LineId Id="57" Count="3" />
       <LineId Id="55" Count="0" />
+      <LineId Id="122" Count="0" />
       <LineId Id="109" Count="4" />
       <LineId Id="108" Count="0" />
       <LineId Id="100" Count="0" />
