@@ -29,16 +29,13 @@ VAR_OUTPUT
 	targetPos : LREAL;
 END_VAR
 VAR
-	test : BOOL;
 	pulseRequest : INT;
-	
 	pulser : TON;
-	//pulseSeparator : TOF;
 	
 	minHoming : TON;
 	resetTimer : TP;
 	
-	step : Homing; //(IDLE, HOME_UP, HOME_FINAL, DOWN, REDO_HOME, HOME_DONE);
+	step : Homing;
 	mode : (DISABLE, HOLD, TARGET, CONTINUOUS, RESET_ERR);
 END_VAR
 VAR_STAT CONSTANT
@@ -75,7 +72,6 @@ CASE mode OF
 		pulseRequest := 0;
 	
 	TARGET:	//target a given position
-		test := WithinTolerance(position, targetPos, distancePerPulse);
 		IF WithinTolerance(position, targetPos, distancePerPulse) THEN
 			pulseRequest := 0;
 			mode := HOLD;
@@ -287,9 +283,7 @@ END_VAR
       <LineId Id="2196" Count="0" />
       <LineId Id="1813" Count="3" />
       <LineId Id="2033" Count="0" />
-      <LineId Id="1817" Count="1" />
-      <LineId Id="2021" Count="0" />
-      <LineId Id="1819" Count="0" />
+      <LineId Id="1817" Count="2" />
       <LineId Id="2035" Count="0" />
       <LineId Id="1826" Count="2" />
       <LineId Id="1920" Count="0" />
