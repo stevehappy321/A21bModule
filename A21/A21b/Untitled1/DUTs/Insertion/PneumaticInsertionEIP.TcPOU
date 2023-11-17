@@ -45,7 +45,6 @@ screw(
 	contact=> , 
 	home=> , 
 	innerLimit=> , 
-	ready=> , 
 	busy=> , 
 	error=> , 
 	homeSet=> );
@@ -108,7 +107,8 @@ END_VAR]]></Declaration>
       </Implementation>
     </Method>
     <LineIds Name="PneumaticInsertionEIP">
-      <LineId Id="296" Count="32" />
+      <LineId Id="296" Count="25" />
+      <LineId Id="323" Count="5" />
       <LineId Id="74" Count="0" />
     </LineIds>
     <LineIds Name="PneumaticInsertionEIP.homingSequence">

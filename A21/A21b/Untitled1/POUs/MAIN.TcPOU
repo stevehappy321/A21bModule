@@ -5,6 +5,7 @@
 VAR_INPUT
 	execute : BOOL;
 	manualMode : BOOL := TRUE;
+	ready : BOOL;
 END_VAR
 VAR_OUTPUT
 	robotLeft, robotRight : Robot;
@@ -18,7 +19,7 @@ VAR_OUTPUT
 	strapper : StrapMachine;
 	
 	insertionLeft, insertionRight : PneumaticInsertionEIP;	
-	insertionBottom : AirPiston;
+	insertionBottom : SimpleAirPiston;
 	
 	topSuction : ARRAY[1..3] OF SuctionPad;
 	leftSuction : ARRAY[1..4] OF SuctionPad;
@@ -27,12 +28,15 @@ VAR_OUTPUT
 	
 	toolStorageLeft, toolStorageRight : A21ToolStorage;
 END_VAR
-VAR
-	//these latches are only temporary to prevent SMC sliders from overshooting the inner limit sensor
-	//to be removed when replaced with pressure sensors
-	latchLeft, latchRight, latchBottom : BOOL;
-	suctionEnableLeft, suctionEnableTop : BOOL;
+VAR //VARs for testing, to be removed when replaced with pressure sensors
+	latchLeft, latchRight : BOOL; //these latches are only temporary to prevent SMC sliders from overshooting the inner limit sensor
 	
+	suctionEnableTop : BOOL;
+	suctionEnableLeft : BOOL;
+	suctionEnableRight : BOOL;
+	suctionEnableBottom : BOOL;
+END_VAR
+VAR
 	robotLeftOutputs, robotRightOutputs : ARRAY[1..50] OF INT;
 	
 	demoPairWB : PositionMaterials := (
@@ -52,7 +56,6 @@ VAR
 	sectionID : SectionEnum := SectionEnum.WOOD_BUNK;
 	
 	step : (IDLE, LOAD_CIP, STAGING, LOAD_WB, PUSH, STRAP, RELEASE, COMPLETE := 1050);
-	ready : BOOL;
 	
 	loadSet : INT;
 	loadStepLeft, loadStepRight : INT;
@@ -69,19 +72,21 @@ hardwareCall();
 
 IF NOT ready THEN
 	ready :=
-		insertionLeft.homingSequence(); //AND
-		//insertionRight.homingSequence(); //AND
-		//insertionBottom.homingSequence();
+		insertionLeft.homingSequence() AND
+		insertionRight.homingSequence() AND
+		insertionBottom.retract();
 	RETURN;
 END_IF
 
 
 CASE step OF
-	IDLE:	
+	IDLE:
+		
 		IF execute THEN
 			execute := FALSE;
 			step := LOAD_WB;
 		END_IF
+		
 	(*
 	LOAD_CIP:
 		IF loadCIP(pair:= demoPairWB) THEN
@@ -108,15 +113,13 @@ CASE step OF
 			step := STRAP;
 		END_IF
 		
-		IF suctionEnableTop THEN
-			EnableSuctions(topSuction);
-		END_IF
-		
-		IF suctionEnableLeft THEN
-			EnableSuctions(leftSuction);
-		END_IF
+		SetSuctions(topSuction, suctionEnableTop);
+		SetSuctions(leftSuction, suctionEnableLeft);
+		SetSuctions(rightSuction, suctionEnableRight);
+		SetSuctions(bottomSuction, suctionEnableBottom);
 		
 		IF manualMode AND_THEN execute THEN
+			suctionEnableTop := suctionEnableLeft := suctionEnableRight := suctionEnableBottom := FALSE;
 			execute := FALSE;
 			step := PUSH;
 		END_IF
@@ -132,19 +135,7 @@ CASE step OF
 			//insertionRight.slideAbsolute(demoHeight/2);
 			RETURN;
 		END_IF
-		
-		insertionLeft.press();
-		insertionRight.press();
-		//insertionBottom.extend();
 		*)
-		
-		IF NOT latchLeft THEN //stop pressing if inner limit pulsed
-			insertionLeft.press();
-		END_IF
-		
-		IF insertionLeft.screw.innerLimit THEN
-			latchLeft := TRUE;
-		END_IF
 		
 		IF insertionLeft.screw.innerLimit THEN
 			latchLeft := TRUE;
@@ -152,21 +143,15 @@ CASE step OF
 			insertionLeft.press();
 		END_IF
 		
-		(*
-		IF insertionRight.screw.innerLimit THEN //stop pressing if inner limit pulsed
+		IF insertionRight.screw.innerLimit THEN
 			latchRight := TRUE;
 		ELSIF NOT latchRight THEN
 			insertionRight.press();
 		END_IF
-		*)
 		
-		(*
-		IF insertionBottom.innerLimit THEN //stop pressing if inner limit pulsed
-			latchBottom := TRUE;
-		ELSIF NOT latchBottom THEN
-			insertionBottom.extend();
-		END_IF
-		*)
+		//insertionRight.press();
+		//insertionLeft.press();
+		insertionBottom.extend();
 		
 		(*
 		IF (*insertionBottom.contact AND*) insertionLeft.contact (*AND insertionRight.contact*) THEN
@@ -174,15 +159,28 @@ CASE step OF
 		END_IF
 		*)
 		IF manualMode AND_THEN execute THEN
-			latchLeft := FALSE;
+			latchLeft := latchRight := FALSE;
+			execute := FALSE;
+			step := STRAP;
+		END_IF
+		
+		IF manualMode AND_THEN execute THEN
+			IF execute THEN
+				latchLeft := latchRight := FALSE;
+				execute := FALSE;
+				step := STRAP;
+			END_IF
+			
+		ELSIF latchLeft AND latchRight AND insertionBottom.extended THEN
+			latchLeft := latchRight := FALSE;
 			execute := FALSE;
 			step := STRAP;
 		END_IF
 		
 	STRAP:
-		DisableSuctions(leftSuction);
-		//DisableSuctions(rightSuction);
-		//DisableSuctions(bottomSuction);
+		SetSuctions(leftSuction, FALSE);
+		SetSuctions(rightSuction, FALSE);
+		SetSuctions(bottomSuction, FALSE);
 		
 		IF strapper.done THEN
 			step := RELEASE;
@@ -193,16 +191,20 @@ CASE step OF
 			strapper.strap();
 		END_IF
 		
+		IF execute THEN
+			execute := FALSE;
+			step := RELEASE;
+		END_IF
+		
 	RELEASE: //release command
-		DisableSuctions(topSuction);
+		SetSuctions(topSuction, FALSE);
+		
+		//insertionLeft.slideAbsolute(0);
+		//insertionRight.slideAbsolute(0);
 		
 		insertionLeft.release();
-		//insertionRight.release();
-		//insertionBottom.retract();
-		
-		insertionLeft.slideAbsolute(0);
-		//insertionRight.slideAbsolute(0);
-		//insertionBottom.retract();
+		insertionRight.release();
+		insertionBottom.retract();
 		
 		(*
 		IF NOT insertionLeft.home THEN
@@ -225,7 +227,12 @@ CASE step OF
 		END_IF
 		*)
 		
-		IF insertionLeft.screw.home THEN
+		IF insertionLeft.screw.home AND insertionRight.screw.home AND insertionBottom.retracted THEN
+			step := COMPLETE;
+		END_IF
+		
+		IF execute THEN
+			execute := FALSE;
 			step := COMPLETE;
 		END_IF
 	
@@ -943,55 +950,68 @@ END_CASE]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="MAIN">
-      <LineId Id="1621" Count="45" />
-      <LineId Id="1670" Count="0" />
-      <LineId Id="1879" Count="3" />
-      <LineId Id="1671" Count="1" />
+      <LineId Id="1621" Count="11" />
+      <LineId Id="2128" Count="0" />
+      <LineId Id="1634" Count="0" />
+      <LineId Id="2137" Count="0" />
+      <LineId Id="1635" Count="3" />
+      <LineId Id="2124" Count="0" />
+      <LineId Id="1639" Count="24" />
+      <LineId Id="2016" Count="4" />
+      <LineId Id="2030" Count="0" />
+      <LineId Id="1672" Count="0" />
+      <LineId Id="2147" Count="0" />
       <LineId Id="1675" Count="4" />
       <LineId Id="1877" Count="0" />
       <LineId Id="1680" Count="2" />
       <LineId Id="1796" Count="0" />
       <LineId Id="1684" Count="4" />
-      <LineId Id="1918" Count="0" />
-      <LineId Id="1920" Count="1" />
-      <LineId Id="1919" Count="0" />
-      <LineId Id="1913" Count="0" />
-      <LineId Id="1922" Count="0" />
-      <LineId Id="1694" Count="2" />
-      <LineId Id="1908" Count="3" />
-      <LineId Id="1884" Count="0" />
-      <LineId Id="1883" Count="0" />
-      <LineId Id="1697" Count="1" />
-      <LineId Id="1898" Count="1" />
-      <LineId Id="1905" Count="0" />
-      <LineId Id="1784" Count="0" />
-      <LineId Id="1786" Count="2" />
-      <LineId Id="1900" Count="0" />
-      <LineId Id="1798" Count="1" />
-      <LineId Id="1906" Count="0" />
-      <LineId Id="1804" Count="0" />
-      <LineId Id="1901" Count="3" />
-      <LineId Id="1785" Count="0" />
-      <LineId Id="1699" Count="0" />
-      <LineId Id="1907" Count="0" />
+      <LineId Id="2006" Count="0" />
+      <LineId Id="2151" Count="1" />
+      <LineId Id="2154" Count="1" />
+      <LineId Id="2157" Count="2" />
+      <LineId Id="2161" Count="3" />
+      <LineId Id="2160" Count="0" />
+      <LineId Id="2153" Count="0" />
+      <LineId Id="2145" Count="1" />
+      <LineId Id="2165" Count="0" />
+      <LineId Id="2148" Count="0" />
       <LineId Id="1783" Count="0" />
       <LineId Id="1701" Count="2" />
-      <LineId Id="1705" Count="7" />
-      <LineId Id="1715" Count="3" />
+      <LineId Id="1705" Count="5" />
+      <LineId Id="2232" Count="1" />
+      <LineId Id="2253" Count="0" />
+      <LineId Id="2256" Count="1" />
+      <LineId Id="2254" Count="1" />
+      <LineId Id="2258" Count="0" />
+      <LineId Id="2235" Count="0" />
+      <LineId Id="2241" Count="1" />
+      <LineId Id="2240" Count="0" />
+      <LineId Id="2243" Count="0" />
+      <LineId Id="1711" Count="1" />
+      <LineId Id="2027" Count="1" />
+      <LineId Id="2150" Count="0" />
+      <LineId Id="1718" Count="0" />
       <LineId Id="1806" Count="0" />
       <LineId Id="1721" Count="6" />
+      <LineId Id="2104" Count="1" />
+      <LineId Id="2115" Count="0" />
+      <LineId Id="2106" Count="1" />
       <LineId Id="1736" Count="1" />
       <LineId Id="1807" Count="0" />
+      <LineId Id="2003" Count="2" />
       <LineId Id="1743" Count="3" />
-      <LineId Id="1809" Count="1" />
-      <LineId Id="1747" Count="0" />
-      <LineId Id="1812" Count="1" />
+      <LineId Id="1809" Count="0" />
       <LineId Id="1748" Count="14" />
       <LineId Id="1814" Count="0" />
       <LineId Id="1763" Count="2" />
       <LineId Id="1815" Count="0" />
       <LineId Id="1767" Count="1" />
-      <LineId Id="1770" Count="6" />
+      <LineId Id="1770" Count="1" />
+      <LineId Id="2108" Count="1" />
+      <LineId Id="2112" Count="0" />
+      <LineId Id="2110" Count="1" />
+      <LineId Id="1772" Count="4" />
       <LineId Id="167" Count="0" />
     </LineIds>
     <LineIds Name="MAIN.changeRobotsEOAT">

@@ -52,15 +52,6 @@
 			</Properties>
 		</DataType>
 		<DataType>
-			<Name GUID="{46C950DA-5D6E-6516-D69B-F24F38546D38}" IecBaseType="true" AutoDeleteType="true">ARRAY [1..16] OF BOOL</Name>
-			<BitSize>128</BitSize>
-			<BaseType GUID="{18071995-0000-0000-0000-000000000030}">BOOL</BaseType>
-			<ArrayInfo>
-				<LBound>1</LBound>
-				<Elements>16</Elements>
-			</ArrayInfo>
-		</DataType>
-		<DataType>
 			<Name GUID="{22728B82-A99E-1178-70C3-33731C966BD6}" IecBaseType="true" AutoDeleteType="true">ARRAY [1..10] OF BOOL</Name>
 			<BitSize>80</BitSize>
 			<BaseType GUID="{18071995-0000-0000-0000-000000000030}">BOOL</BaseType>
@@ -137,21 +128,17 @@
 		</System>
 		<Plc>
 			<Project GUID="{E9571829-45C8-446A-8EB4-A7C28CCAD583}" Name="Untitled1" PrjFilePath="Untitled1\Untitled1.plcproj" TmcFilePath="Untitled1\Untitled1.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{DF2270B3-AD45-6DF4-3863-77EA16D664E4}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{9944DEB4-0C37-F1CE-303E-1C28A77E46E1}">
 					<Name>Untitled1 Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
 						<Name>PlcTask Inputs</Name>
 						<Var>
-							<Name>MAIN.topSuction[1].occupied</Name>
+							<Name>MAIN.bottomSuction[1].occupied</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.topSuction[2].occupied</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.topSuction[3].occupied</Name>
+							<Name>MAIN.bottomSuction[2].occupied</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
@@ -179,19 +166,31 @@
 							<Type GUID="{5E996C28-72DA-BEF8-0B07-75B609163835}">SectionEnum</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.skidLeft.empty</Name>
+							<Name>MAIN.skidLeft.inPosition1</Name>
 							<Comment><![CDATA[units : ARRAY[0..GVL.maxQueue] OF INT;]]></Comment>
-							<Type GUID="{46C950DA-5D6E-6516-D69B-F24F38546D38}">ARRAY [1..16] OF BOOL</Type>
+							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.skidRight.empty</Name>
-							<Comment><![CDATA[units : ARRAY[0..GVL.maxQueue] OF INT;]]></Comment>
-							<Type GUID="{46C950DA-5D6E-6516-D69B-F24F38546D38}">ARRAY [1..16] OF BOOL</Type>
+							<Name>MAIN.skidLeft.inPosition2</Name>
+							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.stagingTemplateLeft.empty</Name>
+							<Name>MAIN.skidRight.inPosition1</Name>
 							<Comment><![CDATA[units : ARRAY[0..GVL.maxQueue] OF INT;]]></Comment>
-							<Type GUID="{46C950DA-5D6E-6516-D69B-F24F38546D38}">ARRAY [1..16] OF BOOL</Type>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.skidRight.inPosition2</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.stagingTemplateLeft.inPosition1</Name>
+							<Comment><![CDATA[units : ARRAY[0..GVL.maxQueue] OF INT;]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.stagingTemplateLeft.inPosition2</Name>
+							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>MAIN.stagingTemplateLeft.occupied</Name>
@@ -199,9 +198,13 @@
 							<Type GUID="{22728B82-A99E-1178-70C3-33731C966BD6}">ARRAY [1..10] OF BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.stagingTemplateRight.empty</Name>
+							<Name>MAIN.stagingTemplateRight.inPosition1</Name>
 							<Comment><![CDATA[units : ARRAY[0..GVL.maxQueue] OF INT;]]></Comment>
-							<Type GUID="{46C950DA-5D6E-6516-D69B-F24F38546D38}">ARRAY [1..16] OF BOOL</Type>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.stagingTemplateRight.inPosition2</Name>
+							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>MAIN.stagingTemplateRight.occupied</Name>
@@ -209,9 +212,13 @@
 							<Type GUID="{22728B82-A99E-1178-70C3-33731C966BD6}">ARRAY [1..10] OF BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.stagingTableLeft.empty</Name>
+							<Name>MAIN.stagingTableLeft.inPosition1</Name>
 							<Comment><![CDATA[units : ARRAY[0..GVL.maxQueue] OF INT;]]></Comment>
-							<Type GUID="{46C950DA-5D6E-6516-D69B-F24F38546D38}">ARRAY [1..16] OF BOOL</Type>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.stagingTableLeft.inPosition2</Name>
+							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>MAIN.stagingTableLeft.occupied</Name>
@@ -219,9 +226,13 @@
 							<Type GUID="{22728B82-A99E-1178-70C3-33731C966BD6}">ARRAY [1..10] OF BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.stagingTableRight.empty</Name>
+							<Name>MAIN.stagingTableRight.inPosition1</Name>
 							<Comment><![CDATA[units : ARRAY[0..GVL.maxQueue] OF INT;]]></Comment>
-							<Type GUID="{46C950DA-5D6E-6516-D69B-F24F38546D38}">ARRAY [1..16] OF BOOL</Type>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.stagingTableRight.inPosition2</Name>
+							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>MAIN.stagingTableRight.occupied</Name>
@@ -229,14 +240,22 @@
 							<Type GUID="{22728B82-A99E-1178-70C3-33731C966BD6}">ARRAY [1..10] OF BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.magazineLeft.empty</Name>
+							<Name>MAIN.magazineLeft.inPosition1</Name>
 							<Comment><![CDATA[units : ARRAY[0..GVL.maxQueue] OF INT;]]></Comment>
-							<Type GUID="{46C950DA-5D6E-6516-D69B-F24F38546D38}">ARRAY [1..16] OF BOOL</Type>
+							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.magazineRight.empty</Name>
+							<Name>MAIN.magazineLeft.inPosition2</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.magazineRight.inPosition1</Name>
 							<Comment><![CDATA[units : ARRAY[0..GVL.maxQueue] OF INT;]]></Comment>
-							<Type GUID="{46C950DA-5D6E-6516-D69B-F24F38546D38}">ARRAY [1..16] OF BOOL</Type>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.magazineRight.inPosition2</Name>
+							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>MAIN.strapper.error</Name>
@@ -255,81 +274,23 @@
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.insertionLeft.slider.contact</Name>
+							<Name>MAIN.insertionBottom.extended</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.insertionLeft.slider.home</Name>
+							<Name>MAIN.insertionBottom.retracted</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.insertionLeft.slider.outerLimit</Name>
+							<Name>MAIN.topSuction[1].occupied</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.insertionLeft.slider.innerLimit</Name>
+							<Name>MAIN.topSuction[2].occupied</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.insertionLeft.slider.hlfb</Name>
-							<Comment><![CDATA[high level feedback, if -9999 then servo is idle]]></Comment>
-							<Type>REAL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionLeft.screw.contact</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionLeft.screw.home</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionLeft.screw.innerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionRight.slider.contact</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionRight.slider.home</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionRight.slider.outerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionRight.slider.innerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionRight.slider.hlfb</Name>
-							<Comment><![CDATA[high level feedback, if -9999 then servo is idle]]></Comment>
-							<Type>REAL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionRight.screw.contact</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionRight.screw.home</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionRight.screw.innerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionBottom.contact</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionBottom.home</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionBottom.innerLimit</Name>
+							<Name>MAIN.topSuction[3].occupied</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
@@ -365,14 +326,6 @@
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.bottomSuction[1].occupied</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.bottomSuction[2].occupied</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
 							<Name>MAIN.toolStorageLeft.pos1ChipboardEOAT</Name>
 							<Type>BOOL</Type>
 						</Var>
@@ -404,19 +357,89 @@
 							<Name>MAIN.toolStorageRight.pos2WoodBunkEOAT</Name>
 							<Type>BOOL</Type>
 						</Var>
+						<Var>
+							<Name>MAIN.insertionLeft.slider.contact</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionLeft.slider.outerLimit</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionLeft.slider.home</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionLeft.slider.innerLimit</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionLeft.slider.hlfb</Name>
+							<Comment><![CDATA[high level feedback, if -9999 then servo is idle]]></Comment>
+							<Type>REAL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionLeft.screw.contact</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionLeft.screw.outerLimit</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionLeft.screw.home</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionLeft.screw.innerLimit</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionRight.slider.contact</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionRight.slider.outerLimit</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionRight.slider.home</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionRight.slider.innerLimit</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionRight.slider.hlfb</Name>
+							<Comment><![CDATA[high level feedback, if -9999 then servo is idle]]></Comment>
+							<Type>REAL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionRight.screw.contact</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionRight.screw.outerLimit</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionRight.screw.home</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionRight.screw.innerLimit</Name>
+							<Type>BOOL</Type>
+						</Var>
 					</Vars>
 					<Vars VarGrpType="2" AreaNo="1">
 						<Name>PlcTask Outputs</Name>
 						<Var>
-							<Name>MAIN.topSuction[1].enable</Name>
+							<Name>MAIN.bottomSuction[1].enable</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.topSuction[2].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.topSuction[3].enable</Name>
+							<Name>MAIN.bottomSuction[2].enable</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
@@ -472,6 +495,58 @@
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
+							<Name>MAIN.insertionBottom.pistonExtend</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionBottom.pistonRetract</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.topSuction[1].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.topSuction[2].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.topSuction[3].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.leftSuction[1].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.leftSuction[2].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.leftSuction[3].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.leftSuction[4].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.rightSuction[1].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.rightSuction[2].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.rightSuction[3].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.rightSuction[4].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
 							<Name>MAIN.insertionLeft.slider.pulse</Name>
 							<Comment><![CDATA[num pulses]]></Comment>
 							<Type>INT</Type>
@@ -513,54 +588,6 @@
 							<Name>MAIN.insertionRight.screw.valveRetract</Name>
 							<Type>BOOL</Type>
 						</Var>
-						<Var>
-							<Name>MAIN.insertionBottom.valveExtend</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionBottom.valveRetract</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.leftSuction[1].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.leftSuction[2].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.leftSuction[3].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.leftSuction[4].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.rightSuction[1].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.rightSuction[2].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.rightSuction[3].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.rightSuction[4].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.bottomSuction[1].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.bottomSuction[2].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
 					</Vars>
 					<UnrestoredVarLinks ImportTime="2023-11-14T17:06:57">
 						<OwnerA Name="InputDst" Prefix="TIPC^Untitled1^Untitled1 Instance" Type="1">
@@ -587,7 +614,7 @@
 			</Project>
 		</Plc>
 		<Io>
-			<Device Id="1" DevType="111" DevFlags="#x0003" AmsPort="28673" AmsNetId="192.168.101.188.2.1" RemoteName="Device 1 (EtherCAT)" InfoImageId="2">
+			<Device Id="1" DevType="111" DevFlags="#x0003" AmsPort="28673" AmsNetId="5.131.216.41.2.1" RemoteName="Device 1 (EtherCAT)" InfoImageId="2">
 				<Name>Device 1 (EtherCAT)</Name>
 				<AddressInfo>
 					<Ccat>
@@ -711,14 +738,14 @@
 						</EtherCAT>
 					</Box>
 					<Box Id="3" BoxType="9099" BoxFlags="#x00000020">
-						<Name>Bridge_Robot1</Name>
+						<Name>BRIDGE_ROBOT1</Name>
 						<ImageId>1002</ImageId>
-						<EtherCAT SlaveType="3" AdsServerAddress="0583d8290204ea03" FixedAdsServerNetId="true" PdiType="#x0008" MboxDataLinkLayer="true" StateMBoxPolling="true" CycleMBoxPollingTime="0" CoeType="63" EoeType="1" FoeType="1" VendorId="#x00000002" ProductCode="#x1a273052" RevisionNo="#x00060000" InfoDataAddr="true" InfoDataNetId="true" TimeoutMailbox2="2000" GenerateOwnNetId="true" CheckRevisionNoType="3" PortPhys="51" DcTimeLoopControlOnly="true" MaxSlotCount="256" MaxSlotGroupCount="1" SlotPdoIncrement="1" SlotIndexIncrement="16" Type="EL6695 EtherCAT Bridge terminal (Primary)" Desc="EL6695" PortABoxInfo="#x01000002">
+						<EtherCAT SlaveType="3" AdsServerAddress="0583d8290204ea03" PdiType="#x0008" MboxDataLinkLayer="true" StateMBoxPolling="true" CycleMBoxPollingTime="0" CoeType="63" EoeType="1" FoeType="1" VendorId="#x00000002" ProductCode="#x1a273052" RevisionNo="#x00060000" InfoDataAddr="true" InfoDataNetId="true" TimeoutMailbox2="2000" GenerateOwnNetId="true" CheckRevisionNoType="3" PortPhys="51" DcTimeLoopControlOnly="true" MaxSlotCount="256" MaxSlotGroupCount="1" SlotPdoIncrement="1" SlotIndexIncrement="16" Type="EL6695 EtherCAT Bridge terminal (Primary)" Desc="EL6695" PortABoxInfo="#x01000002">
 							<SyncMan>0010000426000100010000008000da050004001026010000</SyncMan>
 							<SyncMan>0016000422000100020000008000da050004001622010000</SyncMan>
-							<SyncMan>001c00006400000003000000000000000000001c64010000</SyncMan>
-							<SyncMan>008e02002000010004000000000000000200008e20010000</SyncMan>
-							<Fmmu>0000000000000000000000020000000001000000000000000000000000000000</Fmmu>
+							<SyncMan>001c64006400010003000000000000000000001c64010000</SyncMan>
+							<SyncMan>008e2a002000010004000000000000000200008e20010000</SyncMan>
+							<Fmmu>0000000000000000001c00020100000001000000000000000000000000000000</Fmmu>
 							<Fmmu>0000000000000000008e00010100000002000000000000000000000000000000</Fmmu>
 							<Fmmu>00000000000000000d0800010100000003000000000000000000000000000000</Fmmu>
 							<SwitchPortData>00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000</SwitchPortData>
@@ -822,8 +849,220 @@
 									<Type>UINT</Type>
 								</Entry>
 							</Pdo>
-							<Pdo Name="IO Inputs" Index="#x1a08" Flags="#x0020" SyncMan="3"/>
-							<Pdo Name="IO Outputs" Index="#x1608" InOut="1" Flags="#x0020" SyncMan="2"/>
+							<Pdo Name="IO Inputs" Index="#x1a08" Flags="#x0020" SyncMan="3">
+								<Entry Name="In" Index="#x6000" Sub="#x01">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="In_2" Index="#x6000" Sub="#x02">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="In_3" Index="#x6000" Sub="#x03">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="In_4" Index="#x6000" Sub="#x04">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="In_5" Index="#x6000" Sub="#x05">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="In_6" Index="#x6000" Sub="#x06">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="In_7" Index="#x6000" Sub="#x07">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="In_8" Index="#x6000" Sub="#x08">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="In_9" Index="#x6000" Sub="#x09">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="In_10" Index="#x6000" Sub="#x0a">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="In_11" Index="#x6000" Sub="#x0b">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="In_12" Index="#x6000" Sub="#x0c">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="In_13" Index="#x6000" Sub="#x0d">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="In_14" Index="#x6000" Sub="#x0e">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="In_15" Index="#x6000" Sub="#x0f">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="In_16" Index="#x6000" Sub="#x10">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="In_17" Index="#x6000" Sub="#x11">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="In_18" Index="#x6000" Sub="#x12">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="In_19" Index="#x6000" Sub="#x13">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="In_20" Index="#x6000" Sub="#x14">
+									<Type>WORD</Type>
+								</Entry>
+							</Pdo>
+							<Pdo Name="IO Outputs" Index="#x1608" InOut="1" Flags="#x0020" SyncMan="2">
+								<Entry Name="Out" Index="#x7000" Sub="#x01">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_2" Index="#x7000" Sub="#x02">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_3" Index="#x7000" Sub="#x03">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_4" Index="#x7000" Sub="#x04">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_5" Index="#x7000" Sub="#x05">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_6" Index="#x7000" Sub="#x06">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_7" Index="#x7000" Sub="#x07">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_8" Index="#x7000" Sub="#x08">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_9" Index="#x7000" Sub="#x09">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_10" Index="#x7000" Sub="#x0a">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_11" Index="#x7000" Sub="#x0b">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_12" Index="#x7000" Sub="#x0c">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_13" Index="#x7000" Sub="#x0d">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_14" Index="#x7000" Sub="#x0e">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_15" Index="#x7000" Sub="#x0f">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_16" Index="#x7000" Sub="#x10">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_17" Index="#x7000" Sub="#x11">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_18" Index="#x7000" Sub="#x12">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_19" Index="#x7000" Sub="#x13">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_20" Index="#x7000" Sub="#x14">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_21" Index="#x7000" Sub="#x15">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_22" Index="#x7000" Sub="#x16">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_23" Index="#x7000" Sub="#x17">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_24" Index="#x7000" Sub="#x18">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_25" Index="#x7000" Sub="#x19">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_26" Index="#x7000" Sub="#x1a">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_27" Index="#x7000" Sub="#x1b">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_28" Index="#x7000" Sub="#x1c">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_29" Index="#x7000" Sub="#x1d">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_30" Index="#x7000" Sub="#x1e">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_31" Index="#x7000" Sub="#x1f">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_32" Index="#x7000" Sub="#x20">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_33" Index="#x7000" Sub="#x21">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_34" Index="#x7000" Sub="#x22">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_35" Index="#x7000" Sub="#x23">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_36" Index="#x7000" Sub="#x24">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_37" Index="#x7000" Sub="#x25">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_38" Index="#x7000" Sub="#x26">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_39" Index="#x7000" Sub="#x27">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_40" Index="#x7000" Sub="#x28">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_41" Index="#x7000" Sub="#x29">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_42" Index="#x7000" Sub="#x2a">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_43" Index="#x7000" Sub="#x2b">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_44" Index="#x7000" Sub="#x2c">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_45" Index="#x7000" Sub="#x2d">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_46" Index="#x7000" Sub="#x2e">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_47" Index="#x7000" Sub="#x2f">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_48" Index="#x7000" Sub="#x30">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_49" Index="#x7000" Sub="#x31">
+									<Type>WORD</Type>
+								</Entry>
+								<Entry Name="Out_50" Index="#x7000" Sub="#x32">
+									<Type>WORD</Type>
+								</Entry>
+							</Pdo>
 							<CoeProfile ProfileNo="5001"/>
 						</EtherCAT>
 					</Box>
@@ -1382,15 +1621,455 @@
 								</Pdo>
 							</EtherCAT>
 						</Box>
+						<Box Id="27" BoxType="9099">
+							<Name>SB05</Name>
+							<ImageId>1006</ImageId>
+							<EtherCAT SlaveType="1" PdiType="#x0304" CycleMBoxPollingTime="0" VendorId="#x00000002" ProductCode="#x03f04052" RevisionNo="#x00120001" RepeatSupport="true" PortPhys="17" MaxSlotCount="256" MaxSlotGroupCount="1" SlotPdoIncrement="1" SlotIndexIncrement="16" Type="EP1008-0001 8 Ch. Dig. Input 24V, 3ms, M8" Desc="EP1008-0001" PortABoxInfo="#x0100000c">
+								<SyncMan>001001000000010004000000010001000100001000010000</SyncMan>
+								<Fmmu>0000000000000000001000010100000002000000000000000000000000000000</Fmmu>
+								<Pdo Name="Channel 1" Index="#x1a00" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6000" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 2" Index="#x1a01" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6010" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 3" Index="#x1a02" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6020" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 4" Index="#x1a03" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6030" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 5" Index="#x1a04" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6040" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 6" Index="#x1a05" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6050" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 7" Index="#x1a06" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6060" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 8" Index="#x1a07" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6070" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+							</EtherCAT>
+						</Box>
+						<Box Id="28" BoxType="9099">
+							<Name>SB04</Name>
+							<ImageId>1006</ImageId>
+							<EtherCAT SlaveType="1" PdiType="#x0304" CycleMBoxPollingTime="0" VendorId="#x00000002" ProductCode="#x07114052" RevisionNo="#x00110015" RepeatSupport="true" PortPhys="17" MaxSlotCount="256" MaxSlotGroupCount="1" SlotPdoIncrement="1" SlotIndexIncrement="16" Type="EP1809-0021 16 Ch. Dig. Input 24V, 3ms, M8" Desc="EP1809-0021" PortABoxInfo="#x0100001b">
+								<SyncMan>001002000000010004000000020002000200001000010000</SyncMan>
+								<Fmmu>0000000000000000001000010100000002000000000000000000000000000000</Fmmu>
+								<Pdo Name="Channel 1" Index="#x1a00" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6000" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 2" Index="#x1a01" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6010" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 3" Index="#x1a02" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6020" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 4" Index="#x1a03" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6030" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 5" Index="#x1a04" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6040" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 6" Index="#x1a05" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6050" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 7" Index="#x1a06" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6060" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 8" Index="#x1a07" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6070" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 9" Index="#x1a08" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6080" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 10" Index="#x1a09" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6090" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 11" Index="#x1a0a" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x60a0" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 12" Index="#x1a0b" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x60b0" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 13" Index="#x1a0c" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x60c0" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 14" Index="#x1a0d" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x60d0" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 15" Index="#x1a0e" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x60e0" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 16" Index="#x1a0f" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x60f0" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+							</EtherCAT>
+						</Box>
+						<Box Id="34" BoxType="9099">
+							<Name>SB03</Name>
+							<ImageId>1006</ImageId>
+							<EtherCAT SlaveType="1" PdiType="#x0304" CycleMBoxPollingTime="0" VendorId="#x00000002" ProductCode="#x03f04052" RevisionNo="#x00120001" RepeatSupport="true" PortPhys="17" MaxSlotCount="256" MaxSlotGroupCount="1" SlotPdoIncrement="1" SlotIndexIncrement="16" Type="EP1008-0001 8 Ch. Dig. Input 24V, 3ms, M8" Desc="EP1008-0001" PortABoxInfo="#x0100001c">
+								<SyncMan>001001000000010004000000010001000100001000010000</SyncMan>
+								<Fmmu>0000000000000000001000010100000002000000000000000000000000000000</Fmmu>
+								<Pdo Name="Channel 1" Index="#x1a00" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6000" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 2" Index="#x1a01" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6010" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 3" Index="#x1a02" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6020" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 4" Index="#x1a03" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6030" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 5" Index="#x1a04" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6040" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 6" Index="#x1a05" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6050" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 7" Index="#x1a06" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6060" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 8" Index="#x1a07" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6070" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+							</EtherCAT>
+						</Box>
+						<Box Id="31" BoxType="9099">
+							<Name>SB02</Name>
+							<ImageId>1006</ImageId>
+							<EtherCAT SlaveType="1" PdiType="#x0304" CycleMBoxPollingTime="0" VendorId="#x00000002" ProductCode="#x07114052" RevisionNo="#x00110015" RepeatSupport="true" PortPhys="17" MaxSlotCount="256" MaxSlotGroupCount="1" SlotPdoIncrement="1" SlotIndexIncrement="16" Type="EP1809-0021 16 Ch. Dig. Input 24V, 3ms, M8" Desc="EP1809-0021" PortABoxInfo="#x01000004">
+								<SyncMan>001002000000010004000000020002000200001000010000</SyncMan>
+								<Fmmu>0000000000000000001000010100000002000000000000000000000000000000</Fmmu>
+								<Pdo Name="Channel 1" Index="#x1a00" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6000" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 2" Index="#x1a01" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6010" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 3" Index="#x1a02" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6020" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 4" Index="#x1a03" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6030" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 5" Index="#x1a04" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6040" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 6" Index="#x1a05" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6050" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 7" Index="#x1a06" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6060" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 8" Index="#x1a07" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6070" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 9" Index="#x1a08" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6080" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 10" Index="#x1a09" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6090" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 11" Index="#x1a0a" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x60a0" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 12" Index="#x1a0b" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x60b0" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 13" Index="#x1a0c" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x60c0" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 14" Index="#x1a0d" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x60d0" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 15" Index="#x1a0e" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x60e0" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 16" Index="#x1a0f" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x60f0" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+							</EtherCAT>
+						</Box>
+						<Box Id="32" BoxType="9099">
+							<Name>SB07</Name>
+							<ImageId>1006</ImageId>
+							<EtherCAT SlaveType="1" PdiType="#x0304" CycleMBoxPollingTime="0" VendorId="#x00000002" ProductCode="#x03f04052" RevisionNo="#x00120001" RepeatSupport="true" PortPhys="17" MaxSlotCount="256" MaxSlotGroupCount="1" SlotPdoIncrement="1" SlotIndexIncrement="16" Type="EP1008-0001 8 Ch. Dig. Input 24V, 3ms, M8" Desc="EP1008-0001" PortABoxInfo="#x0100001f">
+								<SyncMan>001001000000010004000000010001000100001000010000</SyncMan>
+								<Fmmu>0000000000000000001000010100000002000000000000000000000000000000</Fmmu>
+								<Pdo Name="Channel 1" Index="#x1a00" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6000" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 2" Index="#x1a01" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6010" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 3" Index="#x1a02" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6020" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 4" Index="#x1a03" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6030" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 5" Index="#x1a04" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6040" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 6" Index="#x1a05" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6050" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 7" Index="#x1a06" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6060" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 8" Index="#x1a07" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6070" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+							</EtherCAT>
+						</Box>
+						<Box Id="33" BoxType="9099">
+							<Name>SB06</Name>
+							<ImageId>1006</ImageId>
+							<EtherCAT SlaveType="1" PdiType="#x0304" CycleMBoxPollingTime="0" VendorId="#x00000002" ProductCode="#x03f04052" RevisionNo="#x00120001" RepeatSupport="true" PortPhys="17" MaxSlotCount="256" MaxSlotGroupCount="1" SlotPdoIncrement="1" SlotIndexIncrement="16" Type="EP1008-0001 8 Ch. Dig. Input 24V, 3ms, M8" Desc="EP1008-0001" PortABoxInfo="#x01000020">
+								<SyncMan>001001000000010004000000010001000100001000010000</SyncMan>
+								<Fmmu>0000000000000000001000010100000002000000000000000000000000000000</Fmmu>
+								<Pdo Name="Channel 1" Index="#x1a00" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6000" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 2" Index="#x1a01" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6010" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 3" Index="#x1a02" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6020" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 4" Index="#x1a03" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6030" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 5" Index="#x1a04" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6040" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 6" Index="#x1a05" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6050" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 7" Index="#x1a06" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6060" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+								<Pdo Name="Channel 8" Index="#x1a07" Flags="#x0011" SyncMan="0">
+									<Entry Name="Input" Index="#x6070" Sub="#x01">
+										<Type>BIT</Type>
+									</Entry>
+								</Pdo>
+							</EtherCAT>
+						</Box>
 					</Box>
 				</Box>
-				<EtherCAT EnableVirtualSwitch="true" MaxSwitchPorts="3" MaxSwitchFrames="140"/>
+				<EtherCAT EnableVirtualSwitch="true" MaxSwitchPorts="2" MaxSwitchFrames="120"/>
 			</Device>
 		</Io>
 	</Project>
 	<Mappings>
 		<MappingInfo Identifier="{00000000-2001-0850-0020-500810000403}" Id="#x02030010"/>
 		<OwnerA Name="TIPC^Untitled1^Untitled1 Instance">
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^EK1200^BRIDGE_ROBOT1">
+				<Link VarA="PlcTask Inputs^MAIN.robotLeft.inputs[10]" VarB="IO Inputs^In_10"/>
+				<Link VarA="PlcTask Inputs^MAIN.robotLeft.inputs[11]" VarB="IO Inputs^In_11"/>
+				<Link VarA="PlcTask Inputs^MAIN.robotLeft.inputs[12]" VarB="IO Inputs^In_12"/>
+				<Link VarA="PlcTask Inputs^MAIN.robotLeft.inputs[13]" VarB="IO Inputs^In_13"/>
+				<Link VarA="PlcTask Inputs^MAIN.robotLeft.inputs[14]" VarB="IO Inputs^In_14"/>
+				<Link VarA="PlcTask Inputs^MAIN.robotLeft.inputs[15]" VarB="IO Inputs^In_15"/>
+				<Link VarA="PlcTask Inputs^MAIN.robotLeft.inputs[16]" VarB="IO Inputs^In_16"/>
+				<Link VarA="PlcTask Inputs^MAIN.robotLeft.inputs[17]" VarB="IO Inputs^In_17"/>
+				<Link VarA="PlcTask Inputs^MAIN.robotLeft.inputs[18]" VarB="IO Inputs^In_18"/>
+				<Link VarA="PlcTask Inputs^MAIN.robotLeft.inputs[19]" VarB="IO Inputs^In_19"/>
+				<Link VarA="PlcTask Inputs^MAIN.robotLeft.inputs[1]" VarB="IO Inputs^In"/>
+				<Link VarA="PlcTask Inputs^MAIN.robotLeft.inputs[20]" VarB="IO Inputs^In_20"/>
+				<Link VarA="PlcTask Inputs^MAIN.robotLeft.inputs[2]" VarB="IO Inputs^In_2"/>
+				<Link VarA="PlcTask Inputs^MAIN.robotLeft.inputs[3]" VarB="IO Inputs^In_3"/>
+				<Link VarA="PlcTask Inputs^MAIN.robotLeft.inputs[4]" VarB="IO Inputs^In_4"/>
+				<Link VarA="PlcTask Inputs^MAIN.robotLeft.inputs[5]" VarB="IO Inputs^In_5"/>
+				<Link VarA="PlcTask Inputs^MAIN.robotLeft.inputs[6]" VarB="IO Inputs^In_6"/>
+				<Link VarA="PlcTask Inputs^MAIN.robotLeft.inputs[7]" VarB="IO Inputs^In_7"/>
+				<Link VarA="PlcTask Inputs^MAIN.robotLeft.inputs[8]" VarB="IO Inputs^In_8"/>
+				<Link VarA="PlcTask Inputs^MAIN.robotLeft.inputs[9]" VarB="IO Inputs^In_9"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[10]" VarB="IO Outputs^Out_10"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[11]" VarB="IO Outputs^Out_11"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[12]" VarB="IO Outputs^Out_12"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[13]" VarB="IO Outputs^Out_13"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[14]" VarB="IO Outputs^Out_14"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[15]" VarB="IO Outputs^Out_15"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[16]" VarB="IO Outputs^Out_16"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[17]" VarB="IO Outputs^Out_17"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[18]" VarB="IO Outputs^Out_18"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[19]" VarB="IO Outputs^Out_19"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[1]" VarB="IO Outputs^Out"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[20]" VarB="IO Outputs^Out_20"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[21]" VarB="IO Outputs^Out_21"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[22]" VarB="IO Outputs^Out_22"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[23]" VarB="IO Outputs^Out_23"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[24]" VarB="IO Outputs^Out_24"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[25]" VarB="IO Outputs^Out_25"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[26]" VarB="IO Outputs^Out_26"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[27]" VarB="IO Outputs^Out_27"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[28]" VarB="IO Outputs^Out_28"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[29]" VarB="IO Outputs^Out_29"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[2]" VarB="IO Outputs^Out_2"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[30]" VarB="IO Outputs^Out_30"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[31]" VarB="IO Outputs^Out_31"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[32]" VarB="IO Outputs^Out_32"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[33]" VarB="IO Outputs^Out_33"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[34]" VarB="IO Outputs^Out_34"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[35]" VarB="IO Outputs^Out_35"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[36]" VarB="IO Outputs^Out_36"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[37]" VarB="IO Outputs^Out_37"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[38]" VarB="IO Outputs^Out_38"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[39]" VarB="IO Outputs^Out_39"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[3]" VarB="IO Outputs^Out_3"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[40]" VarB="IO Outputs^Out_40"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[41]" VarB="IO Outputs^Out_41"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[42]" VarB="IO Outputs^Out_42"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[43]" VarB="IO Outputs^Out_43"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[44]" VarB="IO Outputs^Out_44"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[45]" VarB="IO Outputs^Out_45"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[46]" VarB="IO Outputs^Out_46"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[47]" VarB="IO Outputs^Out_47"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[48]" VarB="IO Outputs^Out_48"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[49]" VarB="IO Outputs^Out_49"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[4]" VarB="IO Outputs^Out_4"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[50]" VarB="IO Outputs^Out_50"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[5]" VarB="IO Outputs^Out_5"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[6]" VarB="IO Outputs^Out_6"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[7]" VarB="IO Outputs^Out_7"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[8]" VarB="IO Outputs^Out_8"/>
+				<Link VarA="PlcTask Outputs^MAIN.robotRight.outputs[9]" VarB="IO Outputs^Out_9"/>
+			</OwnerB>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^EK1200^JUNC_A21^C1^C1_I1">
 				<Link VarA="PlcTask Inputs^MAIN.strapper.done" VarB="Channel 4^Input"/>
 				<Link VarA="PlcTask Inputs^MAIN.strapper.error" VarB="Channel 1^Input"/>
@@ -1424,6 +2103,14 @@
 				<Link VarA="PlcTask Outputs^MAIN.leftSuction[4].enable" VarB="Channel 7^Output"/>
 			</OwnerB>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^EK1200^JUNC_A21^C4^C4_O3">
+				<Link VarA="PlcTask Outputs^MAIN.bottomSuction[1].enable" VarB="Channel 7^Output"/>
+				<Link VarA="PlcTask Outputs^MAIN.bottomSuction[2].enable" VarB="Channel 8^Output"/>
+				<Link VarA="PlcTask Outputs^MAIN.insertionBottom.pistonExtend" VarB="Channel 5^Output"/>
+				<Link VarA="PlcTask Outputs^MAIN.insertionBottom.pistonRetract" VarB="Channel 6^Output"/>
+				<Link VarA="PlcTask Outputs^MAIN.rightSuction[1].enable" VarB="Channel 1^Output"/>
+				<Link VarA="PlcTask Outputs^MAIN.rightSuction[2].enable" VarB="Channel 2^Output"/>
+				<Link VarA="PlcTask Outputs^MAIN.rightSuction[3].enable" VarB="Channel 3^Output"/>
+				<Link VarA="PlcTask Outputs^MAIN.rightSuction[4].enable" VarB="Channel 4^Output"/>
 				<Link VarA="PlcTask Outputs^MAIN.topSuction[1].enable" VarB="Channel 9^Output"/>
 				<Link VarA="PlcTask Outputs^MAIN.topSuction[2].enable" VarB="Channel 10^Output"/>
 				<Link VarA="PlcTask Outputs^MAIN.topSuction[3].enable" VarB="Channel 11^Output"/>
@@ -1431,10 +2118,56 @@
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^EK1200^JUNC_A21^SB01">
 				<Link VarA="PlcTask Inputs^MAIN.insertionLeft.screw.home" VarB="Channel 11^Input"/>
 				<Link VarA="PlcTask Inputs^MAIN.insertionLeft.screw.innerLimit" VarB="Channel 12^Input"/>
-				<Link VarA="PlcTask Inputs^MAIN.leftSuction[1].occupied" VarB="Channel 13^Input"/>
-				<Link VarA="PlcTask Inputs^MAIN.leftSuction[2].occupied" VarB="Channel 14^Input"/>
-				<Link VarA="PlcTask Inputs^MAIN.leftSuction[3].occupied" VarB="Channel 15^Input"/>
-				<Link VarA="PlcTask Inputs^MAIN.leftSuction[4].occupied" VarB="Channel 16^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.leftSuction[1].occupied" VarB="Channel 16^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.leftSuction[2].occupied" VarB="Channel 15^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.leftSuction[3].occupied" VarB="Channel 14^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.leftSuction[4].occupied" VarB="Channel 13^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.stagingTableLeft.occupied[10]" VarB="Channel 10^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.stagingTableLeft.occupied[1]" VarB="Channel 1^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.stagingTableLeft.occupied[2]" VarB="Channel 2^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.stagingTableLeft.occupied[3]" VarB="Channel 3^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.stagingTableLeft.occupied[4]" VarB="Channel 4^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.stagingTableLeft.occupied[5]" VarB="Channel 5^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.stagingTableLeft.occupied[6]" VarB="Channel 6^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.stagingTableLeft.occupied[7]" VarB="Channel 7^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.stagingTableLeft.occupied[8]" VarB="Channel 8^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.stagingTableLeft.occupied[9]" VarB="Channel 9^Input"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^EK1200^JUNC_A21^SB02">
+				<Link VarA="PlcTask Inputs^MAIN.insertionRight.screw.home" VarB="Channel 11^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.insertionRight.screw.innerLimit" VarB="Channel 12^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.rightSuction[1].occupied" VarB="Channel 13^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.rightSuction[2].occupied" VarB="Channel 14^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.rightSuction[3].occupied" VarB="Channel 15^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.rightSuction[4].occupied" VarB="Channel 16^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.stagingTableRight.occupied[10]" VarB="Channel 10^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.stagingTableRight.occupied[1]" VarB="Channel 1^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.stagingTableRight.occupied[2]" VarB="Channel 2^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.stagingTableRight.occupied[3]" VarB="Channel 3^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.stagingTableRight.occupied[4]" VarB="Channel 4^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.stagingTableRight.occupied[5]" VarB="Channel 5^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.stagingTableRight.occupied[6]" VarB="Channel 6^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.stagingTableRight.occupied[7]" VarB="Channel 7^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.stagingTableRight.occupied[8]" VarB="Channel 8^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.stagingTableRight.occupied[9]" VarB="Channel 9^Input"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^EK1200^JUNC_A21^SB05">
+				<Link VarA="PlcTask Inputs^MAIN.magazineLeft.inPosition1" VarB="Channel 1^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.magazineLeft.inPosition2" VarB="Channel 2^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.skidLeft.inPosition1" VarB="Channel 3^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.skidLeft.inPosition2" VarB="Channel 4^Input"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^EK1200^JUNC_A21^SB06">
+				<Link VarA="PlcTask Inputs^MAIN.magazineRight.inPosition1" VarB="Channel 1^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.magazineRight.inPosition2" VarB="Channel 2^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.skidRight.inPosition1" VarB="Channel 3^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.skidRight.inPosition2" VarB="Channel 4^Input"/>
+			</OwnerB>
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^EK1200^JUNC_A21^SB07">
+				<Link VarA="PlcTask Inputs^MAIN.bottomSuction[1].occupied" VarB="Channel 6^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.bottomSuction[2].occupied" VarB="Channel 7^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.insertionBottom.extended" VarB="Channel 5^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.insertionBottom.retracted" VarB="Channel 4^Input"/>
 			</OwnerB>
 		</OwnerA>
 	</Mappings>

@@ -6,7 +6,8 @@ VAR_OUTPUT
 	slots : ARRAY[1..GVL.maxQueue] OF STRING;
 	//units : ARRAY[0..GVL.maxQueue] OF INT;
 	
-	empty AT %I* : ARRAY[1..GVL.maxQueue] OF BOOL;
+	inPosition1 AT %I* : BOOL;
+	inPosition2 AT %I* : BOOL;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[]]></ST>

@@ -38,34 +38,28 @@
     <Compile Include="DUTs\Enums\WoodBunk.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\Insertion\Abstract\ContinuousDrive.TcIO">
+    <Compile Include="DUTs\Insertion\PROTOTYPE\A_ContinuousDrive.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\Insertion\Abstract\Drive.TcIO">
+    <Compile Include="DUTs\Insertion\PROTOTYPE\A_EncodedDrive.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\Insertion\Abstract\EncodedDrive.TcIO">
+    <Compile Include="DUTs\Insertion\PROTOTYPE\Insertion.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\Insertion\Abstract\Insertion.TcPOU">
+    <Compile Include="DUTs\Insertion\Drives\AirPiston.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\Insertion\AirPiston.TcPOU">
+    <Compile Include="DUTs\Insertion\Drives\ClearLinkEIP.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\Insertion\ClearLinkEIP.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DUTs\Insertion\PneumaticInsertion.TcPOU">
+    <Compile Include="DUTs\Insertion\Drives\SimpleAirPiston.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DUTs\Insertion\PneumaticInsertionEIP.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DUTs\Insertion\SuctionPad.TcDUT">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DUTs\Insertion\TeknicHardWire.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DUTs\Machines\Robot.TcPOU">
@@ -97,10 +91,7 @@
     <Compile Include="PlcTask.TcTTO">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\EnableSuctions.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\DisableSuctions.TcPOU">
+    <Compile Include="POUs\SetSuctions.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\Utility Functions\CEILING.TcPOU">
@@ -117,7 +108,8 @@
     <Folder Include="DUTs" />
     <Folder Include="DUTs\Insertion" />
     <Folder Include="DUTs\Enums" />
-    <Folder Include="DUTs\Insertion\Abstract" />
+    <Folder Include="DUTs\Insertion\PROTOTYPE" />
+    <Folder Include="DUTs\Insertion\Drives" />
     <Folder Include="DUTs\Material Holders" />
     <Folder Include="DUTs\Machines" />
     <Folder Include="GVLs" />

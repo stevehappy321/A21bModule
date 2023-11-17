@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <Itf Name="I_PositionalDrive" Id="{542dde8d-3f0e-453c-8c39-9501a69f7da7}">
+    <Declaration><![CDATA[INTERFACE I_PositionalDrive
+]]></Declaration>
+    <Folder Name="Get" Id="{312928f4-e4fd-4a43-994e-49d55c8ad75e}" />
+    <Method Name="atHome" Id="{eb79cbaa-9840-473c-83ef-bcfe177ce337}" FolderPath="Get\">
+      <Declaration><![CDATA[METHOD atHome : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="getPosition" Id="{d85f7d3d-8b37-4622-9561-52092a485cf7}" FolderPath="Get\">
+      <Declaration><![CDATA[METHOD getPosition : LREAL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="getTargetPosition" Id="{33274651-146f-4855-b696-ae10599720d9}" FolderPath="Get\">
+      <Declaration><![CDATA[METHOD getTargetPosition : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="hasError" Id="{9a4146e6-aa6a-4065-94fa-09229cb75d8a}" FolderPath="Get\">
+      <Declaration><![CDATA[METHOD hasError : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="homingSequence" Id="{12409806-842f-4cb2-b5fe-f4a55b9c747a}">
+      <Declaration><![CDATA[METHOD ABSTRACT homingSequence : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="isBusy" Id="{cc17c0d7-ee05-4f61-ac84-32d58b665e57}" FolderPath="Get\">
+      <Declaration><![CDATA[METHOD isBusy : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="moveAbsolute" Id="{2c02535f-adbe-4dfa-ac4b-ddfb412f57da}">
+      <Declaration><![CDATA[METHOD moveAbsolute : BOOL
+VAR_INPUT
+	newTarget : LREAL; 
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="moveContinuous" Id="{bf078701-f572-4316-9dc9-8b0c8ae473a7}">
+      <Declaration><![CDATA[METHOD moveContinuous : BOOL
+VAR_INPUT
+	direction : MC_Direction;
+END_VAR]]></Declaration>
+    </Method>
+    <Method Name="moveRelative" Id="{83781e94-128b-41f5-8391-03ac83176760}">
+      <Declaration><![CDATA[METHOD moveRelative : BOOL
+VAR_INPUT
+	distance : LREAL;
+END_VAR]]></Declaration>
+    </Method>
+  </Itf>
+</TcPlcObject>
