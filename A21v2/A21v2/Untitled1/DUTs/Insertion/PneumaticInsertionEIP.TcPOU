@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
   <POU Name="PneumaticInsertionEIP" Id="{60eb499d-0a9f-498e-8b27-5c86a4039353}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK PneumaticInsertionEIP// EXTENDS Insertion
+    <Declaration><![CDATA[FUNCTION_BLOCK PneumaticInsertionEIP
 VAR_INPUT
 	enable : BOOL;
 END_VAR
 VAR_OUTPUT
-	slider : ClearLinkEIP;
+	slider : ClearLinkMC;
 	screw : AirPiston;
 	
 	contact : BOOL;
@@ -27,31 +27,32 @@ END_VAR]]></Declaration>
 	A=> , 
 	B=> , 
 	clear=> , 
-	contact=> , 
+	contactSensor=> , 
 	home=> , 
 	outerLimit=> , 
 	innerLimit=> , 
 	hlfb=> , 
-	homeSet=> , 
-	busy=> , 
-	error=> , 
-	position=> sliderPos, 
+	homingComplete=> , 
+	Busy=> , 
+	Error=> , 
 	targetPos=> );
 
+sliderPos := slider.CurrentPosition;	
+	
 screw(
 	bEnable:= enable,
 	valveExtend=> , 
 	valveRetract=> , 
-	contact=> , 
+	contactSensor=> , 
 	home=> , 
 	innerLimit=> , 
-	busy=> , 
-	error=> , 
-	homeSet=> );
+	Busy=> , 
+	Error=> , 
+	homingComplete=> );
 	
-home := screw.home AND slider.home;
-busy := slider.busy OR screw.busy;
-error := slider.error OR screw.error;]]></ST>
+home := screw.AtHome AND slider.AtHome;
+busy := slider.Busy OR screw.Busy;
+error := slider.Error OR screw.Error;]]></ST>
     </Implementation>
     <Method Name="homingSequence" Id="{74aa10a4-d54f-4feb-b7ba-b023029d51d3}">
       <Declaration><![CDATA[METHOD homingSequence : BOOL]]></Declaration>
@@ -61,11 +62,11 @@ IF NOT slider.homeSet THEN
 	slider.homingSequence();
 END_IF
 *)
-IF NOT screw.homeSet THEN
+IF NOT screw.homingComplete THEN
 	screw.homingSequence();
 END_IF
 
-homingSequence := (*slider.homeSet AND*) screw.homeSet;]]></ST>
+homingSequence := (*slider.homeSet AND*) screw.homingComplete;]]></ST>
       </Implementation>
     </Method>
     <Method Name="press" Id="{6d696dd3-7676-4d35-8862-76ab2dec8fa9}">
@@ -107,7 +108,12 @@ END_VAR]]></Declaration>
       </Implementation>
     </Method>
     <LineIds Name="PneumaticInsertionEIP">
-      <LineId Id="296" Count="25" />
+      <LineId Id="296" Count="15" />
+      <LineId Id="313" Count="0" />
+      <LineId Id="345" Count="0" />
+      <LineId Id="314" Count="0" />
+      <LineId Id="346" Count="0" />
+      <LineId Id="315" Count="6" />
       <LineId Id="323" Count="5" />
       <LineId Id="74" Count="0" />
     </LineIds>

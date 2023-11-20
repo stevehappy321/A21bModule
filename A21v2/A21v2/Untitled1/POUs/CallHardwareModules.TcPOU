@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
   <POU Name="CallHardwareModules" Id="{d53bfde7-ef31-4033-a59e-17a8585cdf25}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION CallHardwareModules : BOOL]]></Declaration>
+    <Declaration><![CDATA[FUNCTION CallHardwareModules : BOOL //only purpose of this function is to call modules from Hardware]]></Declaration>
     <Implementation>
       <ST><![CDATA[robotLeft();
 robotRight();
@@ -23,16 +23,18 @@ stagingTableRight();
 
 strapper();
 
-insertionLeft();
-insertionRight();
-insertionBottom();
-
-stagingTemplateLeft();
-stagingTemplateRight();]]></ST>
+verticalDriveLeft();
+verticalDriveRight();
+horizontalDriveLeft();
+horizontalDriveRight();
+insertionBottom();]]></ST>
     </Implementation>
     <LineIds Name="CallHardwareModules">
-      <LineId Id="8" Count="24" />
-      <LineId Id="7" Count="0" />
+      <LineId Id="8" Count="19" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="33" Count="1" />
+      <LineId Id="36" Count="0" />
+      <LineId Id="30" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>

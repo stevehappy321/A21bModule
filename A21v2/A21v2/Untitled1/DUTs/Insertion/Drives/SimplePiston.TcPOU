@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
-  <POU Name="SimpleAirPiston" Id="{0b7d1323-ab3c-4527-8947-07c900a0019d}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK SimpleAirPiston
+  <POU Name="SimplePiston" Id="{0b7d1323-ab3c-4527-8947-07c900a0019d}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK SimplePiston
 VAR_INPUT
 	bEnable : BOOL;
 END_VAR
@@ -69,7 +69,7 @@ pistonRetract := FALSE;
 mode := HOLD;]]></ST>
       </Implementation>
     </Method>
-    <LineIds Name="SimpleAirPiston">
+    <LineIds Name="SimplePiston">
       <LineId Id="9" Count="0" />
       <LineId Id="76" Count="0" />
       <LineId Id="56" Count="0" />
@@ -86,15 +86,15 @@ mode := HOLD;]]></ST>
       <LineId Id="52" Count="0" />
       <LineId Id="43" Count="0" />
     </LineIds>
-    <LineIds Name="SimpleAirPiston.extend">
+    <LineIds Name="SimplePiston.extend">
       <LineId Id="6" Count="0" />
     </LineIds>
-    <LineIds Name="SimpleAirPiston.retract">
+    <LineIds Name="SimplePiston.retract">
       <LineId Id="5" Count="0" />
       <LineId Id="9" Count="0" />
       <LineId Id="8" Count="0" />
     </LineIds>
-    <LineIds Name="SimpleAirPiston.stop">
+    <LineIds Name="SimplePiston.stop">
       <LineId Id="6" Count="1" />
       <LineId Id="5" Count="0" />
     </LineIds>

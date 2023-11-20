@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
-  <POU Name="ClearLinkEIP" Id="{82d395c8-897a-4c3b-989f-b99dc8146760}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK ClearLinkEIP EXTENDS A_EncodedDrive
+  <POU Name="ClearLinkMC" Id="{82d395c8-897a-4c3b-989f-b99dc8146760}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ClearLinkMC EXTENDS FBA_Drive IMPLEMENTS I_EncodedDrive //I_PositionalDrive, I_ContinuousDrive
 VAR_OUTPUT
 	pulse AT %Q* : INT; //num pulses
 	outputRegister AT %Q* : INT;
@@ -12,6 +12,7 @@ VAR_OUTPUT
 	clear : BOOL;
 	
 	hlfb AT %I* : REAL; //high level feedback, if -9999 then servo is idle
+	position, targetPos : LREAL;
 END_VAR
 VAR
 	pulseRequest : INT;
@@ -36,14 +37,9 @@ outputRegister.3 := clear; 		//reset bit
 resetTimer(IN:= , PT:= resetTime, Q=> clear, ET=> ); //reset timer
 
 IF NOT bEnable THEN
-	homeSet := FALSE;
+	homingComplete := FALSE;
 	mode := HOLD;
 END_IF
-
-//set the bool outputs, all are listed for readability
-homeSet := homeSet;
-busy := hlfb <> -9999;
-error := error;
 
 override(); //if sensor limits are reached, this method blocks motion that would exceed the limits
 
@@ -64,15 +60,15 @@ CASE mode OF
 				a)  send all pulses at once - single continuous motion but may exceed limits
 				b)  1 pulse at a time - choppy but safer
 			*)
-			pulseRequest := TO_INT(ABS(position - targetPos)/distancePerPulse);
-			//pulseRequest := 1;
+			//pulseRequest := TO_INT(ABS(position - targetPos)/distancePerPulse);
+			pulseRequest := 1;
 			
 		END_IF
 		
 	CONTINUOUS: //single pulses in the direction specified by moveContinuous()
 		pulseRequest := 1;
 		
-	RESET_ERR: //reset pulse
+	RESET_ERR: //reset pulse, servo may need to be rehomed aftewards
 		pulse := 0;
 		pulseRequest := 0;
 		resetTimer.IN := TRUE;
@@ -87,6 +83,48 @@ END_CASE
 sequence();]]></ST>
     </Implementation>
     <Folder Name="Private" Id="{8d4dfb4b-1bc0-44fe-833d-9a6610663d13}" />
+    <Folder Name="Properties" Id="{f4fb86df-136f-4996-9daa-b3b8a4b4fe75}" />
+    <Property Name="Busy" Id="{76e617c1-1707-418c-afd8-37e3d0a70099}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY Busy : BOOL]]></Declaration>
+      <Get Name="Get" Id="{9821e814-6021-4995-a4d6-e74adde35b23}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Busy := hlfb <> -9999;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="CurrentPosition" Id="{552cdbb0-b891-4b67-ad01-a8cfc1c516eb}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY CurrentPosition : LREAL]]></Declaration>
+      <Get Name="Get" Id="{f42f05dd-f56e-4930-a286-1888d4d594cd}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{cba03562-eb55-4743-94dc-7cf01962b58c}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[position := CurrentPosition;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="Error" Id="{7daf4b31-4ccd-4ebb-b598-fd16e9795a78}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY Error : BOOL]]></Declaration>
+      <Get Name="Get" Id="{edbd4fca-a224-4fe5-ba01-ff917580b072}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
     <Method Name="homingSequence" Id="{ed7f9015-f217-4688-b191-db86d43e2b15}">
       <Declaration><![CDATA[METHOD homingSequence : BOOL]]></Declaration>
       <Implementation>
@@ -103,7 +141,7 @@ CASE step OF
 		B := FALSE;
 		brakeRelease := TRUE;
 		
-		homeSet := FALSE;
+		homingComplete := FALSE;
 		step := Homing.IN;
 		
 	Homing.IN: //let insertion drop to inner limit before homing
@@ -140,7 +178,7 @@ CASE step OF
 			
 		position := 0;
 		
-		homeSet := TRUE;
+		homingComplete := TRUE;
 		homingSequence := TRUE;
 		
 		mode := HOLD;
@@ -261,11 +299,43 @@ END_VAR
         <ST><![CDATA[mode := HOLD;]]></ST>
       </Implementation>
     </Method>
-    <LineIds Name="ClearLinkEIP">
-      <LineId Id="2322" Count="56" />
+    <Property Name="TargetPosition" Id="{222c0d80-2607-4af6-8461-be098758948d}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY TargetPosition : LREAL]]></Declaration>
+      <Get Name="Get" Id="{b917e1f8-7faf-4ca9-8c30-5bfbcfdfaf97}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{f401d7bc-6585-4a9b-ae06-cd3e51203159}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[targetPos := TargetPosition;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <LineIds Name="ClearLinkMC">
+      <LineId Id="2403" Count="11" />
+      <LineId Id="2420" Count="39" />
       <LineId Id="1839" Count="0" />
     </LineIds>
-    <LineIds Name="ClearLinkEIP.homingSequence">
+    <LineIds Name="ClearLinkMC.Busy.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="ClearLinkMC.CurrentPosition.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="ClearLinkMC.CurrentPosition.Set">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="ClearLinkMC.Error.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="ClearLinkMC.homingSequence">
       <LineId Id="134" Count="0" />
       <LineId Id="189" Count="0" />
       <LineId Id="191" Count="1" />
@@ -278,20 +348,20 @@ END_VAR
       <LineId Id="183" Count="5" />
       <LineId Id="133" Count="0" />
     </LineIds>
-    <LineIds Name="ClearLinkEIP.moveAbsolute">
+    <LineIds Name="ClearLinkMC.moveAbsolute">
       <LineId Id="16" Count="0" />
       <LineId Id="8" Count="0" />
     </LineIds>
-    <LineIds Name="ClearLinkEIP.moveContinuous">
+    <LineIds Name="ClearLinkMC.moveContinuous">
       <LineId Id="20" Count="0" />
       <LineId Id="23" Count="4" />
       <LineId Id="15" Count="0" />
     </LineIds>
-    <LineIds Name="ClearLinkEIP.moveRelative">
+    <LineIds Name="ClearLinkMC.moveRelative">
       <LineId Id="6" Count="1" />
       <LineId Id="5" Count="0" />
     </LineIds>
-    <LineIds Name="ClearLinkEIP.override">
+    <LineIds Name="ClearLinkMC.override">
       <LineId Id="37" Count="16" />
       <LineId Id="18" Count="0" />
       <LineId Id="20" Count="0" />
@@ -303,10 +373,10 @@ END_VAR
       <LineId Id="26" Count="0" />
       <LineId Id="30" Count="0" />
     </LineIds>
-    <LineIds Name="ClearLinkEIP.reset">
+    <LineIds Name="ClearLinkMC.reset">
       <LineId Id="5" Count="0" />
     </LineIds>
-    <LineIds Name="ClearLinkEIP.sequence">
+    <LineIds Name="ClearLinkMC.sequence">
       <LineId Id="110" Count="6" />
       <LineId Id="136" Count="0" />
       <LineId Id="121" Count="1" />
@@ -314,8 +384,14 @@ END_VAR
       <LineId Id="137" Count="0" />
       <LineId Id="48" Count="0" />
     </LineIds>
-    <LineIds Name="ClearLinkEIP.stop">
+    <LineIds Name="ClearLinkMC.stop">
       <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="ClearLinkMC.TargetPosition.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="ClearLinkMC.TargetPosition.Set">
+      <LineId Id="2" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>

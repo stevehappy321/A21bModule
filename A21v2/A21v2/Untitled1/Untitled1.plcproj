@@ -41,22 +41,32 @@
     <Compile Include="DUTs\Insertion\Drives\AirPiston.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\Insertion\Drives\ClearLinkEIP.TcPOU">
+    <Compile Include="DUTs\Insertion\Drives\ClearLinkMC.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\Insertion\Drives\SimpleAirPiston.TcPOU">
+    <Compile Include="DUTs\Insertion\Drives\SimplePiston.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Insertion\Insertion.TcPOU">
+      <SubType>Code</SubType>
+      <LinkAlways>true</LinkAlways>
+    </Compile>
+    <Compile Include="DUTs\Insertion\Prototypes\FBA_Drive.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Insertion\Prototypes\I_ContinuousDrive.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Insertion\Prototypes\I_Drive.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Insertion\Prototypes\I_PositionalDrive.TcIO">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DUTs\Insertion\PneumaticInsertionEIP.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\Insertion\PROTOTYPE\A_ContinuousDrive.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DUTs\Insertion\PROTOTYPE\A_EncodedDrive.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DUTs\Insertion\PROTOTYPE\Insertion.TcPOU">
+    <Compile Include="DUTs\Insertion\Prototypes\I_EncodedDrive.TcIO">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DUTs\Insertion\SuctionPad.TcDUT">
@@ -66,9 +76,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DUTs\Machines\StrapMachine.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DUTs\Machines\StrapMachine_1.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DUTs\Material Holders\MaterialStorage.TcPOU">
@@ -100,6 +107,9 @@
     <Compile Include="POUs\SetSuctions.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\SetupHardware.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="POUs\Utility Functions\CEILING.TcPOU">
       <SubType>Code</SubType>
     </Compile>
@@ -112,7 +122,7 @@
     <Folder Include="DUTs\Enums" />
     <Folder Include="DUTs\Insertion" />
     <Folder Include="DUTs\Insertion\Drives" />
-    <Folder Include="DUTs\Insertion\PROTOTYPE" />
+    <Folder Include="DUTs\Insertion\Prototypes" />
     <Folder Include="DUTs\Machines" />
     <Folder Include="DUTs\Material Holders" />
     <Folder Include="GVLs" />
@@ -146,19 +156,19 @@
   <ProjectExtensions>
     <PlcProjectOptions>
       <XmlArchive>
-  <Data>
-    <o xml:space="preserve" t="OptionKey">
+        <Data>
+          <o xml:space="preserve" t="OptionKey">
       <v n="Name">"&lt;ProjectRoot&gt;"</v>
       <d n="SubKeys" t="Hashtable" />
       <d n="Values" t="Hashtable" />
     </o>
-  </Data>
-  <TypeList>
-    <Type n="Hashtable">System.Collections.Hashtable</Type>
-    <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
-    <Type n="String">System.String</Type>
-  </TypeList>
-</XmlArchive>
+        </Data>
+        <TypeList>
+          <Type n="Hashtable">System.Collections.Hashtable</Type>
+          <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
+          <Type n="String">System.String</Type>
+        </TypeList>
+      </XmlArchive>
     </PlcProjectOptions>
   </ProjectExtensions>
 </Project>

@@ -6,8 +6,7 @@ VAR_OUTPUT
 	forceStop AT %Q* : BOOL;
 	resetSignal AT %Q* : BOOL;
 	
-	taskID AT %Q* : INT;
-	parameters AT %Q* : ARRAY[1..3] OF INT;
+	taskID : INT;
 	
 	outputs AT %Q* : ARRAY[1..50] OF INT;
 	inputs AT %I* : ARRAY[1..20] OF INT;
@@ -15,10 +14,10 @@ VAR_OUTPUT
 	completedTask AT %I* : INT;
 	tool AT %I* : SectionEnum;
 	
+	operational : BOOL;
 	reserved : BOOL;
 	reservation : SectionEnum := SectionEnum.NULL_SECTION;
 	
-	operational : BOOL;
 	ready : BOOL;
 	//busy : BOOL;
 	done : BOOL;
@@ -27,16 +26,16 @@ VAR_OUTPUT
 END_VAR
 VAR
 	step : (SEND_COMMAND, WAIT);
-END_VAR
-VAR_STAT CONSTANT	
-	emptyRegister : ARRAY[0..2] OF INT := [3(0)];
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[IF completedTask = taskID THEN
+      <ST><![CDATA[taskID := outputs[1];
+
+IF completedTask = taskID THEN
 	done := TRUE;
 END_IF]]></ST>
     </Implementation>
-    <Method Name="command" Id="{6180ebeb-6fb3-4e45-8d5f-010642c60433}">
+    <Folder Name="Obsolete" Id="{866be447-1963-4a08-8cb7-28bb42cb4605}" />
+    <Method Name="command" Id="{6180ebeb-6fb3-4e45-8d5f-010642c60433}" FolderPath="Obsolete\">
       <Declaration><![CDATA[METHOD command : BOOL
 VAR_INPUT
 	task : INT;
@@ -61,6 +60,16 @@ END_VAR
 	outputs[3] := param2;
 	outputs[4] := param3;
 //END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="commandEx" Id="{55c20752-492d-4e9a-a647-f2d920916f43}">
+      <Declaration><![CDATA[METHOD commandEx : BOOL
+VAR_INPUT
+	newOutputs : REFERENCE TO ARRAY[1..50] OF INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[outputs := newOutputs;]]></ST>
       </Implementation>
     </Method>
     <Method Name="eStop" Id="{974b2363-087f-4f71-a37b-fdee6dacfa65}">
@@ -112,8 +121,6 @@ END_IF]]></ST>
       <Implementation>
         <ST><![CDATA[resetSignal := TRUE;
 done := FALSE;
-taskID := 0;
-parameters := emptyRegister;
 
 MEMSET(ADR(outputs), 0, SIZEOF(outputs));
 
@@ -134,43 +141,8 @@ END_VAR
 resume := NOT error AND errId = 0;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="setCommandAndWait" Id="{b4d5330c-16b1-46ee-86e8-d062da45d238}">
+    <Method Name="setCommandAndWait" Id="{861e79f4-9d73-4326-81bf-3ad217fcca64}">
       <Declaration><![CDATA[METHOD setCommandAndWait : BOOL
-VAR_INPUT
-	task, param1, param2, param3 : INT;
-END_VAR
-(*
-this method sends a command and waits for completion
-MAKE SURE TO RESERVE THE ROBOT FIRST
-*)]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[CASE step OF
-	SEND_COMMAND: //send command
-		command(
-			task:= task, 
-			param1:= param1, 
-			param2:= param2, 
-			param3:= param3);
-		
-		step := WAIT;
-		
-	WAIT:
-		IF done THEN
-			release(reservation);
-			
-			IF NOT reset() THEN
-				RETURN;
-			END_IF
-			
-			step := 0;
-			
-			setCommandAndWait := TRUE;
-		END_IF
-END_CASE]]></ST>
-      </Implementation>
-    </Method>
-    <Method Name="setParamsAndWait" Id="{861e79f4-9d73-4326-81bf-3ad217fcca64}">
-      <Declaration><![CDATA[METHOD setParamsAndWait : BOOL
 VAR_INPUT
 	newOutputs : REFERENCE TO ARRAY[1..50] OF INT;
 END_VAR]]></Declaration>
@@ -178,19 +150,19 @@ END_VAR]]></Declaration>
         <ST><![CDATA[outputs := newOutputs;
 
 IF done THEN
-	//release(); //let each section manually release
-	
+	(*	
 	IF NOT reset() THEN
 		RETURN;
 	END_IF
-	
+	*)
 	step := 0;
 
-	setParamsAndWait := TRUE;
+	setCommandAndWait := TRUE;
 END_IF]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="Robot">
+      <LineId Id="82" Count="1" />
       <LineId Id="47" Count="0" />
       <LineId Id="52" Count="0" />
       <LineId Id="51" Count="0" />
@@ -204,6 +176,9 @@ END_IF]]></ST>
       <LineId Id="67" Count="2" />
       <LineId Id="71" Count="0" />
       <LineId Id="49" Count="0" />
+    </LineIds>
+    <LineIds Name="Robot.commandEx">
+      <LineId Id="5" Count="0" />
     </LineIds>
     <LineIds Name="Robot.eStop">
       <LineId Id="5" Count="1" />
@@ -224,9 +199,7 @@ END_IF]]></ST>
     <LineIds Name="Robot.reset">
       <LineId Id="14" Count="0" />
       <LineId Id="27" Count="0" />
-      <LineId Id="31" Count="0" />
-      <LineId Id="30" Count="0" />
-      <LineId Id="33" Count="0" />
+      <LineId Id="34" Count="0" />
       <LineId Id="32" Count="0" />
       <LineId Id="19" Count="0" />
       <LineId Id="15" Count="0" />
@@ -239,11 +212,11 @@ END_IF]]></ST>
       <LineId Id="6" Count="0" />
     </LineIds>
     <LineIds Name="Robot.setCommandAndWait">
-      <LineId Id="111" Count="21" />
-      <LineId Id="5" Count="0" />
-    </LineIds>
-    <LineIds Name="Robot.setParamsAndWait">
-      <LineId Id="35" Count="11" />
+      <LineId Id="53" Count="2" />
+      <LineId Id="65" Count="0" />
+      <LineId Id="58" Count="2" />
+      <LineId Id="66" Count="0" />
+      <LineId Id="62" Count="2" />
       <LineId Id="28" Count="0" />
     </LineIds>
   </POU>
