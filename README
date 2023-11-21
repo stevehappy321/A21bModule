@@ -1,3 +1,5 @@
 TwinCAT 3 XAE is strongly recommended for accessing source code
 
 PLC programs are naturally looped, no infinite WHILE loop required
+
+Repository can be downloaded form Github or https://minhaskamal.github.io/DownGit/#/home
