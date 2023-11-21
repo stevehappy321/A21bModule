@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
   <POU Name="WoodBunkTable" Id="{dc0f3bd0-85c7-41ea-839e-cecdb56a654c}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK WoodBunkTable EXTENDS MaterialStorage
+    <Declaration><![CDATA[FUNCTION_BLOCK WoodBunkTable EXTENDS MaterialHolder
 VAR_OUTPUT
 	occupied AT %I* : ARRAY[1..numSlots] OF BOOL; //sensors must turn HIGH before bunk arrives, and turn LOW after bunk leaves
 END_VAR
@@ -12,11 +12,13 @@ VAR_STAT CONSTANT
 	numSlots : INT := 10;
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[FOR i:=1 TO numSlots BY 1 DO
+      <ST><![CDATA[(*
+FOR i:=1 TO numSlots BY 1 DO
 	IF NOT occupied[i] THEN
 		slots[i] := '';
 	END_IF
-END_FOR]]></ST>
+END_FOR
+*)]]></ST>
     </Implementation>
     <Method Name="autofill" Id="{0b1558f0-abe0-46a4-ba25-2d74dda1538c}">
       <Declaration><![CDATA[METHOD autofill : BOOL
@@ -155,10 +157,12 @@ END_IF]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="WoodBunkTable">
+      <LineId Id="33" Count="0" />
       <LineId Id="9" Count="0" />
       <LineId Id="19" Count="0" />
       <LineId Id="21" Count="1" />
       <LineId Id="20" Count="0" />
+      <LineId Id="32" Count="0" />
     </LineIds>
     <LineIds Name="WoodBunkTable.autofill">
       <LineId Id="5" Count="0" />

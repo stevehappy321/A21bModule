@@ -6,20 +6,19 @@ VAR_OUTPUT
 	forceStop AT %Q* : BOOL;
 	resetSignal AT %Q* : BOOL;
 	
-	taskID : INT;
-	
 	outputs AT %Q* : ARRAY[1..50] OF INT;
 	inputs AT %I* : ARRAY[1..20] OF INT;
 	
-	completedTask AT %I* : INT;
-	tool AT %I* : SectionEnum;
+	taskID : INT;
+	
+	completedTask : INT;
+	tool : SectionEnum;
 	
 	operational : BOOL;
 	reserved : BOOL;
 	reservation : SectionEnum := SectionEnum.NULL_SECTION;
 	
 	ready : BOOL;
-	//busy : BOOL;
 	done : BOOL;
 	error : BOOL;
 	errId : DINT;
@@ -29,6 +28,8 @@ VAR
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[taskID := outputs[1];
+
+completedTask := inputs[1];
 
 IF completedTask = taskID THEN
 	done := TRUE;
@@ -119,15 +120,16 @@ END_IF]]></ST>
     <Method Name="reset" Id="{89eb6678-027f-45a1-a94f-ae23b58ecc5c}">
       <Declaration><![CDATA[METHOD reset : BOOL]]></Declaration>
       <Implementation>
-        <ST><![CDATA[resetSignal := TRUE;
-done := FALSE;
+        <ST><![CDATA[//resetSignal := TRUE;
+//done := FALSE;
 
 MEMSET(ADR(outputs), 0, SIZEOF(outputs));
-
+(*
 IF ready AND completedTask = 0 THEN
 	resetSignal := FALSE;
 	reset := TRUE;
-END_IF]]></ST>
+END_IF
+*)]]></ST>
       </Implementation>
     </Method>
     <Method Name="resume" Id="{1d12dfe1-c8ff-4b57-9b31-0d4b08a72b4a}">
@@ -154,15 +156,18 @@ IF done THEN
 	IF NOT reset() THEN
 		RETURN;
 	END_IF
-	*)
+	
 	step := 0;
-
+	*)
 	setCommandAndWait := TRUE;
 END_IF]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="Robot">
-      <LineId Id="82" Count="1" />
+      <LineId Id="82" Count="0" />
+      <LineId Id="120" Count="0" />
+      <LineId Id="110" Count="0" />
+      <LineId Id="83" Count="0" />
       <LineId Id="47" Count="0" />
       <LineId Id="52" Count="0" />
       <LineId Id="51" Count="0" />
@@ -205,6 +210,7 @@ END_IF]]></ST>
       <LineId Id="15" Count="0" />
       <LineId Id="18" Count="0" />
       <LineId Id="16" Count="1" />
+      <LineId Id="35" Count="0" />
     </LineIds>
     <LineIds Name="Robot.resume">
       <LineId Id="5" Count="0" />

@@ -53,7 +53,7 @@ CASE mode OF
 			pulseRequest := 0;
 			mode := HOLD;
 			
-		ELSIF NOT busy THEN
+		ELSIF NOT Busy THEN
 			A :=  position < targetPos;
 			(*
 			2 options to traverse to a target position:
@@ -102,7 +102,7 @@ END_VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[]]></ST>
+          <ST><![CDATA[CurrentPosition := position;]]></ST>
         </Implementation>
       </Get>
       <Set Name="Set" Id="{cba03562-eb55-4743-94dc-7cf01962b58c}">
@@ -275,7 +275,7 @@ VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[IF hlfb > -9999 THEN //servo is active
+        <ST><![CDATA[IF Busy THEN //servo is active
 	IF A THEN //positive direction
 		position := position + (distancePerPulse * pulse);
 	ELSE //negative direction

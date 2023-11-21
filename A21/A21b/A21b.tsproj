@@ -128,7 +128,7 @@
 		</System>
 		<Plc>
 			<Project GUID="{E9571829-45C8-446A-8EB4-A7C28CCAD583}" Name="Untitled1" PrjFilePath="Untitled1\Untitled1.plcproj" TmcFilePath="Untitled1\Untitled1.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{9747974B-AD5B-4F1E-BFF2-A0585879227B}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{9B111690-6ACB-C965-AC76-B1BE7E8EBDBD}">
 					<Name>Untitled1 Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
@@ -274,6 +274,80 @@
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
+							<Name>MAIN.insertionLeft.slider.contact</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionLeft.slider.outerLimit</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionLeft.slider.home</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionLeft.slider.innerLimit</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionLeft.slider.hlfb</Name>
+							<Comment><![CDATA[high level feedback, if -9999 then servo is idle]]></Comment>
+							<Type>REAL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionLeft.screw.contact</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionLeft.screw.outerLimit</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionLeft.screw.home</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionLeft.screw.innerLimit</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionRight.slider.contact</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionRight.slider.outerLimit</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionRight.slider.home</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionRight.slider.innerLimit</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionRight.slider.hlfb</Name>
+							<Comment><![CDATA[high level feedback, if -9999 then servo is idle]]></Comment>
+							<Type>REAL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionRight.screw.contact</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionRight.screw.outerLimit</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionRight.screw.home</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionRight.screw.innerLimit</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
 							<Name>MAIN.insertionBottom.extended</Name>
 							<Type>BOOL</Type>
 						</Var>
@@ -357,80 +431,6 @@
 							<Name>MAIN.toolStorageRight.pos2WoodBunkEOAT</Name>
 							<Type>BOOL</Type>
 						</Var>
-						<Var>
-							<Name>MAIN.insertionLeft.slider.contact</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionLeft.slider.outerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionLeft.slider.home</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionLeft.slider.innerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionLeft.slider.hlfb</Name>
-							<Comment><![CDATA[high level feedback, if -9999 then servo is idle]]></Comment>
-							<Type>REAL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionLeft.screw.contact</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionLeft.screw.outerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionLeft.screw.home</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionLeft.screw.innerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionRight.slider.contact</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionRight.slider.outerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionRight.slider.home</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionRight.slider.innerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionRight.slider.hlfb</Name>
-							<Comment><![CDATA[high level feedback, if -9999 then servo is idle]]></Comment>
-							<Type>REAL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionRight.screw.contact</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionRight.screw.outerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionRight.screw.home</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionRight.screw.innerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
 					</Vars>
 					<Vars VarGrpType="2" AreaNo="1">
 						<Name>PlcTask Outputs</Name>
@@ -495,6 +495,48 @@
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
+							<Name>MAIN.insertionLeft.slider.pulse</Name>
+							<Comment><![CDATA[num pulses]]></Comment>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionLeft.slider.outputRegister</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionLeft.slider.brakeRelease</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionLeft.screw.valveExtend</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionLeft.screw.valveRetract</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionRight.slider.pulse</Name>
+							<Comment><![CDATA[num pulses]]></Comment>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionRight.slider.outputRegister</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionRight.slider.brakeRelease</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionRight.screw.valveExtend</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertionRight.screw.valveRetract</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
 							<Name>MAIN.insertionBottom.pistonExtend</Name>
 							<Type>BOOL</Type>
 						</Var>
@@ -544,48 +586,6 @@
 						</Var>
 						<Var>
 							<Name>MAIN.rightSuction[4].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionLeft.slider.pulse</Name>
-							<Comment><![CDATA[num pulses]]></Comment>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionLeft.slider.outputRegister</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionLeft.slider.brakeRelease</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionLeft.screw.valveExtend</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionLeft.screw.valveRetract</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionRight.slider.pulse</Name>
-							<Comment><![CDATA[num pulses]]></Comment>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionRight.slider.outputRegister</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionRight.slider.brakeRelease</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionRight.screw.valveExtend</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionRight.screw.valveRetract</Name>
 							<Type>BOOL</Type>
 						</Var>
 					</Vars>
@@ -2097,10 +2097,10 @@
 				<Link VarA="PlcTask Outputs^MAIN.insertionLeft.screw.valveRetract" VarB="Channel 6^Output"/>
 				<Link VarA="PlcTask Outputs^MAIN.insertionRight.screw.valveExtend" VarB="Channel 15^Output"/>
 				<Link VarA="PlcTask Outputs^MAIN.insertionRight.screw.valveRetract" VarB="Channel 16^Output"/>
-				<Link VarA="PlcTask Outputs^MAIN.leftSuction[1].enable" VarB="Channel 10^Output"/>
-				<Link VarA="PlcTask Outputs^MAIN.leftSuction[2].enable" VarB="Channel 9^Output"/>
-				<Link VarA="PlcTask Outputs^MAIN.leftSuction[3].enable" VarB="Channel 8^Output"/>
-				<Link VarA="PlcTask Outputs^MAIN.leftSuction[4].enable" VarB="Channel 7^Output"/>
+				<Link VarA="PlcTask Outputs^MAIN.leftSuction[1].enable" VarB="Channel 7^Output"/>
+				<Link VarA="PlcTask Outputs^MAIN.leftSuction[2].enable" VarB="Channel 8^Output"/>
+				<Link VarA="PlcTask Outputs^MAIN.leftSuction[3].enable" VarB="Channel 9^Output"/>
+				<Link VarA="PlcTask Outputs^MAIN.leftSuction[4].enable" VarB="Channel 10^Output"/>
 			</OwnerB>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^EK1200^JUNC_A21^C4^C4_O3">
 				<Link VarA="PlcTask Outputs^MAIN.bottomSuction[1].enable" VarB="Channel 7^Output"/>
@@ -2118,10 +2118,10 @@
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^EK1200^JUNC_A21^SB01">
 				<Link VarA="PlcTask Inputs^MAIN.insertionLeft.screw.home" VarB="Channel 11^Input"/>
 				<Link VarA="PlcTask Inputs^MAIN.insertionLeft.screw.innerLimit" VarB="Channel 12^Input"/>
-				<Link VarA="PlcTask Inputs^MAIN.leftSuction[1].occupied" VarB="Channel 16^Input"/>
-				<Link VarA="PlcTask Inputs^MAIN.leftSuction[2].occupied" VarB="Channel 15^Input"/>
-				<Link VarA="PlcTask Inputs^MAIN.leftSuction[3].occupied" VarB="Channel 14^Input"/>
-				<Link VarA="PlcTask Inputs^MAIN.leftSuction[4].occupied" VarB="Channel 13^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.leftSuction[1].occupied" VarB="Channel 13^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.leftSuction[2].occupied" VarB="Channel 14^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.leftSuction[3].occupied" VarB="Channel 15^Input"/>
+				<Link VarA="PlcTask Inputs^MAIN.leftSuction[4].occupied" VarB="Channel 16^Input"/>
 				<Link VarA="PlcTask Inputs^MAIN.stagingTableLeft.occupied[10]" VarB="Channel 10^Input"/>
 				<Link VarA="PlcTask Inputs^MAIN.stagingTableLeft.occupied[1]" VarB="Channel 1^Input"/>
 				<Link VarA="PlcTask Inputs^MAIN.stagingTableLeft.occupied[2]" VarB="Channel 2^Input"/>

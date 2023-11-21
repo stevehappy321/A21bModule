@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <GVL Name="Hardware" Id="{001e16b0-c959-4c2c-800c-e6b7ef5ebc23}">
+    <Declaration><![CDATA[//{attribute 'qualified_only'}
+VAR_GLOBAL
+	benderLeft : FoldingMachine;
+	
+	robotLeft, robotRight : Robot;
+	
+	skidLeft, skidRight : SkidMagazine;
+	magazineLeft, magazineRight : SkidMagazine;
+	
+	wrapper : WrapMachine;
+	overhead : STRING;
+	
+	horizontalDriveLeft, horizontalDriveRight : ServoNC;
+	verticalDriveLeft, verticalDriveRight : ClearLinkMC;
+	insertionBottom : SimplePiston;
+	
+	innerSuctions, outerSuctions : ARRAY[Surface.TOP_LEFT..Surface.BOTTOM_RIGHT] OF SuctionPad;
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

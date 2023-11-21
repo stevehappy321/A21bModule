@@ -52,15 +52,6 @@
 			</Properties>
 		</DataType>
 		<DataType>
-			<Name GUID="{46C950DA-5D6E-6516-D69B-F24F38546D38}" IecBaseType="true" AutoDeleteType="true">ARRAY [1..16] OF BOOL</Name>
-			<BitSize>128</BitSize>
-			<BaseType GUID="{18071995-0000-0000-0000-000000000030}">BOOL</BaseType>
-			<ArrayInfo>
-				<LBound>1</LBound>
-				<Elements>16</Elements>
-			</ArrayInfo>
-		</DataType>
-		<DataType>
 			<Name GUID="{CBC83B73-B816-4597-A9E5-2B03263CA131}" Namespace="MC" TcBaseType="true" HideType="true" IecDeclaration="DWORD;">NCTOPLC_AXIS_REF_STATE</Name>
 			<BitSize>32</BitSize>
 			<SubItem>
@@ -1060,374 +1051,369 @@ External Setpoint Generation:
 		</System>
 		<Plc>
 			<Project GUID="{9EBFE716-1EFF-4899-8C57-2D56B56C6F29}" Name="Untitled1" PrjFilePath="Untitled1\Untitled1.plcproj" TmcFilePath="Untitled1\Untitled1.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{65354BC1-6BEA-A8E9-A359-CE26B0A19834}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{A6153DDA-C296-A080-6D71-A76D69AC3BE0}">
 					<Name>Untitled1 Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
 						<Name>PlcTask Inputs</Name>
 						<Var>
-							<Name>MAIN.benderLeft.ready</Name>
+							<Name>MAIN.insertionLeft.contact</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.benderLeft.busy</Name>
+							<Name>MAIN.insertionRight.contact</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.benderLeft.done</Name>
+							<Name>Hardware.benderLeft.ready</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.robotLeft.inputs</Name>
+							<Name>Hardware.benderLeft.busy</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.benderLeft.done</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.robotLeft.inputs</Name>
 							<Type GUID="{FF46E77C-A1C9-160B-C563-9524E562D7F4}">ARRAY [1..20] OF INT</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.robotLeft.completedTask</Name>
+							<Name>Hardware.robotLeft.completedTask</Name>
 							<Type>INT</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.robotLeft.tool</Name>
+							<Name>Hardware.robotLeft.tool</Name>
 							<Type GUID="{5E996C28-72DA-BEF8-0B07-75B609163835}">SectionEnum</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.robotRight.inputs</Name>
+							<Name>Hardware.robotRight.inputs</Name>
 							<Type GUID="{FF46E77C-A1C9-160B-C563-9524E562D7F4}">ARRAY [1..20] OF INT</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.robotRight.completedTask</Name>
+							<Name>Hardware.robotRight.completedTask</Name>
 							<Type>INT</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.robotRight.tool</Name>
+							<Name>Hardware.robotRight.tool</Name>
 							<Type GUID="{5E996C28-72DA-BEF8-0B07-75B609163835}">SectionEnum</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.skidLeft.empty</Name>
-							<Comment><![CDATA[units : ARRAY[0..GVL.maxQueue] OF INT;]]></Comment>
-							<Type GUID="{46C950DA-5D6E-6516-D69B-F24F38546D38}">ARRAY [1..16] OF BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.skidRight.empty</Name>
-							<Comment><![CDATA[units : ARRAY[0..GVL.maxQueue] OF INT;]]></Comment>
-							<Type GUID="{46C950DA-5D6E-6516-D69B-F24F38546D38}">ARRAY [1..16] OF BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.magazineLeft.empty</Name>
-							<Comment><![CDATA[units : ARRAY[0..GVL.maxQueue] OF INT;]]></Comment>
-							<Type GUID="{46C950DA-5D6E-6516-D69B-F24F38546D38}">ARRAY [1..16] OF BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.magazineRight.empty</Name>
-							<Comment><![CDATA[units : ARRAY[0..GVL.maxQueue] OF INT;]]></Comment>
-							<Type GUID="{46C950DA-5D6E-6516-D69B-F24F38546D38}">ARRAY [1..16] OF BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.wrapper.error</Name>
+							<Name>Hardware.skidLeft.inPosition1</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.wrapper.ready</Name>
+							<Name>Hardware.skidLeft.inPosition2</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.wrapper.busy</Name>
+							<Name>Hardware.skidRight.inPosition1</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.wrapper.home</Name>
+							<Name>Hardware.skidRight.inPosition2</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.insertionBottom.contact</Name>
+							<Name>Hardware.magazineLeft.inPosition1</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.insertionBottom.home</Name>
+							<Name>Hardware.magazineLeft.inPosition2</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.insertionBottom.outerLimit</Name>
+							<Name>Hardware.magazineRight.inPosition1</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.insertionBottom.innerLimit</Name>
+							<Name>Hardware.magazineRight.inPosition2</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.insertionBottom.done</Name>
+							<Name>Hardware.wrapper.error</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.innerSuctions[4].readback</Name>
+							<Name>Hardware.wrapper.ready</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.innerSuctions[5].readback</Name>
+							<Name>Hardware.wrapper.busy</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.innerSuctions[6].readback</Name>
+							<Name>Hardware.wrapper.home</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.innerSuctions[7].readback</Name>
+							<Name>Hardware.horizontalDriveLeft.contactSensor</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.outerSuctions[4].readback</Name>
+							<Name>Hardware.horizontalDriveLeft.outerLimit</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.outerSuctions[5].readback</Name>
+							<Name>Hardware.horizontalDriveLeft.home</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.outerSuctions[6].readback</Name>
+							<Name>Hardware.horizontalDriveLeft.innerLimit</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.outerSuctions[7].readback</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionLeft.slider.home</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionLeft.slider.outerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionLeft.slider.innerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionLeft.slider.axis.NcToPlc</Name>
+							<Name>Hardware.horizontalDriveLeft.axis.NcToPlc</Name>
 							<Type GUID="{10036166-C9D3-404B-BDD3-323034AAA7F4}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.insertionLeft.screw.contact</Name>
+							<Name>Hardware.horizontalDriveRight.contactSensor</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.insertionLeft.screw.home</Name>
+							<Name>Hardware.horizontalDriveRight.outerLimit</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.insertionLeft.screw.outerLimit</Name>
+							<Name>Hardware.horizontalDriveRight.home</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.insertionLeft.screw.innerLimit</Name>
+							<Name>Hardware.horizontalDriveRight.innerLimit</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.insertionLeft.screw.done</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionRight.slider.home</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionRight.slider.outerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionRight.slider.innerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionRight.slider.axis.NcToPlc</Name>
+							<Name>Hardware.horizontalDriveRight.axis.NcToPlc</Name>
 							<Type GUID="{10036166-C9D3-404B-BDD3-323034AAA7F4}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.insertionRight.screw.contact</Name>
+							<Name>Hardware.verticalDriveLeft.contactSensor</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.insertionRight.screw.home</Name>
+							<Name>Hardware.verticalDriveLeft.outerLimit</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.insertionRight.screw.outerLimit</Name>
+							<Name>Hardware.verticalDriveLeft.home</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.insertionRight.screw.innerLimit</Name>
+							<Name>Hardware.verticalDriveLeft.innerLimit</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.insertionRight.screw.done</Name>
+							<Name>Hardware.verticalDriveLeft.hlfb</Name>
+							<Comment><![CDATA[high level feedback, if -9999 then servo is idle]]></Comment>
+							<Type>REAL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveRight.contactSensor</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveRight.outerLimit</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveRight.home</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveRight.innerLimit</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveRight.hlfb</Name>
+							<Comment><![CDATA[high level feedback, if -9999 then servo is idle]]></Comment>
+							<Type>REAL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.insertionBottom.extended</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.insertionBottom.retracted</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.innerSuctions[4].readback</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.innerSuctions[5].readback</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.innerSuctions[6].readback</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.innerSuctions[7].readback</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.outerSuctions[4].readback</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.outerSuctions[5].readback</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.outerSuctions[6].readback</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.outerSuctions[7].readback</Name>
 							<Type>BOOL</Type>
 						</Var>
 					</Vars>
 					<Vars VarGrpType="2" AreaNo="1">
 						<Name>PlcTask Outputs</Name>
 						<Var>
-							<Name>MAIN.benderLeft.enable</Name>
+							<Name>Hardware.benderLeft.enable</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.benderLeft.reset</Name>
+							<Name>Hardware.benderLeft.reset</Name>
 							<Comment><![CDATA[execute AT %Q* : BOOL;]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.benderLeft.foldingPositions</Name>
+							<Name>Hardware.benderLeft.foldingPositions</Name>
 							<Type GUID="{2982B12D-8728-3DC7-15E9-7EFAACC33702}">ARRAY [0..1] OF INT</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.robotLeft.forceStop</Name>
+							<Name>Hardware.robotLeft.forceStop</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.robotLeft.resetSignal</Name>
+							<Name>Hardware.robotLeft.resetSignal</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.robotLeft.taskID</Name>
+							<Name>Hardware.robotLeft.taskID</Name>
 							<Type>INT</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.robotLeft.parameters</Name>
+							<Name>Hardware.robotLeft.parameters</Name>
 							<Type GUID="{BA256C6A-CD79-7464-5392-B9A2F61BB830}">ARRAY [1..3] OF INT</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.robotLeft.outputs</Name>
+							<Name>Hardware.robotLeft.outputs</Name>
 							<Type GUID="{3959AF2B-712F-4776-B31A-F615A7A6D72D}">ARRAY [1..50] OF INT</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.robotRight.forceStop</Name>
+							<Name>Hardware.robotRight.forceStop</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.robotRight.resetSignal</Name>
+							<Name>Hardware.robotRight.resetSignal</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.robotRight.taskID</Name>
+							<Name>Hardware.robotRight.taskID</Name>
 							<Type>INT</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.robotRight.parameters</Name>
+							<Name>Hardware.robotRight.parameters</Name>
 							<Type GUID="{BA256C6A-CD79-7464-5392-B9A2F61BB830}">ARRAY [1..3] OF INT</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.robotRight.outputs</Name>
+							<Name>Hardware.robotRight.outputs</Name>
 							<Type GUID="{3959AF2B-712F-4776-B31A-F615A7A6D72D}">ARRAY [1..50] OF INT</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.wrapper.rotations</Name>
+							<Name>Hardware.wrapper.rotations</Name>
 							<Type>INT</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.wrapper.execute</Name>
+							<Name>Hardware.wrapper.execute</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.wrapper.enable</Name>
+							<Name>Hardware.wrapper.enable</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.wrapper.reset</Name>
+							<Name>Hardware.wrapper.reset</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.insertionBottom.enable</Name>
-							<Comment><![CDATA[enable + pulses]]></Comment>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionBottom.A</Name>
-							<Comment><![CDATA[direction (F = inwards, T = outwards)]]></Comment>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionBottom.B</Name>
-							<Comment><![CDATA[home bit]]></Comment>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionBottom.brakeRelease</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.innerSuctions[4].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.innerSuctions[5].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.innerSuctions[6].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.innerSuctions[7].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.outerSuctions[4].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.outerSuctions[5].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.outerSuctions[6].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.outerSuctions[7].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionLeft.slider.axis.PlcToNc</Name>
+							<Name>Hardware.horizontalDriveLeft.axis.PlcToNc</Name>
 							<Type GUID="{63A84524-72E3-41C8-BEAB-4CCE44690A13}" Namespace="MC">PLCTONC_AXIS_REF</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.insertionLeft.screw.enable</Name>
-							<Comment><![CDATA[enable + pulses]]></Comment>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionLeft.screw.A</Name>
-							<Comment><![CDATA[direction (F = inwards, T = outwards)]]></Comment>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionLeft.screw.B</Name>
-							<Comment><![CDATA[home bit]]></Comment>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionLeft.screw.brakeRelease</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.insertionRight.slider.axis.PlcToNc</Name>
+							<Name>Hardware.horizontalDriveRight.axis.PlcToNc</Name>
 							<Type GUID="{63A84524-72E3-41C8-BEAB-4CCE44690A13}" Namespace="MC">PLCTONC_AXIS_REF</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.insertionRight.screw.enable</Name>
-							<Comment><![CDATA[enable + pulses]]></Comment>
+							<Name>Hardware.verticalDriveLeft.pulse</Name>
+							<Comment><![CDATA[num pulses]]></Comment>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveLeft.outputRegister</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveLeft.brakeRelease</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.insertionRight.screw.A</Name>
-							<Comment><![CDATA[direction (F = inwards, T = outwards)]]></Comment>
+							<Name>Hardware.verticalDriveRight.pulse</Name>
+							<Comment><![CDATA[num pulses]]></Comment>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveRight.outputRegister</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveRight.brakeRelease</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.insertionRight.screw.B</Name>
-							<Comment><![CDATA[home bit]]></Comment>
+							<Name>Hardware.insertionBottom.pistonExtend</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.insertionRight.screw.brakeRelease</Name>
+							<Name>Hardware.insertionBottom.pistonRetract</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.innerSuctions[4].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.innerSuctions[5].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.innerSuctions[6].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.innerSuctions[7].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.outerSuctions[4].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.outerSuctions[5].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.outerSuctions[6].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.outerSuctions[7].enable</Name>
 							<Type>BOOL</Type>
 						</Var>
 					</Vars>

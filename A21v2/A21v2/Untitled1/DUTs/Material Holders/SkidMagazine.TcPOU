@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="SkidMagazine" Id="{3fc5a5bc-3ce1-4dc4-bdfd-362d2487d9e5}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK SkidMagazine EXTENDS MaterialHolder
+VAR_OUTPUT
+	occupied : ARRAY[1..GVL.maxQueue] OF BOOL;
+	
+	inPosition1 AT %I* : BOOL;
+	inPosition2 AT %I* : BOOL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="setOccupancy" Id="{2d1b747f-ab4a-4753-9254-fde4bc0bb760}">
+      <Declaration><![CDATA[METHOD setOccupancy : BOOL
+VAR_INPUT
+	i : INT;
+	occupancy : BOOL;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[occupied[i] := occupancy;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="SkidMagazine">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="SkidMagazine.setOccupancy">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

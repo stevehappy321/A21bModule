@@ -23,8 +23,8 @@ VAR_OUTPUT
 END_VAR
 (*
 this FB encapsulates 2 drives into a generic insertion machine
-the 2 drives of the insertion should be called independently and externally
-Insertion instances should be called in the scope they are declared in
+the implementation of both drives should be called externally
+an Insertion instance should be called in the scope it is declared in
 *)]]></Declaration>
     <Implementation>
       <ST><![CDATA[softContact := slider.contact AND screw.contact; //temporary

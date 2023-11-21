@@ -5,24 +5,28 @@
 {attribute 'to_string'}
 TYPE WoodBunk : //21
 (
-	WDW20 := 1, //special top (wide) 
-	WDW22,
-
-	WDT20, //top
-	WDT22, 
-	WDT28,
-
-	WDB20, //bottom
-	WDB22, 
-	WDB28, 
-
+	NULL, 
+	
 	WDS08, //side
 	WDS10, 
 	WDS12, 
 	WDS14, 
-	WDS20, 
+	
+	WDS20, //side - same size as TOP
 	WDS22, 
 	WDS28, 
+	
+	WDB20, //bottom
+	WDB22, 
+	WDB28,
+
+	WDT20, //top
+	WDT22, 
+	WDT28,
+	
+	WDW20, //special top (wide) 
+	WDW22,
+	
 	
 	size
 	(*

@@ -29,22 +29,41 @@
     <Compile Include="DUTs\Enums\Homing.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\Enums\MaterialCodes.TcDUT">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="DUTs\Enums\SectionEnum.TcDUT">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DUTs\Enums\Surface.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\Insertion\ClampInsertion.TcPOU">
+    <Compile Include="DUTs\Insertion\Drives\ClearLinkMC.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\Insertion\ServoECAT.TcPOU">
+    <Compile Include="DUTs\Insertion\Drives\ServoNC.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\Insertion\TeknicEIP.TcPOU">
+    <Compile Include="DUTs\Insertion\Drives\SimplePiston.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Insertion\Drives\TeknicHW.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Insertion\Insertion.TcPOU">
+      <SubType>Code</SubType>
+      <LinkAlways>true</LinkAlways>
+    </Compile>
+    <Compile Include="DUTs\Insertion\Prototypes\FBA_Drive.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Insertion\Prototypes\I_ContinuousDrive.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Insertion\Prototypes\I_Drive.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Insertion\Prototypes\I_EncodedDrive.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Insertion\Prototypes\I_PositionalDrive.TcIO">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DUTs\Machines\FoldingMachine.TcPOU">
@@ -56,7 +75,10 @@
     <Compile Include="DUTs\Machines\WrapMachine.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\MaterialStorage.TcPOU">
+    <Compile Include="DUTs\Material Holders\MaterialHolder.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Material Holders\SkidMagazine.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DUTs\PositionMaterials.TcDUT">
@@ -69,13 +91,38 @@
       <SubType>Code</SubType>
       <LinkAlways>true</LinkAlways>
     </Compile>
+    <Compile Include="GVLs\Hardware.TcGVL">
+      <SubType>Code</SubType>
+      <LinkAlways>true</LinkAlways>
+    </Compile>
     <Compile Include="PlcTask.TcTTO">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\MAIN.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\MatchesMaterialType.TcPOU">
+    <Compile Include="POUs\Module Calls\CallHardwareModules.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Module Calls\SetSuctions.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Module Calls\SetupHardware.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Utility\CEILING.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Utility\IntegerBitAccess.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Utility\IntegerToBoolArray.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Utility\MatchesMaterialType.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Utility\WithinTolerance.TcPOU">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -83,8 +130,13 @@
     <Folder Include="DUTs" />
     <Folder Include="DUTs\Enums" />
     <Folder Include="DUTs\Insertion" />
+    <Folder Include="DUTs\Insertion\Drives" />
+    <Folder Include="DUTs\Insertion\Prototypes" />
     <Folder Include="DUTs\Machines" />
+    <Folder Include="DUTs\Material Holders" />
     <Folder Include="GVLs" />
+    <Folder Include="POUs\Module Calls" />
+    <Folder Include="POUs\Utility" />
     <Folder Include="VISUs" />
     <Folder Include="POUs" />
   </ItemGroup>

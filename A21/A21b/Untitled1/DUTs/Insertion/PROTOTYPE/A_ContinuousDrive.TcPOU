@@ -8,7 +8,7 @@ END_VAR
 VAR_OUTPUT
 	contact AT %I* : BOOL;
 	
-	outerLimit AT %I* : BOOL;
+	outerLimit AT %I* : BOOL; //SMC sliders do not use this
 	home AT %I* : BOOL;
 	innerLimit AT %I* : BOOL;
 	

@@ -2,11 +2,11 @@
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
   <POU Name="ClampInsertion" Id="{a8054870-0722-4545-9a54-faef9caca0df}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK ClampInsertion
-VAR_INPUT CONSTANT
+VAR_INPUT
 	enable : BOOL;
 END_VAR
 VAR_OUTPUT
-	slider : ServoECAT;
+	slider : ServoNC;
 	screw : TeknicEIP;
 	
 	status : BOOL;
@@ -59,7 +59,7 @@ VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[alignTarget := slider.moveAbsolute(targetPos:= targetPos, fault=> );]]></ST>
+        <ST><![CDATA[alignTarget := slider.moveAbsolute(newTarget:= targetPos);]]></ST>
       </Implementation>
     </Method>
     <Method Name="homingSequence" Id="{3e0fa2d6-3807-446a-a1fe-017650352eb9}">

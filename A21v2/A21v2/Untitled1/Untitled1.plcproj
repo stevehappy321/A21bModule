@@ -20,6 +20,9 @@
     <Compile Include="DUTs\A21ToolStorage.TcDUT">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DUTs\Bundle.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="DUTs\Enums\A21.TcDUT">
       <SubType>Code</SubType>
     </Compile>
@@ -63,13 +66,13 @@
     <Compile Include="DUTs\Insertion\Prototypes\I_PositionalDrive.TcIO">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\Insertion\PneumaticInsertionEIP.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="DUTs\Insertion\Prototypes\I_EncodedDrive.TcIO">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DUTs\Insertion\SuctionPad.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Interval.TcDUT">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DUTs\Machines\Robot.TcPOU">
@@ -78,10 +81,16 @@
     <Compile Include="DUTs\Machines\StrapMachine.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\Material Holders\MaterialStorage.TcPOU">
+    <Compile Include="DUTs\Material Holders\SkidMagazine.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Material Holders\MaterialHolder.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DUTs\Material Holders\WoodBunkTable.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\ONE_BIT.TcDUT">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DUTs\PositionMaterials.TcDUT">
@@ -98,22 +107,28 @@
     <Compile Include="PlcTask.TcTTO">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\CallHardwareModules.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="POUs\MAIN.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\SetSuctions.TcPOU">
+    <Compile Include="POUs\Module Calls\CallHardwareModules.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\SetupHardware.TcPOU">
+    <Compile Include="POUs\Module Calls\SetSuctions.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\Utility Functions\CEILING.TcPOU">
+    <Compile Include="POUs\Module Calls\SetupHardware.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\Utility Functions\WithinTolerance.TcPOU">
+    <Compile Include="POUs\Utility\CEILING.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Utility\IntegerBitAccess.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Utility\IntegerToBoolArray.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Utility\WithinTolerance.TcPOU">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -126,7 +141,8 @@
     <Folder Include="DUTs\Machines" />
     <Folder Include="DUTs\Material Holders" />
     <Folder Include="GVLs" />
-    <Folder Include="POUs\Utility Functions" />
+    <Folder Include="POUs\Module Calls" />
+    <Folder Include="POUs\Utility" />
     <Folder Include="VISUs" />
     <Folder Include="POUs" />
   </ItemGroup>

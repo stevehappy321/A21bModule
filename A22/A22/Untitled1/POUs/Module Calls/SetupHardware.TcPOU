@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="SetupHardware" Id="{ad70243f-26d6-4655-b24b-2a994d19bc18}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION SetupHardware : BOOL
+VAR
+	iCardboardSlot : Cardboard;
+	iCornerGuardSlot : CornerGuard;
+	
+	slotsArr : ARRAY[1..GVL.maxQueue] OF STRING;
+	
+	i : INT;
+	j : INT;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[FOR iCardboardSlot:=1 TO Cardboard.size-1 BY 1 DO
+	slotsArr[iCardboardSlot] := TO_STRING(iCardboardSlot);
+END_FOR
+skidLeft.setupSlots(slotsArr);
+skidRight.setupSlots(slotsArr);
+
+
+FOR iCornerGuardSlot:=1 TO CornerGuard.size-1 BY 1 DO
+	slotsArr[iCornerGuardSlot] := TO_STRING(iCornerGuardSlot);
+END_FOR
+magazineLeft.setupSlots(slotsArr);
+magazineRight.setupSlots(slotsArr);
+
+verticalDriveLeft.bEnable := 
+verticalDriveRight.bEnable := 
+horizontalDriveLeft.bEnable := 
+horizontalDriveRight.bEnable := 
+insertionBottom.bEnable := 
+TRUE;
+
+FOR i:=1 TO GVL.maxQueue BY 1 DO
+	magazineLeft.setOccupancy(i := i, occupancy := IntegerBitAccess( TO_ULINT(robotLeft.inputs[3]), TO_ULINT(i-1)) );
+	skidLeft.setOccupancy(i := i, occupancy := IntegerBitAccess( TO_ULINT(robotLeft.inputs[4]), TO_ULINT(i-1)) );
+	
+	magazineRight.setOccupancy(i := i, occupancy := IntegerBitAccess( TO_ULINT(robotRight.inputs[3]), TO_ULINT(i-1)) );
+	skidRight.setOccupancy(i := i, occupancy := IntegerBitAccess( TO_ULINT(robotRight.inputs[4]), TO_ULINT(i-1)) );
+END_FOR]]></ST>
+    </Implementation>
+    <LineIds Name="SetupHardware">
+      <LineId Id="155" Count="2" />
+      <LineId Id="182" Count="0" />
+      <LineId Id="181" Count="0" />
+      <LineId Id="159" Count="0" />
+      <LineId Id="161" Count="3" />
+      <LineId Id="183" Count="0" />
+      <LineId Id="166" Count="14" />
+      <LineId Id="53" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

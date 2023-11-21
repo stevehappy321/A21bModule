@@ -2,34 +2,45 @@
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
   <POU Name="MAIN" Id="{bb23f57b-bfaa-4807-862f-695fb779bd1d}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM MAIN
-VAR_INPUT
+VAR
+	//executeTrigger : R_TRIG;
 	execute : BOOL;
-	manualMode : BOOL;
+	manualStep : BOOL := TRUE;
+	manualSuction : BOOL := FALSE;
+	stop : BOOL;
 END_VAR
-VAR_OUTPUT
-	benderLeft : FoldingMachine;
+VAR //local types
+	insertionLeft, insertionRight : Insertion;
+END_VAR
+VAR //for testing only
+	latchLeft, latchRight : BOOL; //prevents sliders from overshooting the inner limit sensor
 	
-	robotLeft, robotRight : Robot;
+	suctionEnableTopLeft : BOOL;
+	suctionEnableTopRight : BOOL;
+	suctionEnableBottomLeft : BOOL;
+	suctionEnableBottomRight : BOOL;
 	
-	skidLeft, skidRight : MaterialStorage;
-	magazineLeft, magazineRight : MaterialStorage;
+	done : BOOL;
 	
-	wrapper : WrapMachine;
-	overhead : STRING;
-	
-	insertionLeft, insertionRight : ClampInsertion;	
-	insertionBottom : TeknicEIP;
-	
-	innerSuctions, outerSuctions : ARRAY[Surface.TOP_LEFT..Surface.BOTTOM_RIGHT] OF SuctionPad;
+	demoPairCAR : PositionMaterials := (
+		position := 0,
+		top := 'CAR20M',
+		left := 'CAR20S',
+		right := 'CAR20S',
+		bottom := 'CAR28S',
+		wrapRotations := 4);
+		
+	demoPairCOR : PositionMaterials := (
+		position := 0,
+		topLeft := 'COR48',
+		topRight := 'COR48',
+		bottomLeft := 'COR48',
+		bottomRight := 'COR48');
+		
+	demoHeight : REAL := 600; //600mm, 60cm
 END_VAR
 VAR
-	demoPairCAR : PositionMaterials;
-	demoPairCOR : PositionMaterials;
-	demoHeight : REAL := 600; //600mm, 60cm
-
 	robotLeftOutputs, robotRightOutputs : ARRAY[1..50] OF INT;
-	
-	sectionID : SectionEnum := SectionEnum.CARDBOARD_CORNERGUARD;
 	
 	step : (IDLE, LOAD_CORNERS, LOAD_FLATS, PUSH, RUN_TO_WRAP_POSITION, WRAP_AND_RELEASE, COMPLETE := 1050);
 	i : INT;
@@ -47,28 +58,20 @@ VAR
 	releaseDelayTimer : TON;
 END_VAR
 VAR CONSTANT
+	sectionID : SectionEnum := SectionEnum.CARDBOARD_CORNERGUARD;
+	idleRobotOutput : ARRAY[1..50] OF INT := [50(0)];
 	releaseDelay : TIME := T#2S;
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[demoPairCAR.position := 0;
-demoPairCAR.top := 'CAR20M';
-demoPairCAR.left := 'CAR20S';
-demoPairCAR.right := 'CAR20S';
-demoPairCAR.bottom := 'CAR28S';
-demoPairCAR.wrapRotations := 4;
-demoPairCar.wrapPoints := 4;
+      <ST><![CDATA[SetupHardware();
+CallHardwareModules();
 
-demoPairCOR.position := 0;
-demoPairCOR.topLeft := 'COR48';
-demoPairCOR.topRight := 'COR48';
-demoPairCOR.bottomLeft := 'COR48';
-demoPairCOR.bottomRight := 'COR48';
+callLocalModules();
 
-IF NOT ready THEN
-	ready :=
-		insertionLeft.homingSequence() AND
-		insertionRight.homingSequence() AND
-		insertionBottom.homingSequence();
+IF NOT (insertionLeft.homingComplete AND insertionRight.homingComplete) THEN
+	insertionLeft.homingSequence();
+	insertionRight.homingSequence();
+	insertionBottom.retract();
 END_IF
 
 CASE step OF
@@ -80,7 +83,7 @@ CASE step OF
 	
 	LOAD_CORNERS:
 		IF load(pair:= demoPairCor) THEN
-			IF manualMode AND_THEN NOT execute THEN
+			IF manualStep AND_THEN NOT execute THEN
 				RETURN;
 			END_IF
 		
@@ -89,7 +92,7 @@ CASE step OF
 
 	LOAD_FLATS:
 		IF loadFlats(pair := demoPairCar) THEN
-			IF manualMode AND_THEN NOT execute THEN
+			IF manualStep AND_THEN NOT execute THEN
 				RETURN;
 			END_IF
 			
@@ -97,15 +100,15 @@ CASE step OF
 		END_IF
 		
 	PUSH:
-		insertionBottom.traverse(direction := FALSE);
-		IF NOT insertionLeft.alignTarget(demoHeight/2) OR NOT insertionRight.alignTarget(demoHeight/2) THEN
+		IF NOT insertionLeft.align(demoHeight/2) OR NOT insertionRight.align(demoHeight/2) THEN
 			RETURN;
 		END_IF
 		
 		insertionLeft.press();
 		insertionRight.press();
+		insertionBottom.extend();
 		
-		IF insertionBottom.contact AND insertionLeft.contact AND insertionRight.contact THEN
+		IF insertionBottom.extended AND insertionLeft.contact AND insertionRight.contact THEN
 			step := RUN_TO_WRAP_POSITION;
 		END_IF
 		
@@ -135,12 +138,12 @@ CASE step OF
 			END_FOR
 		
 			IF NOT insertionLeft.home THEN
-				insertionLeft.alignTarget(0);
+				insertionLeft.align(0);
 				insertionLeft.release();
 			END_IF
 			
 			IF NOT insertionRight.home THEN
-				insertionRight.alignTarget(0);
+				insertionRight.align(0);
 				insertionRight.release();
 			END_IF
 		END_IF
@@ -159,6 +162,34 @@ END_CASE]]></ST>
     <Folder Name="Cardboard (Corner)" Id="{75e45005-57b6-45af-977a-1cc75cf19289}" />
     <Folder Name="Cardboard (Flat)" Id="{69bbbb84-f428-46bc-8482-36bd2217074a}" />
     <Folder Name="Corner Guards" Id="{6138b1d4-74c6-4a8f-864e-6193654c592a}" />
+    <Method Name="callLocalModules" Id="{ae27e4e1-f18c-46c6-a88d-05763e2b1498}">
+      <Declaration><![CDATA[METHOD callLocalModules : BOOL]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[insertionLeft(
+	enable:= TRUE, 
+	slider:= horizontalDriveLeft, 
+	screw:= verticalDriveLeft, 
+	contact=> , 
+	softContact=> , 
+	busy=> , 
+	error=> , 
+	home=> , 
+	homingComplete=> , 
+	sliderPos=> );
+	
+insertionRight(
+	enable:= TRUE, 
+	slider:= horizontalDriveRight, 
+	screw:= verticalDriveRight, 
+	contact=> , 
+	softContact=> , 
+	busy=> , 
+	error=> , 
+	home=> , 
+	homingComplete=> , 
+	sliderPos=> );]]></ST>
+      </Implementation>
+    </Method>
     <Method Name="changeRobotsEOAT" Id="{71a414a6-260d-4ed7-9b91-4169239414f1}">
       <Declaration><![CDATA[METHOD changeRobotsEOAT : BOOL
 VAR_INPUT
@@ -182,32 +213,11 @@ changeRobotsEOAT := robotLeft.tool = sectionID AND robotRight.tool = sectionID;
 *)]]></ST>
       </Implementation>
     </Method>
-    <Method Name="hardwareCall" Id="{ae27e4e1-f18c-46c6-a88d-05763e2b1498}">
-      <Declaration><![CDATA[METHOD hardwareCall : BOOL]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[benderLeft(enable := TRUE);
-
-robotLeft();
-robotRight();
-
-skidLeft();
-skidRight();
-
-magazineLeft();
-magazineRight();
-
-wrapper();
-
-insertionLeft();
-insertionRight();
-insertionBottom();]]></ST>
-      </Implementation>
-    </Method>
     <Method Name="leftRobotSequence" Id="{08bffef9-e349-4b7d-9ae3-92f5a7d8876a}" FolderPath="Cardboard (Corner)\">
       <Declaration><![CDATA[METHOD PROTECTED leftRobotSequence : BOOL
 VAR_IN_OUT
 	actingRobot : Robot;
-	skid : MaterialStorage;
+	skid : SkidMagazine;
 	loadStep : INT;
 END_VAR
 VAR_INPUT
@@ -552,7 +562,7 @@ END_CASE]]></ST>
 VAR_IN_OUT
 	actingRobot : Robot;
 	robotOutputs : ARRAY[1..50] OF INT;
-	actingStorage : MaterialStorage;
+	actingStorage : SkidMagazine;
 	actingLoadStep : INT;
 END_VAR
 VAR_INPUT
@@ -601,7 +611,7 @@ END_CASE]]></ST>
 VAR_IN_OUT
 	actingRobot : Robot;
 	robotOutputs : ARRAY[1..50] OF INT;
-	actingStorage : MaterialStorage;
+	actingStorage : SkidMagazine;
 	actingLoadStep : INT;
 END_VAR
 VAR_INPUT
@@ -648,7 +658,7 @@ END_CASE]]></ST>
       <Declaration><![CDATA[METHOD PROTECTED rightRobotSequence : BOOL
 VAR_IN_OUT
 	actingRobot : Robot;
-	skid : MaterialStorage;
+	skid : SkidMagazine;
 	loadStep : INT;
 END_VAR
 VAR_INPUT
@@ -705,48 +715,23 @@ END_CASE]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="MAIN">
-      <LineId Id="230" Count="4" />
-      <LineId Id="412" Count="0" />
-      <LineId Id="414" Count="0" />
-      <LineId Id="235" Count="3" />
-      <LineId Id="227" Count="2" />
-      <LineId Id="222" Count="4" />
-      <LineId Id="2" Count="0" />
-      <LineId Id="240" Count="15" />
-      <LineId Id="265" Count="5" />
-      <LineId Id="459" Count="0" />
-      <LineId Id="272" Count="8" />
-      <LineId Id="282" Count="6" />
-      <LineId Id="330" Count="0" />
-      <LineId Id="384" Count="1" />
-      <LineId Id="387" Count="0" />
-      <LineId Id="332" Count="1" />
-      <LineId Id="366" Count="0" />
-      <LineId Id="378" Count="1" />
-      <LineId Id="335" Count="0" />
-      <LineId Id="344" Count="1" />
-      <LineId Id="405" Count="1" />
-      <LineId Id="347" Count="1" />
-      <LineId Id="407" Count="0" />
-      <LineId Id="349" Count="1" />
-      <LineId Id="391" Count="0" />
-      <LineId Id="505" Count="0" />
-      <LineId Id="511" Count="0" />
-      <LineId Id="513" Count="0" />
-      <LineId Id="512" Count="0" />
-      <LineId Id="410" Count="0" />
-      <LineId Id="399" Count="2" />
-      <LineId Id="393" Count="0" />
-      <LineId Id="396" Count="0" />
-      <LineId Id="402" Count="2" />
-      <LineId Id="397" Count="0" />
-      <LineId Id="394" Count="0" />
-      <LineId Id="360" Count="1" />
-      <LineId Id="408" Count="0" />
-      <LineId Id="362" Count="0" />
-      <LineId Id="300" Count="0" />
-      <LineId Id="325" Count="4" />
+      <LineId Id="917" Count="2" />
+      <LineId Id="915" Count="1" />
+      <LineId Id="821" Count="3" />
+      <LineId Id="829" Count="27" />
+      <LineId Id="858" Count="5" />
+      <LineId Id="914" Count="0" />
+      <LineId Id="864" Count="49" />
       <LineId Id="239" Count="0" />
+    </LineIds>
+    <LineIds Name="MAIN.callLocalModules">
+      <LineId Id="38" Count="9" />
+      <LineId Id="36" Count="0" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="50" Count="2" />
+      <LineId Id="60" Count="0" />
+      <LineId Id="54" Count="5" />
+      <LineId Id="49" Count="0" />
     </LineIds>
     <LineIds Name="MAIN.changeRobotsEOAT">
       <LineId Id="27" Count="0" />
@@ -758,23 +743,6 @@ END_CASE]]></ST>
       <LineId Id="23" Count="0" />
       <LineId Id="22" Count="0" />
       <LineId Id="28" Count="0" />
-    </LineIds>
-    <LineIds Name="MAIN.hardwareCall">
-      <LineId Id="34" Count="1" />
-      <LineId Id="16" Count="0" />
-      <LineId Id="18" Count="0" />
-      <LineId Id="32" Count="0" />
-      <LineId Id="31" Count="0" />
-      <LineId Id="33" Count="0" />
-      <LineId Id="22" Count="0" />
-      <LineId Id="21" Count="0" />
-      <LineId Id="23" Count="0" />
-      <LineId Id="25" Count="0" />
-      <LineId Id="24" Count="0" />
-      <LineId Id="28" Count="0" />
-      <LineId Id="26" Count="0" />
-      <LineId Id="29" Count="0" />
-      <LineId Id="7" Count="0" />
     </LineIds>
     <LineIds Name="MAIN.leftRobotSequence">
       <LineId Id="1681" Count="57" />

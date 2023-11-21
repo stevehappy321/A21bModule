@@ -6,12 +6,14 @@
 TYPE Homing :
 (
 	IDLE,
-	HOME_OUT,
-	HOME_FINAL,
+	IN,
+	OUT,
+	OUT_FINAL,
 	STOP,
 	SET,
 	DONE,
-	REDO
+	
+	size
 );
 END_TYPE
 ]]></Declaration>
