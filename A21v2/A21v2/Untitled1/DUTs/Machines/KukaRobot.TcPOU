@@ -1,0 +1,284 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="KukaRobot" Id="{870b17d8-8fed-45ea-b532-f3f727b3e8ec}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK KukaRobot
+VAR_OUTPUT
+	forceStop AT %Q* : BOOL;
+	resetSignal AT %Q* : BOOL;
+	
+	outputs AT %Q* : ARRAY[1..50] OF INT;
+	inputs AT %I* : ARRAY[1..20] OF INT;
+	
+	taskID : INT;
+	completedTask : INT;
+	
+	operational : BOOL;
+	reserved : BOOL;
+	reservation : SectionEnum := SectionEnum.NULL_SECTION;
+	tool : SectionEnum := SectionEnum.WOOD_BUNK;
+	
+	error : BOOL;
+	errId : DINT;
+END_VAR
+VAR
+	step : (SEND_COMMAND, WAIT);
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[taskID := outputs[1];
+completedTask := inputs[1];]]></ST>
+    </Implementation>
+    <Folder Name="Properties" Id="{866be447-1963-4a08-8cb7-28bb42cb4605}" />
+    <Property Name="Busy" Id="{b3d2dd20-1b64-42bd-b7b9-cc40de53165e}" FolderPath="Properties\">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'variable'}
+{attribute 'monitoring' := 'call'}
+PROPERTY Busy : BOOL]]></Declaration>
+      <Get Name="Get" Id="{3bf870ef-0c1b-46d6-841d-b325e44d6211}">
+        <Declaration><![CDATA[VAR
+	emptyOutput : ARRAY[1..50] OF INT;
+END_VAR
+
+//Busy stays TRUE until outputs are cleared AND completed task has elapsed
+//Ready is always inverse of Busy]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[updateStatus();
+
+Busy :=
+	MEMCMP(ADR(outputs), ADR(emptyOutput), SIZEOF(outputs)) <> 0 OR
+	completedTask <> 0;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="commandEx" Id="{55c20752-492d-4e9a-a647-f2d920916f43}">
+      <Declaration><![CDATA[METHOD commandEx : BOOL
+VAR_INPUT
+	newOutputs : REFERENCE TO ARRAY[1..50] OF INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[outputs := newOutputs;]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="Done" Id="{aab115a2-23cb-4864-ae41-4499fdda0c27}" FolderPath="Properties\">
+      <Declaration><![CDATA[//{attribute 'monitoring' := 'variable'}
+{attribute 'monitoring' := 'call'}
+PROPERTY Done : BOOL]]></Declaration>
+      <Get Name="Get" Id="{f35a7b96-3469-4c48-a415-04be19290868}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[updateStatus();
+
+Done := completedTask = taskID;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="eStop" Id="{974b2363-087f-4f71-a37b-fdee6dacfa65}">
+      <Declaration><![CDATA[METHOD eStop : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[forceStop := TRUE;
+eStop := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="idleCommand" Id="{4f96fde8-b481-408a-8e4e-1ca7d5a2c9bb}">
+      <Declaration><![CDATA[METHOD idleCommand : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[MEMSET(ADR(outputs), 0, SIZEOF(outputs));]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="Ready" Id="{b09b77a8-11f4-47fb-9077-e4f375d271da}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY Ready : BOOL]]></Declaration>
+      <Get Name="Get" Id="{86e66399-49b2-4e73-8b04-ebe19b5e9e41}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[updateStatus();
+
+Ready := NOT Busy;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="release" Id="{7fed4361-8a94-445d-8040-f071f846d639}">
+      <Declaration><![CDATA[METHOD release : BOOL
+VAR_INPUT
+	sectionReservation : SectionEnum;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF reservation = sectionReservation AND reserved THEN
+	reservation := SectionEnum.NULL_SECTION;
+	reserved := FALSE;
+	release := TRUE;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="reserve" Id="{1e01deef-588d-4739-a104-23ce337539cb}">
+      <Declaration><![CDATA[METHOD reserve : BOOL
+VAR_INPUT
+	reserveRequest : SectionEnum;
+END_VAR
+(*
+this method exists because chipboard and wood bunk operations use the same robot
+both sections need to check if the robot is open to commands before use
+*)]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF reserved AND reservation = reserveRequest THEN
+	reserve := TRUE;
+
+ELSIF (NOT reserved) AND reservation = SectionEnum.NULL_SECTION THEN
+	reservation := reserveRequest;
+	reserved := TRUE;
+	reserve := TRUE;
+
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="reset" Id="{89eb6678-027f-45a1-a94f-ae23b58ecc5c}">
+      <Declaration><![CDATA[METHOD reset : BOOL]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//resetSignal := TRUE;
+//done := FALSE;
+
+MEMSET(ADR(outputs), 0, SIZEOF(outputs));
+(*
+IF ready AND completedTask = 0 THEN
+	resetSignal := FALSE;
+	reset := TRUE;
+END_IF
+*)]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="resume" Id="{1d12dfe1-c8ff-4b57-9b31-0d4b08a72b4a}">
+      <Declaration><![CDATA[METHOD resume : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[forceStop := FALSE;
+
+resume := NOT error AND errId = 0;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="setCommandAndWait" Id="{861e79f4-9d73-4326-81bf-3ad217fcca64}">
+      <Declaration><![CDATA[METHOD setCommandAndWait : BOOL
+VAR_INPUT
+	newOutputs : REFERENCE TO ARRAY[1..50] OF INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//IF NOT Busy THEN
+	//RETURN;
+//END_IF
+
+outputs := newOutputs;
+setCommandAndWait := Done;
+
+(*
+CASE step OF
+	SEND_COMMAND: //wait 1 cycle
+		outputs := newOutputs;
+		step := WAIT;
+		
+	WAIT:
+		IF done THEN
+			(*	
+			IF NOT reset() THEN
+				RETURN;
+			END_IF
+			
+			step := 0;
+			*)
+			setCommandAndWait := TRUE;
+		END_IF
+		
+END_CASE
+*)]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="updateStatus" Id="{fb027fa2-67ff-4c87-b192-f170e88fa5be}">
+      <Declaration><![CDATA[METHOD updateStatus : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[taskID := outputs[1];
+completedTask := inputs[1];]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="KukaRobot">
+      <LineId Id="82" Count="0" />
+      <LineId Id="110" Count="0" />
+    </LineIds>
+    <LineIds Name="KukaRobot.Busy.Get">
+      <LineId Id="6" Count="1" />
+      <LineId Id="2" Count="0" />
+      <LineId Id="8" Count="1" />
+    </LineIds>
+    <LineIds Name="KukaRobot.commandEx">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="KukaRobot.Done.Get">
+      <LineId Id="10" Count="0" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="KukaRobot.eStop">
+      <LineId Id="5" Count="1" />
+    </LineIds>
+    <LineIds Name="KukaRobot.idleCommand">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="KukaRobot.Ready.Get">
+      <LineId Id="5" Count="1" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="KukaRobot.release">
+      <LineId Id="5" Count="0" />
+      <LineId Id="13" Count="1" />
+      <LineId Id="11" Count="1" />
+    </LineIds>
+    <LineIds Name="KukaRobot.reserve">
+      <LineId Id="123" Count="7" />
+      <LineId Id="97" Count="0" />
+    </LineIds>
+    <LineIds Name="KukaRobot.reset">
+      <LineId Id="14" Count="0" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="34" Count="0" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="19" Count="0" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="18" Count="0" />
+      <LineId Id="16" Count="1" />
+      <LineId Id="35" Count="0" />
+    </LineIds>
+    <LineIds Name="KukaRobot.resume">
+      <LineId Id="5" Count="0" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="6" Count="0" />
+    </LineIds>
+    <LineIds Name="KukaRobot.setCommandAndWait">
+      <LineId Id="96" Count="2" />
+      <LineId Id="88" Count="0" />
+      <LineId Id="94" Count="0" />
+      <LineId Id="93" Count="0" />
+      <LineId Id="99" Count="0" />
+      <LineId Id="89" Count="0" />
+      <LineId Id="70" Count="1" />
+      <LineId Id="73" Count="3" />
+      <LineId Id="79" Count="8" />
+      <LineId Id="77" Count="1" />
+      <LineId Id="72" Count="0" />
+      <LineId Id="95" Count="0" />
+    </LineIds>
+    <LineIds Name="KukaRobot.updateStatus">
+      <LineId Id="5" Count="1" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

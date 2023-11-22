@@ -75,7 +75,7 @@
     <Compile Include="DUTs\Interval.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\Machines\Robot.TcPOU">
+    <Compile Include="DUTs\Machines\KukaRobot.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DUTs\Machines\StrapMachine.TcPOU">
@@ -125,7 +125,19 @@
     <Compile Include="POUs\Utility\IntegerBitAccess.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\Utility\IntegerToBoolArray.TcPOU">
+    <Compile Include="POUs\Utility\String Array\AddToStringArray.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Utility\String Array\IntegerToBoolArray.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Utility\String Array\RemoveElementFromStringArray.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Utility\String Array\RemoveIndexFromStringArray.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Utility\String Array\StringArrayCloseGaps.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\Utility\WithinTolerance.TcPOU">
@@ -143,6 +155,7 @@
     <Folder Include="GVLs" />
     <Folder Include="POUs\Module Calls" />
     <Folder Include="POUs\Utility" />
+    <Folder Include="POUs\Utility\String Array" />
     <Folder Include="VISUs" />
     <Folder Include="POUs" />
   </ItemGroup>
@@ -158,6 +171,10 @@
     <PlaceholderReference Include="Tc2_System">
       <DefaultResolution>Tc2_System, * (Beckhoff Automation GmbH)</DefaultResolution>
       <Namespace>Tc2_System</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_Utilities">
+      <DefaultResolution>Tc2_Utilities, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_Utilities</Namespace>
     </PlaceholderReference>
     <PlaceholderReference Include="Tc3_Module">
       <DefaultResolution>Tc3_Module, * (Beckhoff Automation GmbH)</DefaultResolution>

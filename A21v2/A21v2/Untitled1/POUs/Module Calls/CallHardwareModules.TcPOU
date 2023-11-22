@@ -27,7 +27,7 @@ verticalDriveLeft();
 verticalDriveRight();
 horizontalDriveLeft();
 horizontalDriveRight();
-insertionBottom();]]></ST>
+pistonBottom();]]></ST>
     </Implementation>
     <LineIds Name="CallHardwareModules">
       <LineId Id="8" Count="19" />

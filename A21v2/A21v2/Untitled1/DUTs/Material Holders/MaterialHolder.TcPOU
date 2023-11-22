@@ -33,7 +33,7 @@ END_VAR]]></Declaration>
 	RETURN;
 END_IF
 
-FOR i:=0 TO GVL.maxQueue BY 1 DO
+FOR i:=1 TO GVL.maxQueue BY 1 DO
 	IF slots[i] = materialID THEN
 		atSlot := i;
 		findSlot := TRUE;
