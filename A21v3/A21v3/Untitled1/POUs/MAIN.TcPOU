@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="MAIN" Id="{9caf58b7-eccf-4a65-a3e3-2c8d81beb312}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	execute : BOOL;
+	stop : BOOL;
+	manualStep : BOOL := TRUE;
+	manualSuction : BOOL;
+	
+	moduleWB : WoodBunkEx;
+	moduleCIP : ChipboardEx;
+	exec1, exec2 : BOOL;
+END_VAR
+VAR
+	test : BOOL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SetupHardware();
+CallHardwareModules(); //start program with hardware call
+
+moduleWB(
+	execute:= execute, 
+	stop:= stop, 
+	manualStep:= manualStep, 
+	manualSuction:= manualSuction,
+ 
+	robotLeft:= robot1, 
+	robotRight:= robot2, 
+	toolStorageLeft:= toolStorageA21Left, 
+	toolStorageRight:= toolStorageA21Right, 
+	stagingTableLeft:= stagingTableLeft, 
+	stagingTableRight:= stagingTableRight, 
+	magazineLeft:= magazineA21Left, 
+	magazineRight:= magazineA21Right, 
+	strapper:= strapperA21, 
+	horizontalDriveLeft:= horizontalDriveA21Left, 
+	horizontalDriveRight:= horizontalDriveA21Right, 
+	verticalDriveLeft:= verticalDriveA21Left, 
+	verticalDriveRight:= verticalDriveA21Right, 
+	pistonBottom:= pistonA21Bottom, 
+	topSuction:= suctionA21Top, 
+	leftSuction:= suctionA21Left, 
+	rightSuction:= suctionA21Right, 
+	bottomSuction:= suctionA21Bottom, 
+	
+	generalError=> test, 
+	failLeft=> test, 
+	failRight=> test);
+
+moduleCIP(
+	execute:= execute, 
+	stop:= stop, 
+	manualStep:= manualStep, 
+	manualSuction:= manualSuction,
+	
+	robotLeft:= robot1, 
+	robotRight:= robot2, 
+	toolStorageLeft:= toolStorageA21Left, 
+	toolStorageRight:= toolStorageA21Right, 
+	skidLeft:= skidA21Left, 
+	skidRight:= skidA21Right, 
+	generalError=> test, 
+	failLeft=> test, 
+	failRight=> test);
+
+CallHardwareModules(); //end program with hardware call]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="3942" Count="0" />
+      <LineId Id="3758" Count="0" />
+      <LineId Id="3871" Count="0" />
+      <LineId Id="3873" Count="0" />
+      <LineId Id="3898" Count="2" />
+      <LineId Id="3877" Count="0" />
+      <LineId Id="3901" Count="0" />
+      <LineId Id="3903" Count="2" />
+      <LineId Id="3881" Count="0" />
+      <LineId Id="3906" Count="2" />
+      <LineId Id="3885" Count="0" />
+      <LineId Id="3909" Count="4" />
+      <LineId Id="3891" Count="0" />
+      <LineId Id="3914" Count="2" />
+      <LineId Id="3895" Count="0" />
+      <LineId Id="3902" Count="0" />
+      <LineId Id="3896" Count="1" />
+      <LineId Id="3872" Count="0" />
+      <LineId Id="3759" Count="0" />
+      <LineId Id="3917" Count="0" />
+      <LineId Id="3930" Count="2" />
+      <LineId Id="3921" Count="0" />
+      <LineId Id="3933" Count="3" />
+      <LineId Id="3925" Count="4" />
+      <LineId Id="3695" Count="0" />
+      <LineId Id="3762" Count="0" />
+      <LineId Id="3760" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,10 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
   <POU Name="CallHardwareModules" Id="{d53bfde7-ef31-4033-a59e-17a8585cdf25}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION CallHardwareModules : BOOL //only purpose of this function is to call modules from Hardware]]></Declaration>
+    <Declaration><![CDATA[FUNCTION CallHardwareModules : BOOL //only purpose of this function is to call modules from Hardware
+VAR_STAT
+	temp : INT;
+END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[robotLeft();	
 robotRight();
+
+//(*
+temp := TO_INT(BoolArrayToInteger(arr := stagingTableLeft.occupied));
+temp.15 := NOT strapper.bEnable AND NOT strapper.execute;
+robotLeft.setGroup(group := 8, value := temp);
+
+temp := TO_INT(BoolArrayToInteger(arr := stagingTableRight.occupied));
+temp.15 := NOT strapper.bEnable AND NOT strapper.execute;
+robotRight.setGroup(group := 8, value := temp);
+//*)
 
 skidLeft();
 skidRight();
@@ -30,7 +43,13 @@ horizontalDriveRight();
 pistonBottom();]]></ST>
     </Implementation>
     <LineIds Name="CallHardwareModules">
-      <LineId Id="8" Count="19" />
+      <LineId Id="8" Count="1" />
+      <LineId Id="49" Count="0" />
+      <LineId Id="38" Count="0" />
+      <LineId Id="61" Count="5" />
+      <LineId Id="51" Count="0" />
+      <LineId Id="50" Count="0" />
+      <LineId Id="10" Count="17" />
       <LineId Id="29" Count="0" />
       <LineId Id="33" Count="1" />
       <LineId Id="36" Count="0" />

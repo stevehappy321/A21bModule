@@ -41,6 +41,9 @@
     <Compile Include="DUTs\Enums\WoodBunk.TcDUT">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DUTs\EOAT.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="DUTs\Insertion\Drives\AirPiston.TcPOU">
       <SubType>Code</SubType>
     </Compile>
@@ -76,6 +79,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DUTs\Machines\KukaRobot.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Machines\RobotA21.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DUTs\Machines\StrapMachine.TcPOU">
@@ -119,16 +125,22 @@
     <Compile Include="POUs\Module Calls\SetupHardware.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\Utility\BoolArrayToInteger.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="POUs\Utility\CEILING.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\Utility\IntegerBitAccess.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\Utility\String Array\AddToStringArray.TcPOU">
+    <Compile Include="POUs\Utility\IntegerToBoolArray.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\Utility\String Array\IntegerToBoolArray.TcPOU">
+    <Compile Include="POUs\Utility\JoinStrings.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Utility\String Array\AddToStringArray.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\Utility\String Array\RemoveElementFromStringArray.TcPOU">

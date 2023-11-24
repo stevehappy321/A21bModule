@@ -1,0 +1,1133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="WoodBunkEx" Id="{7c192e4b-e9ee-4c1c-a070-15e2c6191789}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK WoodBunkEx
+VAR_IN_OUT //controls
+	execute : BOOL;
+	stop : BOOL;
+	
+	manualStep : BOOL;
+	manualSuction : BOOL;
+END_VAR
+VAR_IN_OUT //references to required hardware
+	robotLeft, robotRight : RobotA21;
+	toolStorageLeft, toolStorageRight : A21ToolStorage;
+	
+	stagingTableLeft, stagingTableRight : WoodBunkTable;
+	magazineLeft, magazineRight : SkidMagazine;
+	
+	strapper : StrapMachine;
+	
+	horizontalDriveLeft, horizontalDriveRight : AirPiston;
+	verticalDriveLeft, verticalDriveRight : ClearLinkMC;
+	pistonBottom : SimplePiston;
+	
+	topSuction : ARRAY[*(*1..3*)] OF SuctionPad;
+	leftSuction : ARRAY[*(*1..4*)] OF SuctionPad;
+	rightSuction : ARRAY[*(*1..4*)] OF SuctionPad; 
+	bottomSuction : ARRAY[*(*1..2*)] OF SuctionPad;
+END_VAR
+VAR_OUTPUT
+	generalError : BOOL;
+	failLeft, failRight : BOOL;
+END_VAR
+VAR //local types
+	materialsArr : ARRAY[0..GVL.maxPairs] OF PositionMaterials;
+	
+	stagingTemplateLeft, stagingTemplateRight AT %M* : WoodBunkTable; //declaration with %M* overwrites addresses of local attributes
+	stagingArrayLeft, stagingArrayRight : ARRAY[0..GVL.maxPairs*2] OF STRING;
+	insertionLeft, insertionRight : Insertion;
+END_VAR
+VAR //for testing, to be removed when replaced with pressure sensors
+	latchLeft, latchRight : BOOL; //prevents SMC sliders from overshooting the inner limit sensor
+	
+	suctionEnableTop : BOOL;
+	suctionEnableLeft : BOOL;
+	suctionEnableRight : BOOL;
+	suctionEnableBottom : BOOL;
+	
+	done : BOOL;
+	
+	demoPairWB : PositionMaterials := (
+		position := 0,
+		top := 'WDS20',
+		left := 'WDS20',
+		right := 'WDS20',
+		bottom := 'WDS14');
+		
+	demoHeight : REAL := 600; //mm
+END_VAR
+VAR
+	insertionMaterials : ARRAY[Surface.TOP..Surface.BOTTOM] OF STRING;
+	
+	topSuctionDelay : TON;
+	
+	step : (IDLE, LOAD_CIP, STAGING, LOAD_WB, PUSH, STRAP, RELEASE, COMPLETE := 1050);
+	
+	//these 2 ints should replace the 4 ints after
+	commandSet : INT;
+	commandStepLeft, commandStepRight : INT;
+	
+	loadSet : INT;
+	loadStepLeft, loadStepRight : INT;
+	
+	stageSet : INT;	
+	stageStepLeft, stageStepRight : INT;
+	iSlotLeft, iSlotRight : INT(1..10);
+END_VAR
+VAR CONSTANT
+	sectionID : SectionEnum := SectionEnum.WOOD_BUNK;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[{warning disable C0371}
+callLocalModules();
+
+materialsArr[0] := demoPairWB;
+
+IF stop THEN //may need to turn off suction
+	insertionLeft.stop();
+	insertionRight.stop();
+	pistonBottom.stop();
+	
+	robotLeft.clearCommand();
+	robotRight.clearCommand();
+	RETURN;
+END_IF
+
+
+IF NOT (insertionLeft.screw.HomeSet AND insertionRight.screw.HomeSet) THEN
+	insertionLeft.homingSequence();
+	insertionRight.homingSequence();
+	pistonBottom.retract();
+	RETURN;
+END_IF
+
+
+CASE step OF
+	IDLE:
+		IF execute THEN
+			execute := FALSE;
+			suctionEnableTop := suctionEnableLeft := suctionEnableRight := suctionEnableBottom := FALSE;
+			step := STAGING;
+		END_IF
+		
+		SetSuctions(topSuction, suctionEnableTop);
+		SetSuctions(leftSuction, suctionEnableLeft);
+		SetSuctions(rightSuction, suctionEnableRight);
+		SetSuctions(bottomSuction, suctionEnableBottom);
+		
+	STAGING:
+		IF NOT done THEN
+			done := stage(error => generalError);
+		END_IF
+		
+		IF
+			(manualStep AND_THEN execute) OR
+			(NOT manualStep AND_THEN done)
+		THEN
+			execute := FALSE;
+			done := FALSE;
+			step := LOAD_WB;
+		END_IF
+	
+	LOAD_WB:
+		IF NOT done THEN
+			done := load(pair := demoPairWB, error => generalError);
+		END_IF
+		
+		IF manualSuction THEN
+			SetSuctions(topSuction, suctionEnableTop);
+			SetSuctions(leftSuction, suctionEnableLeft);
+			SetSuctions(rightSuction, suctionEnableRight);
+			SetSuctions(bottomSuction, suctionEnableBottom);
+		END_IF
+		
+		IF
+			(manualStep AND_THEN execute) OR
+			(NOT manualStep AND_THEN done)
+		THEN
+			done := FALSE;
+			suctionEnableTop := suctionEnableLeft := suctionEnableRight := suctionEnableBottom := FALSE;
+			execute := FALSE;
+			
+			step := PUSH;
+		END_IF
+		
+	PUSH:
+		(*
+		IF 
+			insertionLeft.sliderPos <> demoHeight/2 //OR 
+			//insertionRight.sliderPos <> demoHeight/2 //OR 
+			//NOT insertionBottom.contact
+		THEN
+			insertionLeft.slideAbsolute(demoHeight/2);
+			//insertionRight.slideAbsolute(demoHeight/2);
+			RETURN;
+		END_IF
+		*)
+		
+		IF insertionLeft.screw.AtInnerLimit THEN
+			latchLeft := TRUE;
+		ELSIF NOT latchLeft THEN
+			insertionLeft.press();
+		END_IF
+		
+		IF insertionRight.screw.AtInnerLimit THEN
+			latchRight := TRUE;
+		ELSIF NOT latchRight THEN
+			insertionRight.press();
+		END_IF
+		pistonBottom.extend();
+		
+		IF
+			(manualStep AND_THEN execute) OR
+			(latchLeft AND latchRight AND pistonBottom.extended)
+		THEN
+			latchLeft := latchRight := FALSE;
+			execute := FALSE;
+			step := STRAP;
+		END_IF
+		
+	STRAP:
+		topSuctionDelay(IN:= , PT:= T#1S, Q=> , ET=> );
+		
+		strapper.bEnable := TRUE;
+		IF strapper.done THEN
+			topSuctionDelay.IN := FALSE;
+			step := RELEASE;
+			RETURN;
+		END_IF
+		
+		IF topSuctionDelay.Q THEN
+			SetSuctions(topSuction, FALSE);
+			SetSuctions(leftSuction, FALSE);
+			SetSuctions(rightSuction, FALSE);
+			SetSuctions(bottomSuction, FALSE);
+		ELSIF strapper.atBundleLevel THEN
+			topSuctionDelay.IN := TRUE;
+		END_IF
+		
+		IF strapper.ready THEN
+			strapper.strap();
+		END_IF
+		
+		IF execute THEN
+			topSuctionDelay.IN := FALSE;
+			execute := FALSE;
+			step := RELEASE;
+		END_IF
+		
+	RELEASE: //release command		
+		//insertionLeft.slideAbsolute(0);
+		//insertionRight.slideAbsolute(0);
+		
+		insertionLeft.release();
+		insertionRight.release();
+		pistonBottom.retract();
+		
+		IF 
+			(insertionLeft.screw.AtHome AND insertionRight.screw.AtHome AND pistonBottom.retracted) OR
+			execute
+		THEN
+			execute := FALSE;
+			step := COMPLETE;
+		END_IF
+	
+	COMPLETE:
+		//reset everything
+		step := IDLE;
+		
+END_CASE]]></ST>
+    </Implementation>
+    <Folder Name="Loading" Id="{d5b5a4e4-ee29-48b3-b5c8-451836b38fcb}" />
+    <Folder Name="Staging" Id="{d65a2989-4fa8-4947-a8e8-602f97dc611d}" />
+    <Folder Name="Template" Id="{cd893e68-3f3a-4606-a79f-9e9ae0341cae}" />
+    <Method Name="callLocalModules" Id="{b785fa8b-1ece-45c9-a9bb-2e324f2e1263}">
+      <Declaration><![CDATA[METHOD callLocalModules : BOOL]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[{warning disable C0371}
+stagingTemplateLeft();
+stagingTemplateRight();
+
+insertionLeft(
+	enable:= TRUE, 
+	slider:= verticalDriveLeft, 
+	screw:= horizontalDriveLeft, 
+	contact=> , 
+	softContact=> , 
+	busy=> , 
+	error=> , 
+	home=> , 
+	homingComplete=> , 
+	sliderPos=> );
+	
+insertionRight(
+	enable:= TRUE, 
+	slider:= verticalDriveRight, 
+	screw:= horizontalDriveRight,  
+	contact=> , 
+	softContact=> , 
+	busy=> , 
+	error=> , 
+	home=> , 
+	homingComplete=> , 
+	sliderPos=> );]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="createStagingArrayLeft" Id="{267fdecb-2bd1-4d34-885b-8346cf63d26a}" FolderPath="Template\">
+      <Declaration><![CDATA[METHOD createStagingArrayLeft : BOOL
+VAR
+	remainingMaterial : STRING;
+	splitMaterial : STRING;
+	
+	i : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FOR i:=0 TO GVL.maxPairs BY 1 DO
+	remainingMaterial := materialsArr[i].top;
+	WHILE FIND(remainingMaterial, '_') > 0 DO
+		splitCombinedMaterials(remainingMaterial, splitMaterial);
+		IF splitMaterial <> '' THEN
+			AddToStringArray(arr := stagingArrayLeft, newString := splitMaterial, numElements => , nextIndex => );
+		END_IF
+	END_WHILE
+	
+	IF remainingMaterial <> '' THEN
+		AddToStringArray(arr := stagingArrayLeft, newString := remainingMaterial, numElements => , nextIndex => );
+	END_IF
+	
+	
+	remainingMaterial := materialsArr[i].left;
+	WHILE FIND(remainingMaterial, '_') > 0 DO
+		splitCombinedMaterials(remainingMaterial, splitMaterial);
+		IF splitMaterial <> '' THEN
+			AddToStringArray(arr := stagingArrayLeft, newString := splitMaterial, numElements => , nextIndex => );
+		END_IF
+	END_WHILE
+	
+	IF remainingMaterial <> '' THEN
+		AddToStringArray(arr := stagingArrayLeft, newString := remainingMaterial, numElements => , nextIndex => );
+	END_IF
+END_FOR]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="createStagingArrayRight" Id="{16356a3e-786d-4de1-9a22-49e2a7eb3ddd}" FolderPath="Template\">
+      <Declaration><![CDATA[METHOD createStagingArrayRight : BOOL
+VAR
+	remainingMaterial : STRING;
+	splitMaterial : STRING;
+	
+	i : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FOR i:=0 TO GVL.maxPairs*2 BY 1 DO
+	remainingMaterial := materialsArr[i].bottom;
+	WHILE FIND(remainingMaterial, '_') > 0 DO
+		splitCombinedMaterials(remainingMaterial, splitMaterial);
+		IF splitMaterial <> '' THEN
+			AddToStringArray(arr := stagingArrayRight, newString := splitMaterial, numElements => , nextIndex => );
+		END_IF
+	END_WHILE
+	
+	IF remainingMaterial <> '' THEN
+		AddToStringArray(arr := stagingArrayRight, newString := remainingMaterial, numElements => , nextIndex => );
+	END_IF
+	
+	
+	
+	remainingMaterial := materialsArr[i].right;
+	WHILE FIND(remainingMaterial, '_') > 0 DO
+		splitCombinedMaterials(remainingMaterial, splitMaterial);
+		IF splitMaterial <> '' THEN
+			AddToStringArray(arr := stagingArrayRight, newString := splitMaterial, numElements => , nextIndex => );
+		END_IF
+	END_WHILE
+	
+	IF remainingMaterial <> '' THEN
+		AddToStringArray(arr := stagingArrayRight, newString := remainingMaterial, numElements => , nextIndex => );
+	END_IF
+END_FOR]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="generateStagingTemplate" Id="{559e2100-9d18-4e6d-a37b-fe2e4a5b8bd4}" FolderPath="Template\">
+      <Declaration><![CDATA[METHOD PROTECTED generateStagingTemplate : BOOL
+VAR
+	remainingMaterial : STRING;
+	splitMaterial : STRING;
+	
+	i : INT;
+END_VAR
+VAR_STAT
+	temp : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[createStagingArrayLeft();
+createStagingArrayRight();
+
+//AddToStringArray(arr := stagingArrayLeft, newString := 'WDB20', numElements =>, nextIndex => );
+
+(*
+iterate through all pairs and autofill the template
+replace succesfully autofilled materials with empty string
+
+when staging needs to be performed a 2nd time, autofilling empty strings is always unsuccessful
+*)
+FOR i:=0 TO GVL.maxPairs*2 BY 1 DO
+	IF stagingTemplateLeft.autofill(materialID := stagingArrayLeft[i]) THEN
+		stagingArrayLeft[i] := '';
+	END_IF
+	
+	IF stagingTemplateRight.autofill(materialID := stagingArrayRight[i]) THEN
+		stagingArrayRight[i] := '';
+	END_IF
+END_FOR
+
+(*
+stagingTemplateLeft.autofill(demoPairWB.top);
+stagingTemplateLeft.autofill(demoPairWB.left);
+
+stagingTemplateRight.autofill(demoPairWB.right);
+stagingTemplateRight.autofill(demoPairWB.bottom);
+*)
+
+generateStagingTemplate := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="load" Id="{41d6aef3-60c1-439a-bdd2-e372cfed0011}" FolderPath="Loading\">
+      <Declaration><![CDATA[METHOD PROTECTED load : BOOL
+VAR_INPUT
+	pair : REFERENCE TO PositionMaterials;
+END_VAR
+VAR_OUTPUT
+	error : BOOL;
+END_VAR
+VAR_STAT
+	leftMaterial : STRING;
+	rightMaterial : STRING;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[{warning disable C0371}
+(*
+IF NOT robotLeft.operational OR NOT robotLeft.operational THEN
+	error := TRUE;
+	RETURN;
+END_IF
+*)
+
+IF robotLeft.error OR robotRight.error THEN
+	error := TRUE;
+	RETURN;
+	
+ELSIF NOT (robotLeft.reserve(sectionID) AND robotRight.reserve(sectionID)) THEN //loading requires both robots be reserved together
+	RETURN;
+	
+ELSIF //robots have wrong tool
+	(robotLeft.tool <> sectionID AND_THEN NOT robotLeft.changeEOAT(targetTool := sectionID)) OR
+	(robotRight.tool <> sectionID AND_THEN NOT robotRight.changeEOAT(targetTool := sectionID))
+THEN
+	RETURN;
+END_IF
+failLeft := FALSE;
+failRight := FALSE;
+
+CASE loadSet OF
+	0: //top and bottom
+		leftMaterial := pair.top;
+		rightMaterial := pair.bottom;
+		IF 
+			loadingSequence(
+				robot:= robotLeft, 
+				table:= stagingTableLeft, 
+				loadStep:= loadStepLeft, 
+				slot:= iSlotLeft,
+				suctions:= topSuction,
+				surfaceID:= Surface.TOP, 
+				material:= pair.top, 
+				fail=> failLeft)
+			
+			AND
+			loadingSequence(
+				robot:= robotRight,
+				table:= stagingTableRight, 
+				loadStep:= loadStepRight, 
+				slot:= iSlotRight,
+				suctions:= bottomSuction,
+				surfaceID:= Surface.BOTTOM, 
+				material:= pair.bottom, 
+				fail=> failRight)
+			
+		THEN
+			loadStepLeft := loadStepRight := 0;
+			loadSet := 10;
+		END_IF
+		
+	10: //sides
+		leftMaterial := pair.left;
+		rightMaterial := pair.right;
+		IF
+			loadingSequence(
+				robot:= robotLeft, 
+				table:= stagingTableLeft, 
+				loadStep:= loadStepLeft, 
+				slot:= iSlotLeft,
+				suctions:= leftSuction,
+				surfaceID:= Surface.LEFT, 
+				material:= pair.left, 
+				fail=> )
+			
+			AND
+			loadingSequence(
+				robot:= robotRight, 
+				table:= stagingTableRight, 
+				loadStep:= loadStepRight, 
+				slot:= iSlotRight,
+				suctions:= rightSuction,
+				surfaceID:= Surface.RIGHT, 
+				material:= pair.right, 
+				fail=> )
+			
+		THEN
+			loadStepLeft := loadStepRight := 0;
+			//loadSet := 20;
+			loadSet := COMPLETE;
+		END_IF
+		
+	20: //left robot to bottom insertion - module only
+		leftMaterial := pair.bottom;
+		IF 
+			loadingSequence(
+				robot:= robotLeft, 
+				table:= stagingTableLeft, 
+				loadStep:= loadStepLeft, 
+				slot:= iSlotLeft,
+				suctions:= bottomSuction,
+				surfaceID:= Surface.BOTTOM, 
+				material:= pair.bottom, 
+				fail=> failLeft)
+		THEN
+			loadSet := COMPLETE;
+		END_IF
+	
+	COMPLETE:
+		loadSet := 0;
+		loadStepLeft := loadStepRight := 0;
+		
+		robotLeft.release(sectionID);
+		robotRight.release(sectionID);
+		
+		load := TRUE;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="loadingSequence" Id="{b6930bdc-6b37-4ccd-8367-4e887d0b238c}" FolderPath="Loading\">
+      <Declaration><![CDATA[METHOD loadingSequence : BOOL
+VAR_IN_OUT
+	robot : RobotA21;
+	//carryMaterial : STRING;
+	table : WoodBunkTable;
+	suctions : ARRAY[*] OF SuctionPad;
+	loadStep : INT;
+	slot : INT(1..10);
+END_VAR
+VAR_INPUT
+	surfaceID : Surface;
+	material : STRING;
+END_VAR
+VAR_OUTPUT
+	fail : BOOL;
+END_VAR
+VAR
+	i : DINT;
+END_VAR
+VAR_STAT
+	tempSlot : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[{warning disable C0371}
+IF material = '' THEN
+	loadingSequence := TRUE;
+	RETURN;
+END_IF
+
+CASE loadStep OF
+	0: //wait for robot
+		robot.clearCommand();
+		
+		IF robot.Ready THEN
+			loadStep := 10;
+		END_IF
+		
+	10: //grab from table
+		IF NOT table.findSlot(materialID := material, atSlot => slot) (*AND slot < 1*) THEN	//cannot find material on table	
+			
+			fail := TRUE;
+			RETURN;
+		END_IF
+		tempSlot := slot;
+		IF NOT table.occupied[slot] AND robot.suspendedMaterial = '' THEN //move from table to robot gripper
+			robot.CarryMaterial := table.slots[slot];
+			table.remove(i := slot, materialID => );
+		END_IF
+		
+		IF robot.Done THEN
+			loadStep := COMPLETE;
+			RETURN;
+		ELSIF robot.materialAtHoldingPosition >= 1 AND robot.materialAtHoldingPosition <= 8 THEN
+			loadStep := 20;
+			RETURN;
+		END_IF
+		
+		CASE surfaceID OF
+			Surface.TOP: 					robot.setGroup(group := 1, value := A21.LOAD_BUNK_TO_TOP); 
+			Surface.LEFT, Surface.RIGHT: 	robot.setGroup(group := 1, value := A21.LOAD_BUNK_TO_SIDE);
+			Surface.BOTTOM: 				robot.setGroup(group := 1, value := A21.LOAD_BUNK_TO_BOTTOM);
+		END_CASE
+		robot.setGroup(group := 2, value := slot); 
+			
+	20: //place to insertion
+		IF robotLeft.Done THEN
+			loadStep := COMPLETE;
+			RETURN;
+		END_IF
+		
+		robot.setGroup(group := 9, value := robot.inputs[5]);
+		
+		IF robot.materialAtHoldingPosition > 0 AND robot.CarryMaterial <> '' THEN //move from gripper to insertion
+			IF insertionMaterials[surfaceID] = '' THEN //transfer to insertion as is
+				insertionMaterials[surfaceID] := robot.suspendedMaterial;
+			ELSE //join with existing material using underscore _
+				insertionMaterials[surfaceID] := JoinStrings(insertionMaterials[surfaceID], robot.suspendedMaterial, '_');
+			END_IF
+			robot.CarryMaterial := '';
+		END_IF
+		
+		CASE surfaceID OF
+			Surface.TOP, Surface.BOTTOM:
+				SetSuctions(suctions, TRUE (*robot.materialAtHoldingPosition = 1 OR robot.materialAtHoldingPosition = 4*));
+				
+			Surface.LEFT, Surface.RIGHT:
+				SetSuctions(suctions, TRUE (*robot.materialAtHoldingPosition = 2 OR robot.materialAtHoldingPosition = 3*));
+				(*
+				FOR i:=LOWER_BOUND(suctions, 1) TO UPPER_BOUND(suctions, 1) BY 1 DO
+					
+					IF i < UPPER_BOUND(suctions, 1)/2 THEN
+						suctions[i].enable := robot.materialAtHoldingPosition = 2; //enable upper half suctions
+					ELSE
+						suctions[i].enable := robot.materialAtHoldingPosition = 3; //enable lower half suctions
+					END_IF
+
+				END_FOR
+				*)
+		END_CASE
+	
+	COMPLETE:
+		robot.clearCommand();
+		loadingSequence := TRUE;
+		
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="splitCombinedMaterials" Id="{253040a1-6112-4088-b271-b912c88ba0a3}" FolderPath="Template\">
+      <Declaration><![CDATA[METHOD splitCombinedMaterials : BOOL
+VAR_IN_OUT
+	materialID : STRING;
+	splitMaterial : STRING;
+END_VAR
+VAR
+	i : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FindAndSplitChar(
+	sSeparatorChar:= '_', 
+	pSrcString:= ADR(materialID), 
+	
+	pLeftString:= ADR(splitMaterial), 
+	nLeftSize:= SIZEOF(splitMaterial), 
+	
+	pRightString:= ADR(materialID), 
+	nRightSize:= SIZEOF(materialID), 
+	
+	bSearchFromRight:= FALSE);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="stage" Id="{394ea3b0-a477-4afc-b551-89e83b2984a7}" FolderPath="Staging\">
+      <Declaration><![CDATA[METHOD stage : BOOL
+VAR_OUTPUT
+	error : BOOL;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[{warning disable C0371}
+(*
+IF NOT robotLeft.operational OR NOT robotLeft.operational THEN
+	error := TRUE;
+	RETURN;
+END_IF
+
+IF NOT (robotLeft.reserve(reserveRequest := sectionID) AND robotRight.reserve(reserveRequest := sectionID)) THEN
+	RETURN;
+END_IF
+
+IF NOT (robotLeft.tool = sectionID AND robotRight.tool = sectionID) THEN //robots have wrong tool
+	changeRobotsEOAT(robot := robotLeft, targetTool := sectionID); //wait for robots to finish changing tools
+	changeRobotsEOAT(robot := robotRight, targetTool := sectionID);
+	RETURN;
+END_IF
+*)
+
+CASE stageSet OF
+	0: //create staging template
+		IF generateStagingTemplate() THEN
+			stageSet := 10;
+		END_IF
+	
+	10: //staging sequence
+		IF stagingSequenceLeft(fail => failLeft) AND stagingSequenceRight(fail => failRight)
+			(*
+			stagingSequence(				
+				robot:= robotLeft, 
+				commands:= robotLeftOutputs,
+				template:= stagingTemplateLeft,
+				table:= stagingTableLeft,  
+				magazine:= magazineLeft, 
+				stagingStep:= stageStepLeft, 
+				iSlot:= iSlotLeft,
+				fail=> failLeft)
+			
+			AND
+			stagingSequence(
+				robot:= robotRight, 
+				commands:= robotRightOutputs,
+				template:= stagingTemplateRight, 
+				magazine:= magazineRight, 
+				table:= stagingTableRight, 
+				stagingStep:= stageStepRight, 
+				iSlot:= iSlotRight,
+				fail=> )
+			*)
+		THEN
+			stageStepLeft := stageStepRight := 0;
+			iSlotLeft := iSlotRight := 1;
+			
+			stageSet := COMPLETE;
+		END_IF
+		
+	COMPLETE:
+		stagingTemplateRight.clear(); //clear the staging templates
+		stagingTemplateLeft.clear();
+		
+		robotLeft.release(sectionID); //release the robots
+		robotRight.release(sectionID);
+		
+		stageSet := 0;
+		stage := TRUE;
+		
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="stagingSequenceLeft" Id="{5ed8ec4d-ccf6-4bb4-aaa2-0f0143aaa26e}" FolderPath="Staging\">
+      <Declaration><![CDATA[METHOD stagingSequenceLeft : BOOL
+VAR_OUTPUT
+	fail : BOOL;
+END_VAR
+VAR
+	magazineColumn : INT; //valid positions start from 1
+END_VAR
+VAR CONSTANT
+	WIP : INT := 0;
+	PASSED : INT := 1;
+	FAILED : INT := 2;
+	suctionDistance : INT := 15;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[{warning disable C0371}
+IF //staging table is full or matches staging template
+	stagingTableLeft.isFull() OR iSlotLeft > 10 OR 
+	MEMCMP(ADR(stagingTableLeft.slots), ADR(stagingTemplateLeft.slots), SIZEOF(stagingTableLeft.slots)) = 0
+THEN
+	robotLeft.release(sectionID);
+	stagingSequenceLeft := TRUE;
+	RETURN;
+END_IF
+
+IF stagingTemplateLeft.slots[iSlotLeft] = '' THEN
+	iSlotLeft := iSlotLeft + 1;
+	RETURN;
+	
+ELSIF robotLeft.offline THEN
+	fail := TRUE;
+	RETURN;
+	
+ELSIF //robot in used by other section, or has wrong tool and is not done changing
+	NOT robotLeft.reserve(reserveRequest := sectionID) OR_ELSE
+	(robotLeft.tool <> SectionID AND_THEN NOT robotLeft.changeEOAT(targetTool := sectionID))
+THEN
+	RETURN;
+END_IF
+
+//follow the stagingTemplateLeft as is
+CASE stageStepLeft OF
+	0:
+		robotLeft.clearCommand();
+		
+		IF robotLeft.Ready THEN
+			stageStepLeft := 10;
+		END_IF
+		
+	10:
+		IF NOT magazineLeft.findSlot(materialID := stagingTemplateLeft.slots[iSlotLeft], atSlot => magazineColumn) THEN
+			fail := TRUE;
+			RETURN;
+		END_IF
+			
+		IF robotLeft.eoatDistance < suctionDistance THEN //robot is grabbing material
+			robotLeft.CarryMaterial := magazineLeft.slots[magazineColumn];
+		END_IF
+		
+		IF robotLeft.Done THEN
+			stageStepLeft := COMPLETE;
+			RETURN;
+		ELSIF stagingTableLeft.occupied[iSlotLeft] THEN
+			stageStepLeft := 20;
+			RETURN;
+		END_IF
+		
+		robotLeft.setGroup(group := 1, value := A21.STAGE_BUNK);
+		robotLeft.setGroup(group := 2, value := magazineColumn);
+		robotLeft.setGroup(group := 3, value := iSlotLeft);
+		
+	20:
+		IF
+			stagingTableLeft.occupied[iSlotLeft] AND //staging table slot is occupied
+			stagingTableLeft.slots[iSlotLeft] = '' AND //staging table has not recorded a bunk
+			robotLeft.CarryMaterial <> '' //robot is carrying a bunk
+		THEN
+			stagingTableLeft.place(i := iSlotLeft, materialID := robotLeft.CarryMaterial);
+			robotLeft.CarryMaterial := '';
+		END_IF
+		
+		IF robotLeft.Done THEN
+			stageStepLeft := COMPLETE;
+			RETURN;
+		END_IF
+		
+	COMPLETE:
+		(*
+		IF stagingTableLeft.occupied[iSlotLeft] THEN //move from gripper to table
+			stagingTableLeft.place(i := iSlotLeft, materialID := robotLeft.CarryMaterial);
+			robotLeft.CarryMaterial := '';
+		END_IF
+		*)
+		robotLeft.clearCommand();
+		
+		iSlotLeft := iSlotLeft + 1;
+		stageStepLeft := 0;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="stagingSequenceRight" Id="{33318b6d-b968-4baa-a218-396084d5cdf2}" FolderPath="Staging\">
+      <Declaration><![CDATA[METHOD stagingSequenceRight : BOOL
+VAR_OUTPUT
+	fail : BOOL;
+END_VAR
+VAR
+	magazineColumn : INT := -1; //valid positions start from 1
+END_VAR
+VAR CONSTANT
+	WIP : INT := 0;
+	PASSED : INT := 1;
+	FAILED : INT := 2;
+	suctionDistance : INT := 15;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[{warning disable C0371}
+IF //staging table is full or matches staging template
+	stagingTableRight.isFull() OR iSlotRight > 10 OR 
+	MEMCMP(ADR(stagingTableRight.slots), ADR(stagingTemplateRight.slots), SIZEOF(stagingTableRight.slots)) = 0
+THEN
+	robotLeft.release(sectionID);
+	stagingSequenceRight := TRUE;
+	RETURN;
+END_IF
+
+IF stagingTemplateRight.slots[iSlotRight] = '' THEN
+	iSlotRight := iSlotRight + 1;
+	RETURN;
+	
+ELSIF robotRight.offline THEN
+	fail := TRUE;
+	RETURN;
+	
+ELSIF //robot in used by other section or has wrong tool
+	NOT robotRight.reserve(reserveRequest := sectionID) OR_ELSE
+	(robotRight.tool <> SectionID AND_THEN robotRight.changeEOAT(targetTool := sectionID))
+THEN
+	RETURN;
+END_IF
+
+//follow the stagingTemplateRight as is
+CASE stageStepRight OF
+	0:
+		robotRight.clearCommand();
+		
+		IF robotRight.Ready THEN
+			stageStepRight := 10;
+		END_IF
+		
+	10:
+		IF NOT magazineRight.findSlot(materialID := stagingTemplateRight.slots[iSlotRight], atSlot => magazineColumn) THEN
+			fail := TRUE;
+			RETURN;
+		END_IF
+			
+		IF robotRight.eoatDistance < suctionDistance THEN //robot is grabbing material
+			robotRight.CarryMaterial := magazineRight.slots[magazineColumn];
+		END_IF
+		
+		IF robotRight.Done THEN
+			stageStepRight := COMPLETE;
+			RETURN;
+		ELSIF stagingTableRight.occupied[iSlotRight] THEN
+			stageStepRight := 20;
+			RETURN;
+		END_IF
+		
+		robotRight.setGroup(group := 1, value := A21.STAGE_BUNK);
+		robotRight.setGroup(group := 2, value := magazineColumn);
+		robotRight.setGroup(group := 3, value := iSlotRight);
+		
+	20:
+		IF
+			stagingTableRight.occupied[iSlotRight] AND //staging table slot is occupied
+			stagingTableRight.slots[iSlotRight] = '' AND //staging table has not recorded a bunk
+			robotRight.CarryMaterial <> '' //robot is carrying a bunk
+		THEN
+			stagingTableRight.place(i := iSlotRight, materialID := robotRight.CarryMaterial);
+			robotRight.CarryMaterial := '';
+		END_IF
+		
+		IF robotRight.Done THEN
+			stageStepRight := COMPLETE;
+			RETURN;
+		END_IF
+		
+	COMPLETE:
+		(*
+		IF stagingTableRight.occupied[iSlotRight] THEN //move from gripper to table
+			stagingTableRight.place(i := iSlotRight, materialID := robotRight.CarryMaterial);
+			robotRight.CarryMaterial := '';
+		END_IF
+		*)
+		robotRight.clearCommand();
+		
+		iSlotRight := iSlotRight + 1;
+		stageStepRight := 0;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="WoodBunkEx">
+      <LineId Id="4646" Count="0" />
+      <LineId Id="4648" Count="157" />
+    </LineIds>
+    <LineIds Name="WoodBunkEx.callLocalModules">
+      <LineId Id="33" Count="0" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="30" Count="1" />
+      <LineId Id="6" Count="9" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="16" Count="0" />
+      <LineId Id="18" Count="0" />
+      <LineId Id="28" Count="1" />
+      <LineId Id="21" Count="6" />
+      <LineId Id="17" Count="0" />
+    </LineIds>
+    <LineIds Name="WoodBunkEx.createStagingArrayLeft">
+      <LineId Id="12" Count="3" />
+      <LineId Id="44" Count="1" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="17" Count="0" />
+      <LineId Id="47" Count="0" />
+      <LineId Id="18" Count="3" />
+      <LineId Id="46" Count="0" />
+      <LineId Id="22" Count="2" />
+      <LineId Id="41" Count="0" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="42" Count="0" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="27" Count="2" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="WoodBunkEx.createStagingArrayRight">
+      <LineId Id="12" Count="3" />
+      <LineId Id="44" Count="1" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="17" Count="0" />
+      <LineId Id="47" Count="0" />
+      <LineId Id="18" Count="3" />
+      <LineId Id="49" Count="0" />
+      <LineId Id="46" Count="0" />
+      <LineId Id="22" Count="2" />
+      <LineId Id="41" Count="0" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="42" Count="0" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="27" Count="2" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="WoodBunkEx.generateStagingTemplate">
+      <LineId Id="400" Count="1" />
+      <LineId Id="441" Count="0" />
+      <LineId Id="440" Count="0" />
+      <LineId Id="402" Count="7" />
+      <LineId Id="411" Count="6" />
+      <LineId Id="419" Count="0" />
+      <LineId Id="422" Count="6" />
+      <LineId Id="421" Count="0" />
+      <LineId Id="430" Count="0" />
+      <LineId Id="429" Count="0" />
+    </LineIds>
+    <LineIds Name="WoodBunkEx.load">
+      <LineId Id="1193" Count="0" />
+      <LineId Id="1081" Count="16" />
+      <LineId Id="1099" Count="0" />
+      <LineId Id="1102" Count="90" />
+      <LineId Id="278" Count="0" />
+    </LineIds>
+    <LineIds Name="WoodBunkEx.loadingSequence">
+      <LineId Id="1006" Count="0" />
+      <LineId Id="683" Count="5" />
+      <LineId Id="970" Count="1" />
+      <LineId Id="689" Count="6" />
+      <LineId Id="975" Count="0" />
+      <LineId Id="696" Count="2" />
+      <LineId Id="883" Count="0" />
+      <LineId Id="885" Count="0" />
+      <LineId Id="980" Count="0" />
+      <LineId Id="886" Count="0" />
+      <LineId Id="884" Count="0" />
+      <LineId Id="878" Count="0" />
+      <LineId Id="981" Count="1" />
+      <LineId Id="984" Count="0" />
+      <LineId Id="983" Count="0" />
+      <LineId Id="881" Count="1" />
+      <LineId Id="879" Count="0" />
+      <LineId Id="968" Count="0" />
+      <LineId Id="701" Count="4" />
+      <LineId Id="936" Count="0" />
+      <LineId Id="825" Count="0" />
+      <LineId Id="715" Count="0" />
+      <LineId Id="818" Count="2" />
+      <LineId Id="817" Count="0" />
+      <LineId Id="887" Count="0" />
+      <LineId Id="816" Count="0" />
+      <LineId Id="824" Count="0" />
+      <LineId Id="780" Count="0" />
+      <LineId Id="791" Count="2" />
+      <LineId Id="943" Count="0" />
+      <LineId Id="790" Count="0" />
+      <LineId Id="781" Count="1" />
+      <LineId Id="846" Count="2" />
+      <LineId Id="894" Count="0" />
+      <LineId Id="852" Count="1" />
+      <LineId Id="977" Count="0" />
+      <LineId Id="976" Count="0" />
+      <LineId Id="895" Count="0" />
+      <LineId Id="934" Count="0" />
+      <LineId Id="929" Count="1" />
+      <LineId Id="900" Count="0" />
+      <LineId Id="931" Count="1" />
+      <LineId Id="928" Count="0" />
+      <LineId Id="888" Count="0" />
+      <LineId Id="942" Count="0" />
+      <LineId Id="849" Count="0" />
+      <LineId Id="734" Count="2" />
+      <LineId Id="739" Count="0" />
+      <LineId Id="845" Count="0" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="WoodBunkEx.splitCombinedMaterials">
+      <LineId Id="15" Count="2" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="18" Count="1" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="20" Count="1" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="13" Count="0" />
+    </LineIds>
+    <LineIds Name="WoodBunkEx.stage">
+      <LineId Id="895" Count="0" />
+      <LineId Id="820" Count="11" />
+      <LineId Id="887" Count="0" />
+      <LineId Id="832" Count="6" />
+      <LineId Id="891" Count="0" />
+      <LineId Id="890" Count="0" />
+      <LineId Id="840" Count="2" />
+      <LineId Id="888" Count="0" />
+      <LineId Id="844" Count="2" />
+      <LineId Id="848" Count="10" />
+      <LineId Id="860" Count="23" />
+      <LineId Id="657" Count="0" />
+    </LineIds>
+    <LineIds Name="WoodBunkEx.stagingSequenceLeft">
+      <LineId Id="736" Count="0" />
+      <LineId Id="421" Count="3" />
+      <LineId Id="739" Count="0" />
+      <LineId Id="425" Count="5" />
+      <LineId Id="529" Count="0" />
+      <LineId Id="723" Count="0" />
+      <LineId Id="693" Count="0" />
+      <LineId Id="695" Count="0" />
+      <LineId Id="697" Count="0" />
+      <LineId Id="722" Count="0" />
+      <LineId Id="524" Count="4" />
+      <LineId Id="522" Count="0" />
+      <LineId Id="432" Count="2" />
+      <LineId Id="498" Count="0" />
+      <LineId Id="573" Count="0" />
+      <LineId Id="575" Count="0" />
+      <LineId Id="499" Count="3" />
+      <LineId Id="435" Count="0" />
+      <LineId Id="618" Count="2" />
+      <LineId Id="617" Count="0" />
+      <LineId Id="607" Count="0" />
+      <LineId Id="685" Count="0" />
+      <LineId Id="681" Count="0" />
+      <LineId Id="706" Count="4" />
+      <LineId Id="588" Count="0" />
+      <LineId Id="721" Count="0" />
+      <LineId Id="719" Count="1" />
+      <LineId Id="495" Count="0" />
+      <LineId Id="664" Count="2" />
+      <LineId Id="447" Count="0" />
+      <LineId Id="698" Count="0" />
+      <LineId Id="711" Count="5" />
+      <LineId Id="705" Count="0" />
+      <LineId Id="717" Count="1" />
+      <LineId Id="701" Count="2" />
+      <LineId Id="700" Count="0" />
+      <LineId Id="704" Count="0" />
+      <LineId Id="457" Count="0" />
+      <LineId Id="687" Count="0" />
+      <LineId Id="622" Count="0" />
+      <LineId Id="621" Count="0" />
+      <LineId Id="682" Count="0" />
+      <LineId Id="627" Count="0" />
+      <LineId Id="631" Count="0" />
+      <LineId Id="468" Count="0" />
+      <LineId Id="461" Count="2" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="WoodBunkEx.stagingSequenceRight">
+      <LineId Id="850" Count="0" />
+      <LineId Id="754" Count="3" />
+      <LineId Id="851" Count="0" />
+      <LineId Id="758" Count="6" />
+      <LineId Id="836" Count="0" />
+      <LineId Id="767" Count="2" />
+      <LineId Id="837" Count="0" />
+      <LineId Id="772" Count="63" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

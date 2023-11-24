@@ -5,6 +5,8 @@
 VAR
 	execute : BOOL;
 	stop : BOOL;
+	generalError : BOOL;
+	failLeft, failRight : BOOL;
 	
 	manualStep : BOOL := TRUE;
 	manualSuction : BOOL := FALSE;
@@ -13,6 +15,7 @@ VAR //local types
 	woodBunkArr : ARRAY[0..GVL.maxPairs] OF PositionMaterials;
 	
 	stagingTemplateLeft, stagingTemplateRight AT %M* : WoodBunkTable; //declaration with %M* overwrites addresses of local attributes
+	stagingArrayLeft, stagingArrayRight : ARRAY[0..GVL.maxPairs*2] OF STRING;
 	insertionLeft, insertionRight : Insertion;
 END_VAR
 VAR //for testing, to be removed when replaced with pressure sensors
@@ -27,10 +30,10 @@ VAR //for testing, to be removed when replaced with pressure sensors
 	
 	demoPairWB : PositionMaterials := (
 		position := 0,
-		top := 'WDS20',//'WDW20',
-		left := 'WDS20', //'WDS14',
-		right := 'WDS20', //'WDS14',
-		bottom := 'WDS20'); //'WDB20');
+		top := 'WDS20',
+		left := 'WDS20',
+		right := 'WDS20',
+		bottom := 'WDS14');
 		
 	demoPairCIP : PositionMaterials := (
 		position := 0,
@@ -40,13 +43,16 @@ VAR //for testing, to be removed when replaced with pressure sensors
 	demoHeight : REAL := 600; //mm
 END_VAR
 VAR
-	robotLeftOutputs, robotRightOutputs : ARRAY[1..50] OF INT;
+	robotLeftOutputs, robotRightOutputs : ARRAY[1..11] OF INT;
 	
 	insertionMaterials : ARRAY[Surface.TOP..Surface.BOTTOM] OF STRING;
-	robotLeftMaterial, robotRightMaterial : STRING;
+	//robotLeftMaterial, robotRightMaterial : STRING;
+	
+	topSuctionDelay : TON;
 	
 	step : (IDLE, LOAD_CIP, STAGING, LOAD_WB, PUSH, STRAP, RELEASE, COMPLETE := 1050);
 	
+	//these 2 ints should replace the 4 ints after
 	commandSet : INT;
 	commandStepLeft, commandStepRight : INT;
 	
@@ -56,20 +62,14 @@ VAR
 	stageSet : INT;	
 	stageStepLeft, stageStepRight : INT;
 	iSlotLeft, iSlotRight : INT(1..10);
-	
-	stagingArrayLeft, stagingArrayRight : ARRAY[0..GVL.maxPairs*2] OF STRING;
-	//iStageLeft, iStageRight : INT; //keep track of where staging started and ended
-	
-	failLeft, failRight : BOOL;
 END_VAR
 VAR //CONSTANT
 	sectionID : SectionEnum := SectionEnum.CHIPBOARD;
-	idleRobotOutput : ARRAY[1..50] OF INT;
+	idleRobotOutput : ARRAY[1..11] OF INT;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[SetupHardware();
 CallHardwareModules();
-
 callLocalModules();
 
 woodBunkArr[0] := demoPairWB;
@@ -79,19 +79,19 @@ IF stop THEN //may need to turn off suction
 	insertionRight.stop();
 	pistonBottom.stop();
 	
-	robotLeft.commandEx(idleRobotOutput);
-	robotRight.commandEx(idleRobotOutput);
+	robotLeft.clearCommand();
+	robotRight.clearCommand();
 	RETURN;
 END_IF
 
-(*
+
 IF NOT (insertionLeft.screw.HomeSet AND insertionRight.screw.HomeSet) THEN
 	insertionLeft.homingSequence();
 	insertionRight.homingSequence();
 	pistonBottom.retract();
 	RETURN;
 END_IF
-*)
+
 
 CASE step OF
 	IDLE:
@@ -108,7 +108,7 @@ CASE step OF
 		
 	LOAD_CIP:
 		IF NOT done THEN
-			done := loadCIP(pair:= demoPairWB);
+			done := loadCIP(pair:= demoPairWB, error => generalError);
 		END_IF
 		
 		IF
@@ -123,7 +123,7 @@ CASE step OF
 		
 	STAGING:
 		IF NOT done THEN
-			done := stage();
+			done := stage(error => generalError);
 		END_IF
 		
 		IF
@@ -137,7 +137,7 @@ CASE step OF
 	
 	LOAD_WB:
 		IF NOT done THEN
-			done := loadWB(pair := demoPairWB);
+			done := loadWB(pair := demoPairWB, error => generalError);
 		END_IF
 		
 		IF manualSuction THEN
@@ -194,13 +194,22 @@ CASE step OF
 		END_IF
 		
 	STRAP:
-		SetSuctions(leftSuction, FALSE);
-		SetSuctions(rightSuction, FALSE);
-		SetSuctions(bottomSuction, FALSE);
+		topSuctionDelay(IN:= , PT:= T#1S, Q=> , ET=> );
 		
+		strapper.bEnable := TRUE;
 		IF strapper.done THEN
+			topSuctionDelay.IN := FALSE;
 			step := RELEASE;
 			RETURN;
+		END_IF
+		
+		IF topSuctionDelay.Q THEN
+			SetSuctions(topSuction, FALSE);
+			SetSuctions(leftSuction, FALSE);
+			SetSuctions(rightSuction, FALSE);
+			SetSuctions(bottomSuction, FALSE);
+		ELSIF strapper.atBundleLevel THEN
+			topSuctionDelay.IN := TRUE;
 		END_IF
 		
 		IF strapper.ready THEN
@@ -208,13 +217,12 @@ CASE step OF
 		END_IF
 		
 		IF execute THEN
+			topSuctionDelay.IN := FALSE;
 			execute := FALSE;
 			step := RELEASE;
 		END_IF
 		
-	RELEASE: //release command
-		SetSuctions(topSuction, FALSE);
-		
+	RELEASE: //release command		
 		//insertionLeft.slideAbsolute(0);
 		//insertionRight.slideAbsolute(0);
 		
@@ -234,7 +242,9 @@ CASE step OF
 		//reset everything
 		step := IDLE;
 		
-END_CASE]]></ST>
+END_CASE
+
+CallHardwareModules(); //end program with hardware call]]></ST>
     </Implementation>
     <Folder Name="Load CIP" Id="{6998e9bf-e2b9-4fd9-897f-fda9aa3bdaab}" />
     <Folder Name="Load WB" Id="{e39bd797-b3d9-44f7-8374-fff5e06ecd5d}" />
@@ -276,7 +286,7 @@ insertionRight(
     <Method Name="changeRobotsEOAT" Id="{71a414a6-260d-4ed7-9b91-4169239414f1}">
       <Declaration><![CDATA[METHOD changeRobotsEOAT : BOOL
 VAR_IN_OUT
-	robot : KukaRobot;
+	robot : RobotA21;
 END_VAR
 VAR_INPUT
 	targetTool : SectionEnum;
@@ -290,7 +300,7 @@ END_VAR]]></Declaration>
 		SectionEnum.WOOD_BUNK: robotLeftOutputs[1] := A21.TOOL_CHANGE_BUNK;
 	END_CASE
 	
-	robotLeft.setCommandAndWait(robotLeftOutputs);
+	robotLeft.setCommand(robotLeftOutputs);
 END_IF
 
 IF robotRight.tool <> targetTool THEN
@@ -301,10 +311,21 @@ IF robotRight.tool <> targetTool THEN
 		SectionEnum.WOOD_BUNK: robotLeftOutputs[1] := A21.TOOL_CHANGE_BUNK;
 	END_CASE
 	
-	robotRight.setCommandAndWait(robotRightOutputs);
+	robotRight.setCommand(robotRightOutputs);
 END_IF
 
-changeRobotsEOAT := robotLeft.tool = targetTool AND robotRight.tool = targetTool;]]></ST>
+changeRobotsEOAT := robot.tool = targetTool;
+
+(*
+IF robot.gripper.id <> targetTool THEN
+	CASE targetTool OF
+		SectionEnum.CHIPBOARD:	robot.setGroup(group := 1, value := A21.TOOL_CHANGE_CHIPBOARD);
+		SectionEnum.WOOD_BUNK:	robot.setGroup(group := 1, value := A21.TOOL_CHANGE_BUNK);
+	END_CASE
+END_IF
+
+changeRobotsEOAT := robot.gripper.id = targetTool;
+*)]]></ST>
       </Implementation>
     </Method>
     <Method Name="createStagingArrayLeft" Id="{2fc9ef78-94fe-4b1c-a256-bbdc142f170a}" FolderPath="Staging\Staging Template\">
@@ -316,7 +337,7 @@ VAR
 	i : INT;
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[FOR i:=0 TO GVL.maxPairs*2 BY 1 DO
+        <ST><![CDATA[FOR i:=0 TO GVL.maxPairs BY 1 DO
 	remainingMaterial := woodBunkArr[i].top;
 	WHILE FIND(remainingMaterial, '_') > 0 DO
 		splitCombinedMaterials(remainingMaterial, splitMaterial);
@@ -382,26 +403,22 @@ END_VAR]]></Declaration>
 END_FOR]]></ST>
       </Implementation>
     </Method>
-    <Method Name="createStagingTemplate" Id="{7fe7b744-7294-4b6c-b036-1426eaceb21a}" FolderPath="Staging\Staging Template\">
-      <Declaration><![CDATA[METHOD PROTECTED createStagingTemplate : BOOL
+    <Method Name="generateStagingTemplate" Id="{7fe7b744-7294-4b6c-b036-1426eaceb21a}" FolderPath="Staging\Staging Template\">
+      <Declaration><![CDATA[METHOD PROTECTED generateStagingTemplate : BOOL
 VAR
 	remainingMaterial : STRING;
 	splitMaterial : STRING;
 	
 	i : INT;
+END_VAR
+VAR_STAT
+	temp : INT;
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[stagingTemplateLeft.autofill(demoPairWB.top);
-stagingTemplateLeft.autofill(demoPairWB.left);
-
-stagingTemplateRight.autofill(demoPairWB.right);
-stagingTemplateRight.autofill(demoPairWB.bottom);
-
-createStagingTemplate := TRUE;
-
-(*
-createStagingArrayLeft();
+        <ST><![CDATA[createStagingArrayLeft();
 createStagingArrayRight();
+
+//AddToStringArray(arr := stagingArrayLeft, newString := 'WDB20', numElements =>, nextIndex => );
 
 (*
 iterate through all pairs and autofill the template
@@ -410,17 +427,24 @@ replace succesfully autofilled materials with empty string
 when staging needs to be performed a 2nd time, autofilling empty strings is always unsuccessful
 *)
 FOR i:=0 TO GVL.maxPairs*2 BY 1 DO
-	//if autofill is successful, remove the material from the array
-	IF stagingTableLeft.autofill(materialID := stagingArrayLeft[i]) THEN
+	IF stagingTemplateLeft.autofill(materialID := stagingArrayLeft[i]) THEN
 		stagingArrayLeft[i] := '';
 	END_IF
 	
-	IF stagingTableRight.autofill(materialID := stagingArrayRight[i]) THEN
+	IF stagingTemplateRight.autofill(materialID := stagingArrayRight[i]) THEN
 		stagingArrayRight[i] := '';
 	END_IF
-
 END_FOR
-*)]]></ST>
+
+(*
+stagingTemplateLeft.autofill(demoPairWB.top);
+stagingTemplateLeft.autofill(demoPairWB.left);
+
+stagingTemplateRight.autofill(demoPairWB.right);
+stagingTemplateRight.autofill(demoPairWB.bottom);
+*)
+
+generateStagingTemplate := TRUE;]]></ST>
       </Implementation>
     </Method>
     <Method Name="loadCIP" Id="{4d48d146-da99-4898-b32c-d988fd277adc}" FolderPath="Load CIP\">
@@ -454,8 +478,8 @@ CASE loadSet OF
 	0: //demo only - only top chipboard loaded by left robot
 		IF 
 			loadingSequenceCIP(
-				actingRobot:= robotLeft, 
-				robotOutputs:= robotLeftOutputs, 
+				robot:= robotLeft, 
+				command:= robotLeftOutputs, 
 				storage:= skidLeft, 
 				loadStep:= loadStepLeft, 
 				surfaceID:= Surface.TOP,
@@ -470,8 +494,8 @@ CASE loadSet OF
 		IF robotLeft.operational AND NOT robotRight.operational THEN //left ok, right fail
 			IF //load bottom using left robot
 				loadingSequenceCIP(
-					actingRobot:= robotLeft, 
-					robotOutputs:= robotLeftOutputs, 
+					robot:= robotLeft, 
+					command:= robotLeftOutputs, 
 					storage:= skidLeft, 
 					loadStep:= loadStepLeft, 
 					surfaceID:= Surface.BOTTOM,
@@ -484,8 +508,8 @@ CASE loadSet OF
 		ELSIF NOT robotLeft.operational AND robotRight.operational THEN //left fail, right ok
 			IF //load top using right robot
 				loadingSequenceCIP(
-					actingRobot:= robotRight, 
-					robotOutputs:= robotRightOutputs, 
+					robot:= robotRight, 
+					command:= robotRightOutputs, 
 					storage:= skidRight, 
 					loadStep:= loadStepRight, 
 					surfaceID:= Surface.TOP,
@@ -511,8 +535,8 @@ END_CASE]]></ST>
     <Method Name="loadingSequenceCIP" Id="{dab34edb-3da5-4404-8c49-3d0bd468a2d2}" FolderPath="Load CIP\">
       <Declaration><![CDATA[METHOD loadingSequenceCIP : BOOL
 VAR_IN_OUT
-	actingRobot : KukaRobot;
-	robotOutputs : ARRAY[1..50] OF INT;
+	robot : RobotA21;
+	command : ARRAY[1..11] OF INT;
 	storage : MaterialHolder;
 	loadStep : INT;
 END_VAR
@@ -539,9 +563,9 @@ CASE loadStep OF
 			RETURN;
 		END_IF
 		
-		MEMSET(ADR(robotOutputs), 0, SIZEOF(robotOutputs));
-		robotOutputs[1] := A21.GET_CHIPBOARD_FROM_SKID;
-		robotOutputs[2] := slot;
+		MEMSET(ADR(command), 0, SIZEOF(command));
+		command[1] := A21.GET_CHIPBOARD_FROM_SKID;
+		command[2] := slot;
 		
 		IF surfaceID = Surface.BOTTOM THEN
 			//lower conveyor
@@ -549,32 +573,32 @@ CASE loadStep OF
 		
 		CASE surfaceID OF
 			Surface.TOP:
-				IF actingRobot.setCommandAndWait(robotOutputs) THEN
+				IF robot.setCommand(command) THEN
 					loadStep := 10;
 				END_IF
 				
 			Surface.BOTTOM:
 				//lower conveyor
-				IF actingRobot.setCommandAndWait(robotOutputs) (*AND conveyor lowered*) THEN
+				IF robot.setCommand(command) (*AND conveyor lowered*) THEN
 					loadStep := 10;
 				END_IF
 			
 		END_CASE
 		
 	10:
-		MEMSET(ADR(robotOutputs), 0, SIZEOF(robotOutputs));
+		MEMSET(ADR(command), 0, SIZEOF(command));
 		CASE surfaceID OF
-			Surface.TOP: 					robotOutputs[1] := A21.PLACE_CHIPBOARD_TO_TOP;
-			Surface.BOTTOM: 				robotOutputs[1] := A21.PLACE_CHIPBOARD_TO_BOTTOM;
+			Surface.TOP: 					command[1] := A21.PLACE_CHIPBOARD_TO_TOP;
+			Surface.BOTTOM: 				command[1] := A21.PLACE_CHIPBOARD_TO_BOTTOM;
 		END_CASE
-		robotOutputs[2] := slot;
+		command[2] := slot;
 		
-		IF actingRobot.setCommandAndWait(robotOutputs) THEN
+		IF robot.setCommand(command) THEN
 			loadStep := 10;
 		END_IF
 		
 	COMPLETE:
-		actingRobot.release(sectionID);
+		robot.release(sectionID);
 		loadingSequenceCIP := TRUE;
 		
 END_CASE]]></ST>
@@ -583,12 +607,12 @@ END_CASE]]></ST>
     <Method Name="loadingSequenceWB" Id="{ec5e74a4-d8f7-4a78-89ca-cd705faa47d2}" FolderPath="Load WB\">
       <Declaration><![CDATA[METHOD loadingSequenceWB : BOOL
 VAR_IN_OUT
-	actingRobot : KukaRobot;
-	robotOutputs : ARRAY[1..50] OF INT;
-	holdingMaterial : STRING;
+	robot : RobotA21;
+	//carryMaterial : STRING;
 	table : WoodBunkTable;
 	suctions : ARRAY[*] OF SuctionPad;
 	loadStep : INT;
+	slot : INT(1..10);
 END_VAR
 VAR_INPUT
 	surfaceID : Surface;
@@ -597,60 +621,339 @@ END_VAR
 VAR_OUTPUT
 	fail : BOOL;
 END_VAR
-VAR_STAT
-	currentMaterial : STRING;
-	slot : INT;
+VAR
 	i : DINT;
-	
-	test : BOOL;
+END_VAR
+VAR_STAT
+	tempSlot : INT;
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[currentMaterial := material;
-
-IF material = '' THEN
+        <ST><![CDATA[IF material = '' THEN
 	loadingSequenceWB := TRUE;
 	RETURN;
 END_IF
 
 CASE loadStep OF
-	0:
-		IF NOT table.findSlot(materialID := material, atSlot => slot) AND slot < 1 THEN	//cannot find material on table	
+	0: //wait for robot
+		robot.clearCommand();
+		
+		IF robot.Ready THEN
+			loadStep := 10;
+		END_IF
+		
+	10: //grab from table
+		IF NOT table.findSlot(materialID := material, atSlot => slot) (*AND slot < 1*) THEN	//cannot find material on table	
+			
+			fail := TRUE;
+			RETURN;
+		END_IF
+		tempSlot := slot;
+		IF NOT table.occupied[slot] AND robot.suspendedMaterial = '' THEN //move from table to robot gripper
+			robot.CarryMaterial := table.slots[slot];
+			table.remove(i := slot, materialID => );
+		END_IF
+		
+		IF robot.Done THEN
+			loadStep := COMPLETE;
+			RETURN;
+		ELSIF robot.materialAtHoldingPosition >= 1 AND robot.materialAtHoldingPosition <= 8 THEN
+			loadStep := 20;
+			RETURN;
+		END_IF
+		
+		CASE surfaceID OF
+			Surface.TOP: 					robot.setGroup(group := 1, value := A21.LOAD_BUNK_TO_TOP); 
+			Surface.LEFT, Surface.RIGHT: 	robot.setGroup(group := 1, value := A21.LOAD_BUNK_TO_SIDE);
+			Surface.BOTTOM: 				robot.setGroup(group := 1, value := A21.LOAD_BUNK_TO_BOTTOM);
+		END_CASE
+		robot.setGroup(group := 2, value := slot); 
+			
+	20: //place to insertion
+		IF robotLeft.Done THEN
+			loadStep := COMPLETE;
+			RETURN;
+		END_IF
+		
+		robot.setGroup(group := 9, value := robot.inputs[5]);
+		
+		IF robot.materialAtHoldingPosition > 0 AND robot.CarryMaterial <> '' THEN //move from gripper to insertion
+			IF insertionMaterials[surfaceID] = '' THEN //transfer to insertion as is
+				insertionMaterials[surfaceID] := robot.suspendedMaterial;
+			ELSE //join with existing material using underscore _
+				insertionMaterials[surfaceID] := JoinStrings(insertionMaterials[surfaceID], robot.suspendedMaterial, '_');
+			END_IF
+			robot.CarryMaterial := '';
+		END_IF
+		
+		CASE surfaceID OF
+			Surface.TOP, Surface.BOTTOM:
+				SetSuctions(suctions, TRUE (*robot.materialAtHoldingPosition = 1 OR robot.materialAtHoldingPosition = 4*));
+				
+			Surface.LEFT, Surface.RIGHT:
+				SetSuctions(suctions, TRUE (*robot.materialAtHoldingPosition = 2 OR robot.materialAtHoldingPosition = 3*));
+				(*
+				FOR i:=LOWER_BOUND(suctions, 1) TO UPPER_BOUND(suctions, 1) BY 1 DO
+					
+					IF i < UPPER_BOUND(suctions, 1)/2 THEN
+						suctions[i].enable := robot.materialAtHoldingPosition = 2; //enable upper half suctions
+					ELSE
+						suctions[i].enable := robot.materialAtHoldingPosition = 3; //enable lower half suctions
+					END_IF
+
+				END_FOR
+				*)
+		END_CASE
+	
+	COMPLETE:
+		robot.clearCommand();
+		loadingSequenceWB := TRUE;
+		
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="loadingSequenceWB_old" Id="{48ef858c-eabd-44dd-95dc-307256d783fc}" FolderPath="x_Reworking\">
+      <Declaration><![CDATA[METHOD loadingSequenceWB_old : BOOL
+VAR_IN_OUT
+	robot : RobotA21;
+	commands : ARRAY[1..11] OF INT;
+	carryMaterial : STRING;
+	table : WoodBunkTable;
+	suctions : ARRAY[*] OF SuctionPad;
+	loadStep : INT;
+	slot : INT(1..10);
+END_VAR
+VAR_INPUT
+	surfaceID : Surface;
+	material : STRING;
+END_VAR
+VAR_OUTPUT
+	fail : BOOL;
+END_VAR
+VAR
+	i : DINT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF material = '' THEN
+	loadingSequenceWB_old := TRUE;
+	RETURN;
+END_IF
+
+CASE loadStep OF
+	0: //wait for robot
+		IF robot.Ready THEN
+			loadStep := 10;
+		END_IF
+		
+	10: //grab from table
+		IF NOT table.findSlot(materialID := material, atSlot => slot) (*AND slot < 1*) THEN	//cannot find material on table	
 			fail := TRUE;
 			RETURN;
 		END_IF
 		
-		MEMSET(ADR(robotOutputs), 0, SIZEOF(robotOutputs));
-		CASE surfaceID OF
-			Surface.TOP: 					robotOutputs[1] := A21.LOAD_BUNK_TO_TOP;
-			Surface.LEFT, Surface.RIGHT: 	robotOutputs[1] := A21.LOAD_BUNK_TO_SIDE;
-			Surface.BOTTOM: 				robotOutputs[1] := A21.LOAD_BUNK_TO_BOTTOM;
-		END_CASE
-		robotOutputs[2] := slot;
+		IF NOT table.occupied[slot] AND carryMaterial = '' THEN //move from table to robot gripper
+			table.remove(i := slot, materialID => carryMaterial);
+		END_IF
 		
-		IF NOT table.occupied[slot] AND holdingMaterial = '' THEN //wood bunk is taken from table, move from table to robot gripper
-			table.remove(i := slot, materialID => );
-			holdingMaterial := material;
+		IF robot.inputs[5] > 0 THEN
+			loadStep := 20;
+			RETURN;
+		END_IF		
+		
+		MEMSET(ADR(commands), 0, SIZEOF(commands));
+		CASE surfaceID OF
+			Surface.TOP: 					commands[1] := A21.LOAD_BUNK_TO_TOP;
+			Surface.LEFT, Surface.RIGHT: 	commands[1] := A21.LOAD_BUNK_TO_SIDE;
+			Surface.BOTTOM: 				commands[1] := A21.LOAD_BUNK_TO_BOTTOM;
+		END_CASE
+		commands[2] := slot;
+		robot.setCommand(commands);
+			
+	20: //place to insertion
+		IF robotLeft.Done THEN
+			loadStep := COMPLETE;
+			RETURN;
+		END_IF
+		
+		robot.setCommand(commands);
+		robot.setGroup(group := 9, value := robot.inputs[5]);
+		
+		IF robot.inputs[5] > 0 THEN //move from gripper to insertion
+			IF insertionMaterials[surfaceID] = '' THEN //transfer to insertion as is
+				insertionMaterials[surfaceID] := carryMaterial;
+			ELSE //join with existing material using underscore _
+				insertionMaterials[surfaceID] := CONCAT(insertionMaterials[surfaceID], '_');
+				insertionMaterials[surfaceID] := CONCAT(insertionMaterials[surfaceID], carryMaterial);
+			END_IF
+			carryMaterial := '';
+		END_IF
+		
+		CASE surfaceID OF
+			Surface.TOP, Surface.BOTTOM:
+				SetSuctions(suctions, robot.inputs[5] = 1);
+				
+			Surface.LEFT, Surface.RIGHT:
+				FOR i:=LOWER_BOUND(suctions, 1) TO UPPER_BOUND(suctions, 1) BY 1 DO
+					
+					IF i < UPPER_BOUND(suctions, 1)/2 THEN
+						suctions[i].enable := robot.inputs[5] = 2; //enable upper half suctions
+					ELSE
+						suctions[i].enable := robot.inputs[5] = 3; //enable lower half suctions
+					END_IF
+
+				END_FOR
+				(*
+				suctions[1].enable := robot.inputs[5] = 2;
+				suctions[2].enable := robot.inputs[5] = 2;
+				
+				suctions[3].enable := robot.inputs[5] = 3;
+				suctions[4].enable := robot.inputs[5] = 3;
+				*)
+		END_CASE
+		(*
+		CASE robot.inputs[5] OF
+			1, 4: //top/bottom insertions - enable all suctions
+				SetSuctions(suctions, TRUE);
+				
+			2: //side insertion - enable upper half suctions
+				suctions[1].enable := TRUE;
+				suctions[2].enable := TRUE;
+			
+			3: //side insertion - enable lower half suctions
+				suctions[3].enable := TRUE;
+				suctions[4].enable := TRUE;
+			
+		END_CASE
+		*)
+	
+	COMPLETE:
+		robot.clearCommand();
+		MEMSET(ADR(commands), 0, SIZEOF(commands));
+		loadingSequenceWB_old := TRUE;
+		
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="loadingSequenceWB_simple" Id="{66d1a82e-19b9-4dbc-bfdc-434a8fb4c8bc}" FolderPath="x_Reworking\">
+      <Declaration><![CDATA[METHOD loadingSequenceWB_simple : BOOL
+VAR_IN_OUT
+	robot : RobotA21;
+	commands : ARRAY[1..11] OF INT;
+	carryMaterial : STRING;
+	table : WoodBunkTable;
+	suctions : ARRAY[*] OF SuctionPad;
+	loadStep : INT;
+	slot : INT(1..10);
+END_VAR
+VAR_INPUT
+	surfaceID : Surface;
+	material : STRING;
+END_VAR
+VAR_OUTPUT
+	fail : BOOL;
+END_VAR
+VAR
+	i : DINT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF material = '' THEN
+	loadingSequenceWB_simple := TRUE;
+	RETURN;
+END_IF
+
+CASE loadStep OF
+	0: //wait for robot
+		IF robot.Ready THEN
 			loadStep := 10;
 		END_IF
 		
-		IF actingRobot.inputs[5] > 0 THEN
-			robotOutputs[9] := 1;
-			SetSuctions(suctions, TRUE);
-			loadStep := COMPLETE;
+	10: //grab from table
+		IF NOT table.findSlot(materialID := material, atSlot => slot) (*AND slot < 1*) THEN	//cannot find material on table	
+			fail := TRUE;
+			RETURN;
 		END_IF
 		
-		IF actingRobot.setCommandAndWait(robotOutputs) THEN
+		IF robotLeft.Done THEN
 			loadStep := COMPLETE;
+			RETURN;
 		END_IF
 		
+		IF
+			robot.inputs[5] > 0 AND  //robot is holding wood bunk at insertion position
+			carryMaterial <> '' //robot gripper is carrying a wood bunk
+		THEN
+			//move from gripper to insertion
+			IF insertionMaterials[surfaceID] = '' THEN //transfer to insertion as is
+				insertionMaterials[surfaceID] := carryMaterial;
+			ELSE //join with existing material using underscore _
+				insertionMaterials[surfaceID] := CONCAT(insertionMaterials[surfaceID], '_');
+				insertionMaterials[surfaceID] := CONCAT(insertionMaterials[surfaceID], carryMaterial);
+			END_IF
+			carryMaterial := '';
+			
+		ELSIF
+			NOT table.occupied[slot] AND //table slot is vacant
+			table.slots[slot] <> '' AND //table slot had a wood bunk on it
+			carryMaterial <> '' //robot gripper is vacant
+		THEN
+			table.remove(i := slot, materialID => carryMaterial); //move from table to robot gripper
+			
+		END_IF		
+		
+		MEMSET(ADR(commands), 0, SIZEOF(commands));
+		CASE surfaceID OF
+			Surface.TOP: 					commands[1] := A21.LOAD_BUNK_TO_TOP;
+			Surface.LEFT, Surface.RIGHT: 	commands[1] := A21.LOAD_BUNK_TO_SIDE;
+			Surface.BOTTOM: 				commands[1] := A21.LOAD_BUNK_TO_BOTTOM;
+		END_CASE
+		commands[2] := slot;
+		
+		robot.setCommand(commands);
+		robot.setGroup(group := 9, value := robot.inputs[5]);
+		
+		CASE surfaceID OF
+			Surface.TOP, Surface.BOTTOM:
+				SetSuctions(suctions, robot.inputs[5] = 1);
+				
+			Surface.LEFT, Surface.RIGHT:
+				FOR i:=LOWER_BOUND(suctions, 1) TO UPPER_BOUND(suctions, 1) BY 1 DO
+					
+					IF i < UPPER_BOUND(suctions, 1)/2 THEN
+						suctions[i].enable := robot.inputs[5] = 2; //enable upper half suctions
+					ELSE
+						suctions[i].enable := robot.inputs[5] = 3; //enable lower half suctions
+					END_IF
+
+				END_FOR
+				(*
+				//if the FOR loop does not work, use this
+				suctions[1].enable := robot.inputs[5] = 2;
+				suctions[2].enable := robot.inputs[5] = 2;
+				
+				suctions[3].enable := robot.inputs[5] = 3;
+				suctions[4].enable := robot.inputs[5] = 3;
+				*)
+		END_CASE
+		(*
+		//if the above does not work, revert to this
+		CASE robot.inputs[5] OF
+			1, 4: //top/bottom insertions - enable all suctions
+				SetSuctions(suctions, TRUE);
+				
+			2: //side insertion - enable upper half suctions
+				suctions[1].enable := TRUE;
+				suctions[2].enable := TRUE;
+			
+			3: //side insertion - enable lower half suctions
+				suctions[3].enable := TRUE;
+				suctions[4].enable := TRUE;
+		END_CASE
+		*)		
+	
 	COMPLETE:
-		actingRobot.idleCommand();
-		MEMSET(ADR(robotOutputs), 0, SIZEOF(robotOutputs));
+		robot.clearCommand();
+		MEMSET(ADR(commands), 0, SIZEOF(commands));
+		loadingSequenceWB_simple := TRUE;
 		
-		insertionMaterials[Surface.TOP] := holdingMaterial;
-		holdingMaterial := '';
-		
-		loadStep := 0;
 END_CASE]]></ST>
       </Implementation>
     </Method>
@@ -663,19 +966,11 @@ VAR_OUTPUT
 	error : BOOL;
 END_VAR
 VAR_STAT
-	running : BOOL;
+	leftMaterial : STRING;
+	rightMaterial : STRING;
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[sectionID := SectionEnum.WOOD_BUNK;
-
-(*
-anything outside the state machine is checked every cycle
--robot status
--robot reservation
--robot tool
-
-everything else inside the state machine is performed in steps
-*)
 
 (*
 IF NOT robotLeft.operational OR NOT robotLeft.operational THEN
@@ -683,77 +978,104 @@ IF NOT robotLeft.operational OR NOT robotLeft.operational THEN
 	RETURN;
 END_IF
 *)
-running := FALSE;
 
-IF NOT (robotLeft.reserve(sectionID) AND robotRight.reserve(sectionID)) THEN
+IF robotLeft.error OR robotRight.error THEN
+	error := TRUE;
+	RETURN;
+	
+ELSIF NOT (robotLeft.reserve(sectionID) AND robotRight.reserve(sectionID)) THEN //loading requires both robots be reserved together
+	RETURN;
+	
+ELSIF
+	(robotLeft.tool <> sectionID AND_THEN NOT changeRobotsEOAT(robot := robotLeft, targetTool := sectionID)) OR
+	(robotRight.tool <> sectionID AND_THEN NOT changeRobotsEOAT(robot := robotRight, targetTool := sectionID))
+	//NOT (robotLeft.tool = sectionID AND robotRight.tool = sectionID) 
+THEN //robots have wrong tool
+	//changeRobotsEOAT(robot := robotLeft, targetTool := sectionID); //wait for robots to finish changing tools
+	//changeRobotsEOAT(robot := robotRight, targetTool := sectionID);
 	RETURN;
 END_IF
-
-IF NOT (robotLeft.tool = sectionID AND robotRight.tool = sectionID) THEN //robots have wrong tool
-	changeRobotsEOAT(robot := robotLeft, targetTool := sectionID); //wait for robots to finish changing tools
-	changeRobotsEOAT(robot := robotRight, targetTool := sectionID);
-	RETURN;
-END_IF
-
-running := TRUE;
+failLeft := FALSE;
+failRight := FALSE;
 
 CASE loadSet OF
 	0: //top and bottom
+		leftMaterial := pair.top;
+		rightMaterial := pair.bottom;
 		IF 
 			loadingSequenceWB(
-				actingRobot:= robotLeft, 
-				robotOutputs:= robotLeftOutputs, 
-				holdingMaterial:= robotLeftMaterial,
+				robot:= robotLeft, 
 				table:= stagingTableLeft, 
 				loadStep:= loadStepLeft, 
+				slot:= iSlotLeft,
 				suctions:= topSuction,
 				surfaceID:= Surface.TOP, 
 				material:= pair.top, 
 				fail=> failLeft)
+			
 			AND
 			loadingSequenceWB(
-				actingRobot:= robotRight, 
-				robotOutputs:= robotRightOutputs, 
-				holdingMaterial:= robotRightMaterial,
+				robot:= robotRight,
 				table:= stagingTableRight, 
 				loadStep:= loadStepRight, 
+				slot:= iSlotRight,
 				suctions:= bottomSuction,
 				surfaceID:= Surface.BOTTOM, 
 				material:= pair.bottom, 
 				fail=> failRight)
+			
 		THEN
 			loadStepLeft := loadStepRight := 0;
 			loadSet := 10;
 		END_IF
 		
 	10: //sides
+		leftMaterial := pair.left;
+		rightMaterial := pair.right;
 		IF
 			loadingSequenceWB(
-				actingRobot:= robotLeft, 
-				robotOutputs:= robotLeftOutputs, 
-				holdingMaterial:= robotLeftMaterial,
+				robot:= robotLeft, 
 				table:= stagingTableLeft, 
 				loadStep:= loadStepLeft, 
+				slot:= iSlotLeft,
 				suctions:= leftSuction,
 				surfaceID:= Surface.LEFT, 
 				material:= pair.left, 
 				fail=> )
+			
 			AND
 			loadingSequenceWB(
-				actingRobot:= robotRight, 
-				robotOutputs:= robotRightOutputs, 
-				holdingMaterial:= robotRightMaterial,
+				robot:= robotRight, 
 				table:= stagingTableRight, 
 				loadStep:= loadStepRight, 
+				slot:= iSlotRight,
 				suctions:= rightSuction,
 				surfaceID:= Surface.RIGHT, 
 				material:= pair.right, 
 				fail=> )
+			
 		THEN
 			loadStepLeft := loadStepRight := 0;
+			//loadSet := 20;
 			loadSet := COMPLETE;
 		END_IF
 		
+	20: //left robot to bottom insertion - module only
+		leftMaterial := pair.bottom;
+		IF 
+			loadingSequenceWB(
+				robot:= robotLeft, 
+				table:= stagingTableLeft, 
+				loadStep:= loadStepLeft, 
+				slot:= iSlotLeft,
+				suctions:= bottomSuction,
+				surfaceID:= Surface.BOTTOM, 
+				material:= pair.bottom, 
+				fail=> failLeft)
+		THEN
+			loadSet := COMPLETE;
+		END_IF
+	
 	COMPLETE:
 		loadSet := 0;
 		loadStepLeft := loadStepRight := 0;
@@ -778,10 +1100,13 @@ END_VAR]]></Declaration>
         <ST><![CDATA[FindAndSplitChar(
 	sSeparatorChar:= '_', 
 	pSrcString:= ADR(materialID), 
+	
 	pLeftString:= ADR(splitMaterial), 
 	nLeftSize:= SIZEOF(splitMaterial), 
+	
 	pRightString:= ADR(materialID), 
 	nRightSize:= SIZEOF(materialID), 
+	
 	bSearchFromRight:= FALSE);]]></ST>
       </Implementation>
     </Method>
@@ -803,40 +1128,40 @@ IF NOT (robotLeft.reserve(reserveRequest := sectionID) AND robotRight.reserve(re
 END_IF
 
 IF NOT (robotLeft.tool = sectionID AND robotRight.tool = sectionID) THEN //robots have wrong tool
-	changeRobotsEOAT(targetTool := sectionID); //wait for robots to finish changing tools
+	changeRobotsEOAT(robot := robotLeft, targetTool := sectionID); //wait for robots to finish changing tools
+	changeRobotsEOAT(robot := robotRight, targetTool := sectionID);
 	RETURN;
 END_IF
 *)
 
 CASE stageSet OF
 	0: //create staging template
-		createStagingTemplate();
-		stageSet := 10;
+		IF generateStagingTemplate() THEN
+			stageSet := 10;
+		END_IF
 	
 	10: //staging sequence
-		IF stagingSequenceLeft() //AND stagingSequenceRight()
+		IF stagingSequenceLeft(fail => failLeft) AND stagingSequenceRight(fail => failRight)
 			(*
 			stagingSequence(				
-				actingRobot:= robotLeft, 
-				robotOutputs:= robotLeftOutputs,
-				holdingMaterial:= robotLeftMaterial,
+				robot:= robotLeft, 
+				commands:= robotLeftOutputs,
 				template:= stagingTemplateLeft,
 				table:= stagingTableLeft,  
 				magazine:= magazineLeft, 
 				stagingStep:= stageStepLeft, 
-				stagingSlot:= iStagingSlotLeft,
-				fail=> stageFailLeft)
+				iSlot:= iSlotLeft,
+				fail=> failLeft)
 			
 			AND
 			stagingSequence(
-				actingRobot:= robotRight, 
-				robotOutputs:= robotRightOutputs,
-				holdingMaterial:= robotRightMaterial,
+				robot:= robotRight, 
+				commands:= robotRightOutputs,
 				template:= stagingTemplateRight, 
 				magazine:= magazineRight, 
 				table:= stagingTableRight, 
 				stagingStep:= stageStepRight, 
-				stagingSlot:= iStagingSlotRight,
+				iSlot:= iSlotRight,
 				fail=> )
 			*)
 		THEN
@@ -859,134 +1184,124 @@ CASE stageSet OF
 END_CASE]]></ST>
       </Implementation>
     </Method>
-    <Method Name="stagingSequence" Id="{a405d3c7-f8a4-4bcd-a99a-948da7c9242e}" FolderPath="Staging\">
-      <Declaration><![CDATA[METHOD stagingSequence : BOOL
-VAR_IN_OUT
-	robot : KukaRobot;
-	commands : ARRAY[1..50] OF INT;	
-	carryMaterial : STRING;
-	template : WoodBunkTable;
-	table : WoodBunkTable;
-	magazine : MaterialHolder;
-	stagingStep : INT;
-	iSlot : INT;
-END_VAR
-VAR_OUTPUT
-	fail : BOOL;
-END_VAR
-VAR
-	magazineColumn : INT := -1; //valid positions start from 1
-END_VAR
-VAR CONSTANT
-	WIP : INT := 0;
-	PASSED : INT := 1;
-	FAILED : INT := 2;
-	
-	suctionDistance : INT := 20;
-END_VAR]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[IF //staging table is full or matches template, or sequence has reached end of table
-	table.isFull() OR iSlot > 10 OR 
-	MEMCMP(ADR(table.slots), ADR(template.slots), SIZEOF(table.slots)) = 0
-THEN
-	stagingSequence := TRUE;
-	RETURN;
-END_IF
-
-IF template.slots[iSlot] = '' THEN //no material at slot
-	iSlot := iSlot + 1;
-	RETURN;
-END_IF
-
-IF //robot in used by other section or has wrong tool
-	NOT robot.reserve(reserveRequest := sectionID) OR_ELSE
-	(robot.tool <> SectionID AND_THEN changeRobotsEOAT(robot := robotLeft, targetTool := sectionID))
-THEN
-	RETURN;
-END_IF
-
-//follow the template as is
-CASE stagingStep OF
-	0: //wait for robot
-		IF robot.Ready THEN
-			step := 10;
-		END_IF
-		
-	10: //grab material from magazine
-		IF
-			NOT magazine.findSlot(materialID := template.slots[iSlot], atSlot => magazineColumn) AND
-			magazineColumn < 1
-		THEN
-			fail := TRUE;
-			RETURN;
-		END_IF
-		
-		MEMSET(ADR(commands), 0, SIZEOF(commands));
-		commands[1] := A21.STAGE_BUNK;
-		commands[2] := magazineColumn;
-		commands[3] := iSlot;
-		robot.setCommandAndWait(commands);
-		
-		IF robot.inputs[2] < suctionDistance AND carryMaterial = '' THEN //robot is grabbing material
-			carryMaterial := magazine.slots[magazineColumn];
-			step := 20;
-		END_IF
-	
-	20:
-		MEMSET(ADR(commands), 0, SIZEOF(commands));
-		commands[1] := A21.STAGE_BUNK;
-		commands[2] := magazineColumn;
-		commands[3] := iSlot;
-		robot.setCommandAndWait(commands);
-		
-		IF table.occupied[magazineColumn] AND table.slots[iSlot] = '' THEN //move from gripper to table
-			table.place(i := iSlot, materialID := carryMaterial);
-			carryMaterial := '';
-		END_IF
-		
-		IF robot.Done THEN
-			stagingStep := COMPLETE;
-		END_IF
-	
-	COMPLETE:
-		robot.idleCommand();
-		MEMSET(ADR(commands), 0, SIZEOF(commands));
-		iSlot := iSlot + 1;
-		stagingStep := 0;
-		(*
-		IF robot.Ready THEN
-			iSlot := iSlot + 1;
-			stagingStep := 0;
-		END_IF
-		*)
-END_CASE]]></ST>
-      </Implementation>
-    </Method>
     <Method Name="stagingSequenceLeft" Id="{a2e944c4-f8c2-4354-93da-04205d3c2d79}" FolderPath="Staging\">
       <Declaration><![CDATA[METHOD stagingSequenceLeft : BOOL
 VAR_OUTPUT
 	fail : BOOL;
 END_VAR
 VAR
-	magazineColumn : INT := -1; //valid positions start from 1
+	magazineColumn : INT; //valid positions start from 1
 END_VAR
 VAR CONSTANT
 	WIP : INT := 0;
 	PASSED : INT := 1;
 	FAILED : INT := 2;
-	suctionDistance : INT := 20;
-END_VAR
-VAR_STAT
-	test : BOOL;
+	suctionDistance : INT := 15;
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[test := MEMCMP(ADR(stagingTableLeft.slots), ADR(stagingTemplateLeft.slots), SIZEOF(stagingTableLeft.slots)) = 0;
-
-IF //staging table is full or matches staging template
+        <ST><![CDATA[IF //staging table is full or matches staging template
 	stagingTableLeft.isFull() OR iSlotLeft > 10 OR 
 	MEMCMP(ADR(stagingTableLeft.slots), ADR(stagingTemplateLeft.slots), SIZEOF(stagingTableLeft.slots)) = 0
 THEN
 	stagingSequenceLeft := TRUE;
+	RETURN;
+END_IF
+
+IF stagingTemplateLeft.slots[iSlotLeft] = '' THEN
+	iSlotLeft := iSlotLeft + 1;
+	RETURN;
+	
+ELSIF robotLeft.offline THEN
+	fail := TRUE;
+	RETURN;
+	
+ELSIF //robot in used by other section, or has wrong tool and is not done changing
+	NOT robotLeft.reserve(reserveRequest := sectionID) OR_ELSE
+	(robotLeft.tool <> SectionID AND_THEN NOT changeRobotsEOAT(robot := robotLeft, targetTool := sectionID))
+THEN
+	RETURN;
+END_IF
+
+//follow the stagingTemplateLeft as is
+CASE stageStepLeft OF
+	0:
+		robotLeft.clearCommand();
+		
+		IF robotLeft.Ready THEN
+			stageStepLeft := 10;
+		END_IF
+		
+	10:
+		IF NOT magazineLeft.findSlot(materialID := stagingTemplateLeft.slots[iSlotLeft], atSlot => magazineColumn) THEN
+			fail := TRUE;
+			RETURN;
+		END_IF
+			
+		IF robotLeft.eoatDistance < suctionDistance THEN //robot is grabbing material
+			robotLeft.CarryMaterial := magazineLeft.slots[magazineColumn];
+		END_IF
+		
+		IF robotLeft.Done THEN
+			stageStepLeft := COMPLETE;
+			RETURN;
+		ELSIF stagingTableLeft.occupied[iSlotLeft] THEN
+			stageStepLeft := 20;
+			RETURN;
+		END_IF
+		
+		robotLeft.setGroup(group := 1, value := A21.STAGE_BUNK);
+		robotLeft.setGroup(group := 2, value := magazineColumn);
+		robotLeft.setGroup(group := 3, value := iSlotLeft);
+		
+	20:
+		IF
+			stagingTableLeft.occupied[iSlotLeft] AND //staging table slot is occupied
+			stagingTableLeft.slots[iSlotLeft] = '' AND //staging table has not recorded a bunk
+			robotLeft.CarryMaterial <> '' //robot is carrying a bunk
+		THEN
+			stagingTableLeft.place(i := iSlotLeft, materialID := robotLeft.CarryMaterial);
+			robotLeft.CarryMaterial := '';
+		END_IF
+		
+		IF robotLeft.Done THEN
+			stageStepLeft := COMPLETE;
+			RETURN;
+		END_IF
+		
+	COMPLETE:
+		(*
+		IF stagingTableLeft.occupied[iSlotLeft] THEN //move from gripper to table
+			stagingTableLeft.place(i := iSlotLeft, materialID := robotLeft.CarryMaterial);
+			robotLeft.CarryMaterial := '';
+		END_IF
+		*)
+		robotLeft.clearCommand();
+		
+		iSlotLeft := iSlotLeft + 1;
+		stageStepLeft := 0;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="stagingSequenceLeft_old" Id="{8d49159b-390c-41e9-ac59-4702bd265405}" FolderPath="x_Reworking\">
+      <Declaration><![CDATA[METHOD stagingSequenceLeft_old : BOOL
+VAR_OUTPUT
+	fail : BOOL;
+END_VAR
+VAR
+	magazineColumn : INT; //valid positions start from 1
+END_VAR
+VAR CONSTANT
+	WIP : INT := 0;
+	PASSED : INT := 1;
+	FAILED : INT := 2;
+	suctionDistance : INT := 15;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF //staging table is full or matches staging template
+	stagingTableLeft.isFull() OR iSlotLeft > 10 OR 
+	MEMCMP(ADR(stagingTableLeft.slots), ADR(stagingTemplateLeft.slots), SIZEOF(stagingTableLeft.slots)) = 0
+THEN
+	stagingSequenceLeft_old := TRUE;
 	RETURN;
 END_IF
 
@@ -1005,48 +1320,72 @@ END_IF
 //follow the stagingTemplateLeft as is
 CASE stageStepLeft OF
 	0:
+		robotLeft.clearCommand();
+		MEMSET(ADR(robotLeftOutputs), 0, SIZEOF(robotLeftOutputs));
+		
 		IF robotLeft.Ready THEN
-			step := 10;
+			stageStepLeft := 10;
 		END_IF
 		
 	10:
-		IF
-			NOT magazineLeft.findSlot(materialID := stagingTemplateLeft.slots[iSlotLeft], atSlot => magazineColumn) AND
-			magazineColumn < 1
-		THEN
+		IF NOT magazineLeft.findSlot(materialID := stagingTemplateLeft.slots[iSlotLeft], atSlot => magazineColumn) THEN
 			fail := TRUE;
 			RETURN;
 		END_IF
-		
-		MEMSET(ADR(robotLeftOutputs), 0, SIZEOF(robotLeftOutputs));
-		robotLeftOutputs[1] := A21.STAGE_BUNK;
-		robotLeftOutputs[2] := magazineColumn;
-		robotLeftOutputs[3] := iSlotLeft;
-		robotLeft.setCommandAndWait(robotLeftOutputs);
-		
-		IF robotLeft.inputs[2] < suctionDistance AND robotLeftMaterial = '' THEN //robot is grabbing material
-			robotLeftMaterial := magazineLeft.slots[magazineColumn];
-			step := 20;
-		END_IF
-		
-	20:
-		MEMSET(ADR(robotLeftOutputs), 0, SIZEOF(robotLeftOutputs));
-		robotLeftOutputs[1] := A21.STAGE_BUNK;
-		robotLeftOutputs[2] := magazineColumn;
-		robotLeftOutputs[3] := iSlotLeft;
-		robotLeft.setCommandAndWait(robotLeftOutputs);
-		
-		IF stagingTableLeft.occupied[magazineColumn] AND stagingTableLeft.slots[iSlotLeft] = '' THEN //move from gripper to table
-			stagingTableLeft.place(i := iSlotLeft, materialID := robotLeftMaterial);
-			robotLeftMaterial := '';
+			
+		IF robotLeft.eoatDistance < suctionDistance THEN //robot is grabbing material
+			robotLeft.CarryMaterial := magazineLeft.slots[magazineColumn];
 		END_IF
 		
 		IF robotLeft.Done THEN
 			stageStepLeft := COMPLETE;
+			RETURN;
 		END_IF
-	
+		
+		MEMSET(ADR(robotLeftOutputs), 0, SIZEOF(robotLeftOutputs));
+		robotLeft.setGroup(group := 1, value := A21.STAGE_BUNK);
+		robotLeft.setGroup(group := 2, value := magazineColumn);
+		robotLeft.setGroup(group := 3, value := iSlotLeft);
+		robotLeftOutputs[1] := A21.STAGE_BUNK;
+		robotLeftOutputs[2] := magazineColumn;
+		robotLeftOutputs[3] := iSlotLeft;
+		
+		robotLeft.setCommand(robotLeftOutputs);
+		
+	(*
+	20:
+		
+		(*
+		MEMSET(ADR(robotLeftOutputs), 0, SIZEOF(robotLeftOutputs));
+		robotLeftOutputs[1] := A21.STAGE_BUNK;
+		robotLeftOutputs[2] := magazineColumn;
+		robotLeftOutputs[3] := iSlotLeft;
+		robotLeft.commandEx(robotLeftOutputs);
+		*)
+		
+		robotLeft.commandEx(robotLeftOutputs);
+		
+		IF stagingTableLeft.occupied[magazineColumn] THEN //move from gripper to table
+			stagingTableLeft.place(i := iSlotLeft, materialID := robotLeftMaterial);
+			robotLeftMaterial := '';
+			stageStepLeft := 30;
+		END_IF
+				
+	30:
+		robotLeft.commandEx(robotLeftOutputs);
+		IF robotLeft.Done THEN
+			stageStepLeft := COMPLETE;
+			RETURN;
+		END_IF
+	*)
 	COMPLETE:
-		robotLeft.idleCommand();
+		IF stagingTableLeft.occupied[iSlotLeft] THEN //move from gripper to table
+			stagingTableLeft.place(i := iSlotLeft, materialID := robotLeft.suspendedMaterial);
+			robotLeft.CarryMaterial := '';
+		END_IF
+		
+		
+		robotLeft.clearCommand();
 		MEMSET(ADR(robotLeftOutputs), 0, SIZEOF(robotLeftOutputs));
 		
 		iSlotLeft := iSlotLeft + 1;
@@ -1066,14 +1405,10 @@ VAR CONSTANT
 	WIP : INT := 0;
 	PASSED : INT := 1;
 	FAILED : INT := 2;
-END_VAR
-VAR_STAT
-	test : BOOL;
+	suctionDistance : INT := 15;
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[test := MEMCMP(ADR(stagingTableRight.slots), ADR(stagingTemplateRight.slots), SIZEOF(stagingTableRight.slots)) = 0;
-
-IF //staging table is full or matches staging template
+        <ST><![CDATA[IF //staging table is full or matches staging template
 	stagingTableRight.isFull() OR iSlotRight > 10 OR 
 	MEMCMP(ADR(stagingTableRight.slots), ADR(stagingTemplateRight.slots), SIZEOF(stagingTableRight.slots)) = 0
 THEN
@@ -1082,46 +1417,74 @@ THEN
 END_IF
 
 IF stagingTemplateRight.slots[iSlotRight] = '' THEN
-	stageStepRight := COMPLETE;
+	iSlotRight := iSlotRight + 1;
+	RETURN;
+	
+ELSIF robotRight.offline THEN
+	fail := TRUE;
+	RETURN;
+	
+ELSIF //robot in used by other section or has wrong tool
+	NOT robotRight.reserve(reserveRequest := sectionID) OR_ELSE
+	(robotRight.tool <> SectionID AND_THEN changeRobotsEOAT(robot := robotRight, targetTool := sectionID))
+THEN
+	RETURN;
 END_IF
 
 //follow the stagingTemplateRight as is
 CASE stageStepRight OF
 	0:
+		robotRight.clearCommand();
+		
 		IF robotRight.Ready THEN
-			step := 10;
+			stageStepRight := 10;
 		END_IF
 		
 	10:
-		IF
-			NOT magazineRight.findSlot(materialID := stagingTemplateRight.slots[iSlotRight], atSlot => magazineColumn) AND
-			magazineColumn < 1
-		THEN
+		IF NOT magazineRight.findSlot(materialID := stagingTemplateRight.slots[iSlotRight], atSlot => magazineColumn) THEN
 			fail := TRUE;
 			RETURN;
 		END_IF
-		
-		MEMSET(ADR(robotRightOutputs), 0, SIZEOF(robotRightOutputs));
-		robotRightOutputs[1] := A21.STAGE_BUNK;
-		robotRightOutputs[2] := magazineColumn;
-		robotRightOutputs[3] := iSlotRight;
-		
-		robotRightMaterial := magazineRight.slots[magazineColumn];
-		
-		IF stagingTableRight.occupied[magazineColumn] THEN //move from gripper to table
-			stagingTableRight.place(i := magazineColumn, materialID := robotRightMaterial);
-			robotRightMaterial := '';
-			step := 10;
+			
+		IF robotRight.eoatDistance < suctionDistance THEN //robot is grabbing material
+			robotRight.CarryMaterial := magazineRight.slots[magazineColumn];
 		END_IF
 		
-		robotRight.setCommandAndWait(robotRightOutputs);
 		IF robotRight.Done THEN
 			stageStepRight := COMPLETE;
+			RETURN;
+		ELSIF stagingTableRight.occupied[iSlotRight] THEN
+			stageStepRight := 20;
+			RETURN;
 		END_IF
-	
+		
+		robotRight.setGroup(group := 1, value := A21.STAGE_BUNK);
+		robotRight.setGroup(group := 2, value := magazineColumn);
+		robotRight.setGroup(group := 3, value := iSlotRight);
+		
+	20:
+		IF
+			stagingTableRight.occupied[iSlotRight] AND //staging table slot is occupied
+			stagingTableRight.slots[iSlotRight] = '' AND //staging table has not recorded a bunk
+			robotRight.CarryMaterial <> '' //robot is carrying a bunk
+		THEN
+			stagingTableRight.place(i := iSlotRight, materialID := robotRight.CarryMaterial);
+			robotRight.CarryMaterial := '';
+		END_IF
+		
+		IF robotRight.Done THEN
+			stageStepRight := COMPLETE;
+			RETURN;
+		END_IF
+		
 	COMPLETE:
-		robotRight.idleCommand();
-		MEMSET(ADR(robotRightOutputs), 0, SIZEOF(robotRightOutputs));
+		(*
+		IF stagingTableRight.occupied[iSlotRight] THEN //move from gripper to table
+			stagingTableRight.place(i := iSlotRight, materialID := robotRight.CarryMaterial);
+			robotRight.CarryMaterial := '';
+		END_IF
+		*)
+		robotRight.clearCommand();
 		
 		iSlotRight := iSlotRight + 1;
 		stageStepRight := 0;
@@ -1129,11 +1492,11 @@ END_CASE]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="MAIN">
-      <LineId Id="3429" Count="9" />
-      <LineId Id="3597" Count="0" />
-      <LineId Id="3596" Count="0" />
-      <LineId Id="3441" Count="154" />
-      <LineId Id="167" Count="0" />
+      <LineId Id="3855" Count="124" />
+      <LineId Id="4035" Count="1" />
+      <LineId Id="3980" Count="0" />
+      <LineId Id="3983" Count="47" />
+      <LineId Id="3665" Count="0" />
     </LineIds>
     <LineIds Name="MAIN.callLocalModules">
       <LineId Id="32" Count="0" />
@@ -1161,8 +1524,15 @@ END_CASE]]></ST>
       <LineId Id="37" Count="0" />
       <LineId Id="21" Count="0" />
       <LineId Id="9" Count="0" />
+      <LineId Id="53" Count="1" />
+      <LineId Id="52" Count="0" />
+      <LineId Id="45" Count="0" />
+      <LineId Id="44" Count="0" />
+      <LineId Id="48" Count="2" />
+      <LineId Id="46" Count="1" />
       <LineId Id="23" Count="0" />
       <LineId Id="22" Count="0" />
+      <LineId Id="51" Count="0" />
     </LineIds>
     <LineIds Name="MAIN.createStagingArrayLeft">
       <LineId Id="12" Count="3" />
@@ -1199,52 +1569,20 @@ END_CASE]]></ST>
       <LineId Id="27" Count="2" />
       <LineId Id="5" Count="0" />
     </LineIds>
-    <LineIds Name="MAIN.createStagingTemplate">
-      <LineId Id="259" Count="6" />
-      <LineId Id="330" Count="0" />
-      <LineId Id="311" Count="0" />
-      <LineId Id="266" Count="0" />
-      <LineId Id="312" Count="0" />
-      <LineId Id="314" Count="0" />
-      <LineId Id="308" Count="0" />
-      <LineId Id="306" Count="0" />
-      <LineId Id="327" Count="0" />
-      <LineId Id="329" Count="0" />
-      <LineId Id="328" Count="0" />
-      <LineId Id="326" Count="0" />
-      <LineId Id="268" Count="0" />
-      <LineId Id="325" Count="0" />
-      <LineId Id="316" Count="0" />
-      <LineId Id="323" Count="0" />
-      <LineId Id="318" Count="1" />
-      <LineId Id="321" Count="0" />
-      <LineId Id="324" Count="0" />
-      <LineId Id="320" Count="0" />
-      <LineId Id="315" Count="0" />
-      <LineId Id="298" Count="0" />
-      <LineId Id="331" Count="0" />
+    <LineIds Name="MAIN.generateStagingTemplate">
+      <LineId Id="400" Count="1" />
+      <LineId Id="441" Count="0" />
+      <LineId Id="440" Count="0" />
+      <LineId Id="402" Count="7" />
+      <LineId Id="411" Count="6" />
+      <LineId Id="419" Count="0" />
+      <LineId Id="422" Count="6" />
+      <LineId Id="421" Count="0" />
+      <LineId Id="430" Count="0" />
+      <LineId Id="429" Count="0" />
     </LineIds>
     <LineIds Name="MAIN.loadCIP">
-      <LineId Id="233" Count="1" />
-      <LineId Id="87" Count="7" />
-      <LineId Id="232" Count="0" />
-      <LineId Id="96" Count="1" />
-      <LineId Id="241" Count="0" />
-      <LineId Id="98" Count="6" />
-      <LineId Id="187" Count="6" />
-      <LineId Id="113" Count="0" />
-      <LineId Id="124" Count="4" />
-      <LineId Id="163" Count="0" />
-      <LineId Id="194" Count="0" />
-      <LineId Id="217" Count="0" />
-      <LineId Id="195" Count="7" />
-      <LineId Id="218" Count="2" />
-      <LineId Id="203" Count="2" />
-      <LineId Id="221" Count="0" />
-      <LineId Id="206" Count="7" />
-      <LineId Id="222" Count="2" />
-      <LineId Id="129" Count="0" />
-      <LineId Id="154" Count="8" />
+      <LineId Id="321" Count="72" />
       <LineId Id="5" Count="0" />
     </LineIds>
     <LineIds Name="MAIN.loadingSequenceCIP">
@@ -1255,150 +1593,336 @@ END_CASE]]></ST>
       <LineId Id="5" Count="0" />
     </LineIds>
     <LineIds Name="MAIN.loadingSequenceWB">
-      <LineId Id="562" Count="1" />
-      <LineId Id="398" Count="2" />
-      <LineId Id="477" Count="0" />
-      <LineId Id="407" Count="1" />
-      <LineId Id="473" Count="0" />
-      <LineId Id="515" Count="2" />
-      <LineId Id="485" Count="0" />
-      <LineId Id="520" Count="0" />
-      <LineId Id="523" Count="7" />
-      <LineId Id="518" Count="0" />
-      <LineId Id="534" Count="0" />
-      <LineId Id="533" Count="0" />
-      <LineId Id="519" Count="0" />
-      <LineId Id="489" Count="0" />
-      <LineId Id="612" Count="0" />
-      <LineId Id="614" Count="3" />
-      <LineId Id="613" Count="0" />
-      <LineId Id="537" Count="0" />
-      <LineId Id="539" Count="1" />
-      <LineId Id="538" Count="0" />
-      <LineId Id="421" Count="1" />
-      <LineId Id="608" Count="0" />
-      <LineId Id="611" Count="0" />
-      <LineId Id="469" Count="1" />
-      <LineId Id="482" Count="0" />
-      <LineId Id="610" Count="0" />
-      <LineId Id="428" Count="0" />
+      <LineId Id="683" Count="5" />
+      <LineId Id="970" Count="1" />
+      <LineId Id="689" Count="6" />
+      <LineId Id="975" Count="0" />
+      <LineId Id="696" Count="2" />
+      <LineId Id="883" Count="0" />
+      <LineId Id="885" Count="0" />
+      <LineId Id="980" Count="0" />
+      <LineId Id="886" Count="0" />
+      <LineId Id="884" Count="0" />
+      <LineId Id="878" Count="0" />
+      <LineId Id="981" Count="1" />
+      <LineId Id="984" Count="0" />
+      <LineId Id="983" Count="0" />
+      <LineId Id="881" Count="1" />
+      <LineId Id="879" Count="0" />
+      <LineId Id="968" Count="0" />
+      <LineId Id="701" Count="4" />
+      <LineId Id="936" Count="0" />
+      <LineId Id="825" Count="0" />
+      <LineId Id="715" Count="0" />
+      <LineId Id="818" Count="2" />
+      <LineId Id="817" Count="0" />
+      <LineId Id="887" Count="0" />
+      <LineId Id="816" Count="0" />
+      <LineId Id="824" Count="0" />
+      <LineId Id="780" Count="0" />
+      <LineId Id="791" Count="2" />
+      <LineId Id="943" Count="0" />
+      <LineId Id="790" Count="0" />
+      <LineId Id="781" Count="1" />
+      <LineId Id="846" Count="2" />
+      <LineId Id="894" Count="0" />
+      <LineId Id="852" Count="1" />
+      <LineId Id="977" Count="0" />
+      <LineId Id="976" Count="0" />
+      <LineId Id="895" Count="0" />
+      <LineId Id="934" Count="0" />
+      <LineId Id="929" Count="1" />
+      <LineId Id="900" Count="0" />
+      <LineId Id="931" Count="1" />
+      <LineId Id="928" Count="0" />
+      <LineId Id="888" Count="0" />
+      <LineId Id="942" Count="0" />
+      <LineId Id="849" Count="0" />
+      <LineId Id="734" Count="2" />
+      <LineId Id="739" Count="0" />
+      <LineId Id="845" Count="0" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="MAIN.loadingSequenceWB_old">
+      <LineId Id="683" Count="15" />
+      <LineId Id="883" Count="0" />
+      <LineId Id="885" Count="1" />
+      <LineId Id="884" Count="0" />
+      <LineId Id="878" Count="0" />
+      <LineId Id="880" Count="2" />
+      <LineId Id="879" Count="0" />
+      <LineId Id="699" Count="8" />
+      <LineId Id="825" Count="0" />
+      <LineId Id="715" Count="0" />
+      <LineId Id="818" Count="2" />
+      <LineId Id="817" Count="0" />
+      <LineId Id="887" Count="0" />
+      <LineId Id="821" Count="0" />
+      <LineId Id="816" Count="0" />
+      <LineId Id="824" Count="0" />
+      <LineId Id="780" Count="0" />
+      <LineId Id="791" Count="3" />
+      <LineId Id="796" Count="0" />
+      <LineId Id="790" Count="0" />
+      <LineId Id="781" Count="1" />
+      <LineId Id="846" Count="2" />
+      <LineId Id="894" Count="0" />
+      <LineId Id="852" Count="1" />
+      <LineId Id="895" Count="0" />
+      <LineId Id="934" Count="0" />
+      <LineId Id="929" Count="1" />
+      <LineId Id="900" Count="0" />
+      <LineId Id="931" Count="1" />
+      <LineId Id="928" Count="0" />
+      <LineId Id="888" Count="0" />
+      <LineId Id="897" Count="0" />
+      <LineId Id="856" Count="0" />
+      <LineId Id="859" Count="0" />
+      <LineId Id="877" Count="0" />
+      <LineId Id="857" Count="0" />
+      <LineId Id="860" Count="0" />
+      <LineId Id="933" Count="0" />
+      <LineId Id="849" Count="0" />
+      <LineId Id="753" Count="2" />
+      <LineId Id="760" Count="0" />
+      <LineId Id="777" Count="0" />
+      <LineId Id="757" Count="0" />
+      <LineId Id="771" Count="1" />
+      <LineId Id="765" Count="0" />
+      <LineId Id="758" Count="0" />
+      <LineId Id="774" Count="1" />
+      <LineId Id="764" Count="0" />
+      <LineId Id="756" Count="0" />
+      <LineId Id="822" Count="0" />
+      <LineId Id="734" Count="3" />
+      <LineId Id="739" Count="0" />
+      <LineId Id="845" Count="0" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="MAIN.loadingSequenceWB_simple">
+      <LineId Id="683" Count="15" />
+      <LineId Id="924" Count="0" />
+      <LineId Id="926" Count="2" />
+      <LineId Id="925" Count="0" />
+      <LineId Id="883" Count="0" />
+      <LineId Id="916" Count="0" />
+      <LineId Id="942" Count="2" />
+      <LineId Id="937" Count="0" />
+      <LineId Id="931" Count="5" />
+      <LineId Id="930" Count="0" />
+      <LineId Id="920" Count="0" />
+      <LineId Id="885" Count="0" />
+      <LineId Id="938" Count="1" />
+      <LineId Id="941" Count="0" />
+      <LineId Id="940" Count="0" />
+      <LineId Id="886" Count="0" />
+      <LineId Id="921" Count="0" />
+      <LineId Id="884" Count="0" />
+      <LineId Id="910" Count="0" />
+      <LineId Id="700" Count="6" />
+      <LineId Id="923" Count="0" />
+      <LineId Id="707" Count="0" />
+      <LineId Id="905" Count="1" />
+      <LineId Id="945" Count="11" />
+      <LineId Id="982" Count="0" />
+      <LineId Id="958" Count="1" />
+      <LineId Id="983" Count="0" />
+      <LineId Id="960" Count="5" />
+      <LineId Id="907" Count="0" />
+      <LineId Id="967" Count="0" />
+      <LineId Id="981" Count="0" />
+      <LineId Id="968" Count="10" />
+      <LineId Id="980" Count="0" />
+      <LineId Id="966" Count="0" />
+      <LineId Id="734" Count="3" />
+      <LineId Id="739" Count="0" />
+      <LineId Id="845" Count="0" />
       <LineId Id="5" Count="0" />
     </LineIds>
     <LineIds Name="MAIN.loadWB">
-      <LineId Id="656" Count="0" />
-      <LineId Id="665" Count="0" />
-      <LineId Id="664" Count="0" />
-      <LineId Id="669" Count="0" />
-      <LineId Id="668" Count="0" />
-      <LineId Id="670" Count="1" />
-      <LineId Id="673" Count="0" />
-      <LineId Id="672" Count="0" />
-      <LineId Id="667" Count="0" />
-      <LineId Id="666" Count="0" />
-      <LineId Id="657" Count="0" />
-      <LineId Id="532" Count="1" />
-      <LineId Id="536" Count="2" />
-      <LineId Id="695" Count="1" />
-      <LineId Id="643" Count="5" />
-      <LineId Id="697" Count="0" />
-      <LineId Id="649" Count="0" />
-      <LineId Id="609" Count="0" />
-      <LineId Id="694" Count="0" />
-      <LineId Id="693" Count="0" />
-      <LineId Id="542" Count="6" />
-      <LineId Id="680" Count="0" />
-      <LineId Id="549" Count="1" />
-      <LineId Id="635" Count="0" />
-      <LineId Id="551" Count="6" />
-      <LineId Id="681" Count="0" />
-      <LineId Id="558" Count="1" />
-      <LineId Id="634" Count="0" />
-      <LineId Id="560" Count="12" />
-      <LineId Id="683" Count="0" />
-      <LineId Id="573" Count="1" />
-      <LineId Id="633" Count="0" />
-      <LineId Id="575" Count="6" />
-      <LineId Id="682" Count="0" />
-      <LineId Id="582" Count="1" />
-      <LineId Id="636" Count="0" />
-      <LineId Id="584" Count="10" />
-      <LineId Id="631" Count="0" />
-      <LineId Id="602" Count="3" />
+      <LineId Id="1045" Count="0" />
+      <LineId Id="1051" Count="0" />
+      <LineId Id="1046" Count="4" />
+      <LineId Id="899" Count="0" />
+      <LineId Id="1002" Count="0" />
+      <LineId Id="1001" Count="0" />
+      <LineId Id="1035" Count="0" />
+      <LineId Id="1037" Count="0" />
+      <LineId Id="1052" Count="0" />
+      <LineId Id="918" Count="1" />
+      <LineId Id="1054" Count="0" />
+      <LineId Id="922" Count="0" />
+      <LineId Id="1057" Count="1" />
+      <LineId Id="1055" Count="1" />
+      <LineId Id="923" Count="3" />
+      <LineId Id="929" Count="0" />
+      <LineId Id="1059" Count="0" />
+      <LineId Id="999" Count="0" />
+      <LineId Id="930" Count="1" />
+      <LineId Id="1039" Count="0" />
+      <LineId Id="1043" Count="0" />
+      <LineId Id="932" Count="2" />
+      <LineId Id="937" Count="1" />
+      <LineId Id="995" Count="0" />
+      <LineId Id="939" Count="3" />
+      <LineId Id="1003" Count="0" />
+      <LineId Id="943" Count="2" />
+      <LineId Id="948" Count="1" />
+      <LineId Id="996" Count="0" />
+      <LineId Id="950" Count="3" />
+      <LineId Id="1004" Count="0" />
+      <LineId Id="954" Count="5" />
+      <LineId Id="1040" Count="1" />
+      <LineId Id="960" Count="2" />
+      <LineId Id="965" Count="1" />
+      <LineId Id="997" Count="0" />
+      <LineId Id="967" Count="3" />
+      <LineId Id="1005" Count="0" />
+      <LineId Id="971" Count="2" />
+      <LineId Id="976" Count="1" />
+      <LineId Id="998" Count="0" />
+      <LineId Id="978" Count="3" />
+      <LineId Id="1006" Count="0" />
+      <LineId Id="982" Count="2" />
+      <LineId Id="1038" Count="0" />
+      <LineId Id="985" Count="0" />
+      <LineId Id="1013" Count="1" />
+      <LineId Id="1044" Count="0" />
+      <LineId Id="1016" Count="2" />
+      <LineId Id="1020" Count="5" />
+      <LineId Id="986" Count="0" />
+      <LineId Id="1026" Count="2" />
+      <LineId Id="1015" Count="0" />
+      <LineId Id="987" Count="7" />
       <LineId Id="278" Count="0" />
     </LineIds>
     <LineIds Name="MAIN.splitCombinedMaterials">
-      <LineId Id="15" Count="6" />
+      <LineId Id="15" Count="2" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="18" Count="1" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="20" Count="1" />
+      <LineId Id="31" Count="0" />
       <LineId Id="13" Count="0" />
     </LineIds>
     <LineIds Name="MAIN.stage">
-      <LineId Id="819" Count="64" />
+      <LineId Id="819" Count="12" />
+      <LineId Id="887" Count="0" />
+      <LineId Id="832" Count="6" />
+      <LineId Id="891" Count="0" />
+      <LineId Id="890" Count="0" />
+      <LineId Id="840" Count="2" />
+      <LineId Id="888" Count="0" />
+      <LineId Id="844" Count="2" />
+      <LineId Id="848" Count="10" />
+      <LineId Id="860" Count="23" />
       <LineId Id="657" Count="0" />
     </LineIds>
-    <LineIds Name="MAIN.stagingSequence">
-      <LineId Id="659" Count="11" />
-      <LineId Id="740" Count="0" />
-      <LineId Id="738" Count="0" />
-      <LineId Id="743" Count="0" />
-      <LineId Id="746" Count="0" />
-      <LineId Id="744" Count="0" />
-      <LineId Id="741" Count="1" />
-      <LineId Id="671" Count="20" />
-      <LineId Id="737" Count="0" />
-      <LineId Id="692" Count="2" />
-      <LineId Id="720" Count="0" />
+    <LineIds Name="MAIN.stagingSequenceLeft">
+      <LineId Id="421" Count="9" />
+      <LineId Id="529" Count="0" />
+      <LineId Id="723" Count="0" />
+      <LineId Id="693" Count="0" />
       <LineId Id="695" Count="0" />
+      <LineId Id="697" Count="0" />
+      <LineId Id="722" Count="0" />
+      <LineId Id="524" Count="4" />
+      <LineId Id="522" Count="0" />
+      <LineId Id="432" Count="2" />
+      <LineId Id="498" Count="0" />
+      <LineId Id="573" Count="0" />
+      <LineId Id="575" Count="0" />
+      <LineId Id="499" Count="3" />
+      <LineId Id="435" Count="0" />
+      <LineId Id="618" Count="2" />
+      <LineId Id="617" Count="0" />
+      <LineId Id="607" Count="0" />
+      <LineId Id="685" Count="0" />
+      <LineId Id="681" Count="0" />
+      <LineId Id="706" Count="4" />
+      <LineId Id="588" Count="0" />
+      <LineId Id="721" Count="0" />
+      <LineId Id="719" Count="1" />
+      <LineId Id="495" Count="0" />
+      <LineId Id="664" Count="2" />
+      <LineId Id="447" Count="0" />
+      <LineId Id="698" Count="0" />
+      <LineId Id="711" Count="5" />
+      <LineId Id="705" Count="0" />
       <LineId Id="717" Count="1" />
-      <LineId Id="721" Count="2" />
-      <LineId Id="719" Count="0" />
-      <LineId Id="724" Count="0" />
-      <LineId Id="736" Count="0" />
-      <LineId Id="726" Count="2" />
-      <LineId Id="725" Count="0" />
-      <LineId Id="733" Count="2" />
-      <LineId Id="731" Count="0" />
-      <LineId Id="708" Count="3" />
-      <LineId Id="752" Count="1" />
-      <LineId Id="712" Count="0" />
-      <LineId Id="748" Count="0" />
-      <LineId Id="751" Count="0" />
-      <LineId Id="749" Count="1" />
-      <LineId Id="754" Count="0" />
+      <LineId Id="701" Count="2" />
+      <LineId Id="700" Count="0" />
+      <LineId Id="704" Count="0" />
+      <LineId Id="457" Count="0" />
+      <LineId Id="687" Count="0" />
+      <LineId Id="622" Count="0" />
+      <LineId Id="621" Count="0" />
+      <LineId Id="682" Count="0" />
+      <LineId Id="627" Count="0" />
+      <LineId Id="631" Count="0" />
+      <LineId Id="468" Count="0" />
+      <LineId Id="461" Count="2" />
       <LineId Id="5" Count="0" />
     </LineIds>
-    <LineIds Name="MAIN.stagingSequenceLeft">
-      <LineId Id="520" Count="1" />
+    <LineIds Name="MAIN.stagingSequenceLeft_old">
       <LineId Id="421" Count="9" />
       <LineId Id="529" Count="0" />
       <LineId Id="431" Count="0" />
       <LineId Id="523" Count="5" />
       <LineId Id="522" Count="0" />
       <LineId Id="432" Count="2" />
-      <LineId Id="498" Count="4" />
-      <LineId Id="435" Count="1" />
-      <LineId Id="489" Count="0" />
-      <LineId Id="491" Count="0" />
-      <LineId Id="490" Count="0" />
-      <LineId Id="437" Count="2" />
+      <LineId Id="498" Count="0" />
+      <LineId Id="573" Count="2" />
+      <LineId Id="499" Count="3" />
+      <LineId Id="435" Count="0" />
+      <LineId Id="618" Count="2" />
+      <LineId Id="617" Count="0" />
+      <LineId Id="607" Count="0" />
+      <LineId Id="589" Count="0" />
+      <LineId Id="683" Count="0" />
+      <LineId Id="588" Count="0" />
+      <LineId Id="612" Count="0" />
+      <LineId Id="614" Count="2" />
+      <LineId Id="613" Count="0" />
       <LineId Id="495" Count="0" />
       <LineId Id="505" Count="0" />
+      <LineId Id="664" Count="2" />
       <LineId Id="442" Count="2" />
+      <LineId Id="601" Count="0" />
       <LineId Id="446" Count="1" />
-      <LineId Id="531" Count="2" />
       <LineId Id="530" Count="0" />
-      <LineId Id="536" Count="1" />
+      <LineId Id="537" Count="0" />
+      <LineId Id="584" Count="0" />
+      <LineId Id="577" Count="0" />
       <LineId Id="539" Count="4" />
+      <LineId Id="576" Count="0" />
+      <LineId Id="586" Count="0" />
+      <LineId Id="579" Count="0" />
       <LineId Id="546" Count="0" />
       <LineId Id="549" Count="2" />
+      <LineId Id="572" Count="0" />
       <LineId Id="547" Count="1" />
-      <LineId Id="544" Count="1" />
-      <LineId Id="538" Count="0" />
+      <LineId Id="568" Count="0" />
+      <LineId Id="580" Count="0" />
+      <LineId Id="570" Count="1" />
+      <LineId Id="587" Count="0" />
+      <LineId Id="569" Count="0" />
       <LineId Id="456" Count="1" />
+      <LineId Id="622" Count="0" />
+      <LineId Id="621" Count="0" />
+      <LineId Id="648" Count="0" />
+      <LineId Id="627" Count="0" />
+      <LineId Id="630" Count="1" />
       <LineId Id="468" Count="0" />
       <LineId Id="460" Count="3" />
       <LineId Id="5" Count="0" />
     </LineIds>
     <LineIds Name="MAIN.stagingSequenceRight">
-      <LineId Id="597" Count="53" />
+      <LineId Id="754" Count="10" />
+      <LineId Id="836" Count="0" />
+      <LineId Id="767" Count="2" />
+      <LineId Id="837" Count="0" />
+      <LineId Id="772" Count="63" />
       <LineId Id="5" Count="0" />
     </LineIds>
   </POU>

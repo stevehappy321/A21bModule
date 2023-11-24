@@ -10,46 +10,56 @@ VAR
 	
 	i : INT;
 	j : INT;
+	
+	temp : INT;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[MEMSET(ADR(slotsArr), 0, SIZEOF(slotsArr));
-FOR iWoodBunkSlot:=1 TO WoodBunk.size-1 BY 1 DO
+FOR iWoodBunkSlot:=1 TO WoodBunk.size-1 BY 1 DO //init wood bunk magazine slots
 	slotsArr[iWoodBunkSlot] := TO_STRING(iWoodBunkSlot);
 END_FOR
 magazineLeft.setupSlots(slotsArr);
 magazineRight.setupSlots(slotsArr);
 
+
 MEMSET(ADR(slotsArr), 0, SIZEOF(slotsArr));
-FOR iChipboardSlot:=1 TO Chipboard.size-1 BY 1 DO
+FOR iChipboardSlot:=1 TO Chipboard.size-1 BY 1 DO //init chipboard skid slots
 	slotsArr[iChipboardSlot] := TO_STRING(iChipboardSlot);
 END_FOR
 skidLeft.setupSlots(slotsArr);
 skidRight.setupSlots(slotsArr);
 
-verticalDriveLeft.bEnable := 
-verticalDriveRight.bEnable := 
-horizontalDriveLeft.bEnable := 
-horizontalDriveRight.bEnable := 
-pistonBottom.bEnable := 
-TRUE;
 
-FOR i:=1 TO GVL.maxQueue BY 1 DO
+FOR i:=1 TO GVL.maxQueue BY 1 DO //get wood bunk magazine availability from robot
 	magazineLeft.setOccupancy(i := i, occupancy := IntegerBitAccess( TO_ULINT(robotLeft.inputs[3]), TO_ULINT(i-1)) );
 	skidLeft.setOccupancy(i := i, occupancy := IntegerBitAccess( TO_ULINT(robotLeft.inputs[4]), TO_ULINT(i-1)) );
 	
 	magazineRight.setOccupancy(i := i, occupancy := IntegerBitAccess( TO_ULINT(robotRight.inputs[3]), TO_ULINT(i-1)) );
 	skidRight.setOccupancy(i := i, occupancy := IntegerBitAccess( TO_ULINT(robotRight.inputs[4]), TO_ULINT(i-1)) );
-END_FOR]]></ST>
+END_FOR
+
+//enable all drives
+verticalDriveLeft.bEnable := 
+verticalDriveRight.bEnable := 
+horizontalDriveLeft.bEnable := 
+horizontalDriveRight.bEnable := 
+pistonBottom.bEnable := 
+TRUE;]]></ST>
     </Implementation>
     <LineIds Name="SetupHardware">
       <LineId Id="94" Count="0" />
-      <LineId Id="8" Count="12" />
+      <LineId Id="8" Count="4" />
+      <LineId Id="133" Count="0" />
+      <LineId Id="13" Count="6" />
+      <LineId Id="159" Count="0" />
+      <LineId Id="134" Count="6" />
+      <LineId Id="151" Count="0" />
+      <LineId Id="161" Count="0" />
+      <LineId Id="149" Count="0" />
       <LineId Id="31" Count="0" />
       <LineId Id="41" Count="2" />
       <LineId Id="82" Count="0" />
       <LineId Id="84" Count="0" />
-      <LineId Id="62" Count="6" />
-      <LineId Id="53" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>

@@ -2,21 +2,21 @@
 <TcSmProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4024.32">
 	<DataTypes>
 		<DataType>
-			<Name GUID="{FF46E77C-A1C9-160B-C563-9524E562D7F4}" IecBaseType="true" AutoDeleteType="true">ARRAY [1..20] OF INT</Name>
-			<BitSize>320</BitSize>
-			<BaseType GUID="{18071995-0000-0000-0000-000000000006}">INT</BaseType>
-			<ArrayInfo>
-				<LBound>1</LBound>
-				<Elements>20</Elements>
-			</ArrayInfo>
-		</DataType>
-		<DataType>
 			<Name GUID="{22728B82-A99E-1178-70C3-33731C966BD6}" IecBaseType="true" AutoDeleteType="true">ARRAY [1..10] OF BOOL</Name>
 			<BitSize>80</BitSize>
 			<BaseType GUID="{18071995-0000-0000-0000-000000000030}">BOOL</BaseType>
 			<ArrayInfo>
 				<LBound>1</LBound>
 				<Elements>10</Elements>
+			</ArrayInfo>
+		</DataType>
+		<DataType>
+			<Name GUID="{FF46E77C-A1C9-160B-C563-9524E562D7F4}" IecBaseType="true" AutoDeleteType="true">ARRAY [1..20] OF INT</Name>
+			<BitSize>320</BitSize>
+			<BaseType GUID="{18071995-0000-0000-0000-000000000006}">INT</BaseType>
+			<ArrayInfo>
+				<LBound>1</LBound>
+				<Elements>20</Elements>
 			</ArrayInfo>
 		</DataType>
 		<DataType>
@@ -75,7 +75,7 @@
 		</System>
 		<Plc>
 			<Project GUID="{D232006A-254D-4F35-9BFE-5131CC19FE71}" Name="Untitled1" PrjFilePath="Untitled1\Untitled1.plcproj" TmcFilePath="Untitled1\Untitled1.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{7E38AF77-2923-4B6E-1DA7-5BB7CD36CFD7}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{CCFA5900-FC8C-6DA8-7196-0B2CD119FA33}">
 					<Name>Untitled1 Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
@@ -105,14 +105,6 @@
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.robotLeft.inputs</Name>
-							<Type GUID="{FF46E77C-A1C9-160B-C563-9524E562D7F4}">ARRAY [1..20] OF INT</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.robotRight.inputs</Name>
-							<Type GUID="{FF46E77C-A1C9-160B-C563-9524E562D7F4}">ARRAY [1..20] OF INT</Type>
-						</Var>
-						<Var>
 							<Name>Hardware.toolStorageRight.pos1ChipboardEOAT</Name>
 							<Type>BOOL</Type>
 						</Var>
@@ -126,14 +118,6 @@
 						</Var>
 						<Var>
 							<Name>Hardware.toolStorageRight.pos2WoodBunkEOAT</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.bottomSuction[1].occupied</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.bottomSuction[2].occupied</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
@@ -176,22 +160,6 @@
 						</Var>
 						<Var>
 							<Name>Hardware.magazineRight.inPosition2</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.strapper.error</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.strapper.ready</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.strapper.done</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.strapper.home</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
@@ -320,53 +288,54 @@
 							<Name>Hardware.rightSuction[4].occupied</Name>
 							<Type>BOOL</Type>
 						</Var>
+						<Var>
+							<Name>Hardware.bottomSuction[1].occupied</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.bottomSuction[2].occupied</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.strapper.error</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.strapper.ready</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.strapper.done</Name>
+							<Comment><![CDATA[busy (*AT %I**) : BOOL;]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.strapper.home</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.strapper.atBundleLevel</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.robotLeft.offline</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.robotLeft.inputs</Name>
+							<Type GUID="{FF46E77C-A1C9-160B-C563-9524E562D7F4}">ARRAY [1..20] OF INT</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.robotRight.offline</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.robotRight.inputs</Name>
+							<Type GUID="{FF46E77C-A1C9-160B-C563-9524E562D7F4}">ARRAY [1..20] OF INT</Type>
+						</Var>
 					</Vars>
 					<Vars VarGrpType="2" AreaNo="1">
 						<Name>PlcTask Outputs</Name>
-						<Var>
-							<Name>Hardware.robotLeft.forceStop</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.robotLeft.resetSignal</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.robotLeft.outputs</Name>
-							<Type GUID="{3959AF2B-712F-4776-B31A-F615A7A6D72D}">ARRAY [1..50] OF INT</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.robotRight.forceStop</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.robotRight.resetSignal</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.robotRight.outputs</Name>
-							<Type GUID="{3959AF2B-712F-4776-B31A-F615A7A6D72D}">ARRAY [1..50] OF INT</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.bottomSuction[1].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.bottomSuction[2].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.strapper.execute</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.strapper.enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.strapper.reset</Name>
-							<Type>BOOL</Type>
-						</Var>
 						<Var>
 							<Name>Hardware.horizontalDriveLeft.valveExtend</Name>
 							<Type>BOOL</Type>
@@ -460,6 +429,50 @@
 						<Var>
 							<Name>Hardware.rightSuction[4].enable</Name>
 							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.bottomSuction[1].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.bottomSuction[2].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.strapper.enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.strapper.execute</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.strapper.reset</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.robotLeft.forceStop</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.robotLeft.resetSignal</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.robotLeft.outputs</Name>
+							<Type GUID="{3959AF2B-712F-4776-B31A-F615A7A6D72D}">ARRAY [1..50] OF INT</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.robotRight.forceStop</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.robotRight.resetSignal</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.robotRight.outputs</Name>
+							<Type GUID="{3959AF2B-712F-4776-B31A-F615A7A6D72D}">ARRAY [1..50] OF INT</Type>
 						</Var>
 					</Vars>
 					<UnrestoredVarLinks ImportTime="2023-11-17T17:55:41">
@@ -2254,6 +2267,7 @@
 				<Link VarA="PlcTask Inputs^Hardware.robotRight.inputs[7]" VarB="IO Inputs^In_7"/>
 				<Link VarA="PlcTask Inputs^Hardware.robotRight.inputs[8]" VarB="IO Inputs^In_8"/>
 				<Link VarA="PlcTask Inputs^Hardware.robotRight.inputs[9]" VarB="IO Inputs^In_9"/>
+				<Link VarA="PlcTask Inputs^Hardware.robotRight.offline" VarB="SYNC Inputs^External device not connected"/>
 				<Link VarA="PlcTask Outputs^Hardware.robotRight.outputs[10]" VarB="IO Outputs^Out_10"/>
 				<Link VarA="PlcTask Outputs^Hardware.robotRight.outputs[11]" VarB="IO Outputs^Out_11"/>
 				<Link VarA="PlcTask Outputs^Hardware.robotRight.outputs[12]" VarB="IO Outputs^Out_12"/>
@@ -2306,6 +2320,7 @@
 				<Link VarA="PlcTask Outputs^Hardware.robotRight.outputs[9]" VarB="IO Outputs^Out_9"/>
 			</OwnerB>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^EK1200^JUNC_A21^C1^C1_I1">
+				<Link VarA="PlcTask Inputs^Hardware.strapper.atBundleLevel" VarB="Channel 6^Input"/>
 				<Link VarA="PlcTask Inputs^Hardware.strapper.done" VarB="Channel 4^Input"/>
 				<Link VarA="PlcTask Inputs^Hardware.strapper.error" VarB="Channel 1^Input"/>
 				<Link VarA="PlcTask Inputs^Hardware.strapper.home" VarB="Channel 5^Input"/>
@@ -2337,6 +2352,7 @@
 				<Link VarA="PlcTask Inputs^Hardware.robotLeft.inputs[7]" VarB="IO Inputs^In_7"/>
 				<Link VarA="PlcTask Inputs^Hardware.robotLeft.inputs[8]" VarB="IO Inputs^In_8"/>
 				<Link VarA="PlcTask Inputs^Hardware.robotLeft.inputs[9]" VarB="IO Inputs^In_9"/>
+				<Link VarA="PlcTask Inputs^Hardware.robotLeft.offline" VarB="SYNC Inputs^External device not connected"/>
 				<Link VarA="PlcTask Outputs^Hardware.robotLeft.outputs[10]" VarB="IO Outputs^Out_10"/>
 				<Link VarA="PlcTask Outputs^Hardware.robotLeft.outputs[11]" VarB="IO Outputs^Out_11"/>
 				<Link VarA="PlcTask Outputs^Hardware.robotLeft.outputs[12]" VarB="IO Outputs^Out_12"/>

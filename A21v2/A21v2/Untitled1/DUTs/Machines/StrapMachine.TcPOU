@@ -2,18 +2,23 @@
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
   <POU Name="StrapMachine" Id="{195d23e9-3ade-4278-a206-bfe5b204b6b8}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK StrapMachine
+VAR_INPUT
+	bEnable : BOOL;
+END_VAR
 VAR_OUTPUT
+	enable AT %Q* : BOOL;
 	error AT %I* : BOOL;
 	ready AT %I* : BOOL;
-	busy (*AT %I**) : BOOL;
+	//busy (*AT %I**) : BOOL;
 	done AT %I* : BOOL;
 	home AT %I* : BOOL;
 	
 	execute AT %Q* : BOOL;
-	enable AT %Q* : BOOL;
 	reset AT %Q* : BOOL;
 	
 	timeout : BOOL;
+	
+	atBundleLevel AT %I* : BOOL;
 END_VAR
 VAR	
 	holdPost : TON;
@@ -34,29 +39,28 @@ delay(IN:= step > 0 OR start, PT:= maxDelay, Q=> timeout, ET=> );
 IF delay.Q THEN
 	delay.IN := FALSE;
 	//timeout := TRUE;
-	busy := FALSE;
+	//busy := FALSE;
 	
 	start := FALSE;
 	step := SETUP;
 END_IF
 
-enable := TRUE;
-
 CASE step OF
 	SETUP:
-		busy := FALSE;
-		IF error THEN
-			reset := NOT reset;
+		//busy := FALSE;
+		enable := FALSE;
+		execute := FALSE;
+		
+		IF NOT clear() THEN
 			RETURN;
-		END_IF
+		END_IF		
 		
-		reset := FALSE;
+		enable := bEnable AND robotLeft.strapSafetyIn AND robotRight.strapSafetyIn;
 		
-		IF start THEN
+		IF start AND enable THEN
 			start := FALSE;
 			step := RUN;
 		END_IF
-		
 	
 	RUN:
 		IF NOT execute THEN
@@ -117,14 +121,11 @@ execute := FALSE;
 
 IF error THEN
 	reset := NOT reset;
-	clear := NOT error;
-
 ELSE
 	reset := FALSE;
-	clear := TRUE;
-	
 END_IF
-]]></ST>
+
+clear := NOT error;]]></ST>
       </Implementation>
     </Method>
     <Method Name="strap" Id="{8221f6b6-4ed9-46c5-a2f2-3e9b4c2e4608}">
@@ -143,68 +144,20 @@ start := TRUE;]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="StrapMachine">
-      <LineId Id="497" Count="3" />
-      <LineId Id="551" Count="0" />
-      <LineId Id="524" Count="0" />
-      <LineId Id="713" Count="0" />
-      <LineId Id="643" Count="1" />
-      <LineId Id="562" Count="0" />
-      <LineId Id="502" Count="0" />
-      <LineId Id="642" Count="0" />
-      <LineId Id="641" Count="0" />
-      <LineId Id="503" Count="1" />
-      <LineId Id="527" Count="0" />
-      <LineId Id="610" Count="0" />
-      <LineId Id="539" Count="1" />
-      <LineId Id="544" Count="0" />
-      <LineId Id="541" Count="0" />
-      <LineId Id="715" Count="0" />
-      <LineId Id="535" Count="0" />
-      <LineId Id="577" Count="0" />
-      <LineId Id="546" Count="0" />
-      <LineId Id="575" Count="0" />
-      <LineId Id="549" Count="0" />
-      <LineId Id="548" Count="0" />
-      <LineId Id="536" Count="0" />
-      <LineId Id="532" Count="0" />
-      <LineId Id="553" Count="0" />
-      <LineId Id="646" Count="2" />
-      <LineId Id="554" Count="0" />
-      <LineId Id="686" Count="0" />
-      <LineId Id="678" Count="0" />
-      <LineId Id="556" Count="0" />
-      <LineId Id="558" Count="0" />
-      <LineId Id="557" Count="0" />
-      <LineId Id="685" Count="0" />
-      <LineId Id="560" Count="1" />
-      <LineId Id="563" Count="0" />
-      <LineId Id="565" Count="1" />
-      <LineId Id="564" Count="0" />
-      <LineId Id="568" Count="2" />
-      <LineId Id="611" Count="0" />
-      <LineId Id="573" Count="0" />
-      <LineId Id="571" Count="0" />
-      <LineId Id="533" Count="0" />
-      <LineId Id="528" Count="0" />
-      <LineId Id="505" Count="0" />
-      <LineId Id="507" Count="14" />
-      <LineId Id="523" Count="0" />
-      <LineId Id="234" Count="0" />
+      <LineId Id="914" Count="1" />
+      <LineId Id="918" Count="12" />
+      <LineId Id="1003" Count="2" />
+      <LineId Id="1000" Count="2" />
+      <LineId Id="935" Count="0" />
+      <LineId Id="937" Count="49" />
       <LineId Id="576" Count="0" />
     </LineIds>
     <LineIds Name="StrapMachine.clear">
-      <LineId Id="45" Count="1" />
-      <LineId Id="60" Count="0" />
-      <LineId Id="59" Count="0" />
-      <LineId Id="57" Count="0" />
-      <LineId Id="67" Count="0" />
-      <LineId Id="66" Count="0" />
-      <LineId Id="58" Count="0" />
-      <LineId Id="68" Count="0" />
-      <LineId Id="61" Count="0" />
-      <LineId Id="65" Count="0" />
-      <LineId Id="62" Count="0" />
-      <LineId Id="31" Count="0" />
+      <LineId Id="75" Count="4" />
+      <LineId Id="82" Count="1" />
+      <LineId Id="86" Count="0" />
+      <LineId Id="88" Count="0" />
+      <LineId Id="87" Count="0" />
     </LineIds>
     <LineIds Name="StrapMachine.strap">
       <LineId Id="19" Count="0" />
