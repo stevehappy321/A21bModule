@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="MAIN" Id="{2cbdba0c-ad31-4c75-8f6b-289818655c29}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR_OUTPUT
+	currentTime : TIMESTRUCT;
+END_VAR
+VAR
+	sMessage : STRING := 'from SERVER to CLIENT';
+	newRecipient : STRING;
+	newData : AdsData;
+	
+	sendOnce : BOOL;
+	sendFastNum : BOOL;;
+	
+	retrievedData : AdsData;
+	
+	i : INT := 0;
+	
+	fbLocalSystemTime : FB_LocalSystemTime;
+	
+	messageSize : ULINT;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[fbLocalSystemTime(
+	sNetID:= , 
+	bEnable:= TRUE, 
+	dwCycle:= , 
+	dwOpt:= , 
+	tTimeout:= , 
+	bValid=> , 
+	systemTime=> currentTime, 
+	tzID=> );
+
+AdsTcp_WinCE(
+	bBusy=> , 
+	err=> , 
+	errid=> , 
+	areaSockets=> );
+
+IF sendOnce OR sendFastNum THEN
+	MEMSET(ADR(newData), 0, SIZEOF(newData));
+	
+	sMessage := TO_STRING(i);
+	
+	newRecipient := TO_STRING(AreaNum.AREA_2);
+	
+	newData.description := EventsEnum.TEST_COMMS;
+	newData.timestamp := currentTime;
+	MEMCPY(ADR(newData.binaryData), ADR(sMessage), LEN(sMessage));
+	
+	IF AdsTcp_WinCE.sendMessage(recipient := newRecipient, data := newData) THEN
+		i := i + 1;
+		sendOnce := FALSE;
+	END_IF
+	
+END_IF
+
+//retrievedData := AdsTcp_WinCE.AREA_2.receivingData;]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="320" Count="19" />
+      <LineId Id="376" Count="0" />
+      <LineId Id="340" Count="0" />
+      <LineId Id="374" Count="0" />
+      <LineId Id="342" Count="7" />
+      <LineId Id="377" Count="0" />
+      <LineId Id="350" Count="1" />
+      <LineId Id="208" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

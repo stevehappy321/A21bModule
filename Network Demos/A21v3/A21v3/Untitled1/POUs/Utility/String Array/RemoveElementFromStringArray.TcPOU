@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="RemoveElementFromStringArray" Id="{5dd27eda-d562-4bc3-bb22-82e5ce25be77}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION RemoveElementFromStringArray : BOOL
+VAR_IN_OUT
+	arr : ARRAY[*] OF STRING; //must start from 0 index
+END_VAR
+VAR_INPUT
+	target : STRING;
+END_VAR
+VAR_OUTPUT
+	numElements : DINT;
+	nextIndex : DINT;
+END_VAR
+VAR
+	i : DINT;
+	j : DINT;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[FOR i:=LOWER_BOUND(arr, 1) TO UPPER_BOUND(arr, 1) BY 1 DO
+	
+	IF arr[i] = target THEN
+		
+		FOR j:=i TO UPPER_BOUND(arr, 1)-1 BY 1 DO
+			arr[j] := arr[j+1];
+		END_FOR
+		
+		(*
+		MEMMOVE(
+			ADR(arr[i]), 
+			ADR(arr[ MIN(i+1, UPPER_BOUND(arr, 1)) ]), 
+			SIZEOF(STRING) * (UPPER_BOUND(arr, 1) - i) );
+		*)
+		
+		arr[UPPER_BOUND(arr, 1)] := '';
+		RemoveElementFromStringArray := TRUE;
+		RETURN;
+
+	END_IF
+	
+END_FOR]]></ST>
+    </Implementation>
+    <LineIds Name="RemoveElementFromStringArray">
+      <LineId Id="75" Count="20" />
+      <LineId Id="23" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

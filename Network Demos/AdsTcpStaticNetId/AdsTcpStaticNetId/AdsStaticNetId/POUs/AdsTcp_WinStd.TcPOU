@@ -1,0 +1,339 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="AdsTcp_WinStd" Id="{fdbfe87f-1184-47dd-b08b-0750e1c8692f}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM AdsTcp_WinStd
+VAR_OUTPUT
+	bBusy : BOOL;
+	err : BOOL;
+	errid : UDINT;
+END_VAR
+VAR_OUTPUT
+	areaSockets : ARRAY[1..6] OF POINTER TO AdsSocket; //only used for finding a socket by name, POINTER because array of REFERENCE does not exist
+	
+	//unlikely that each area will need communication with all other areas
+	//only area 3 needs access to all areas, other areas only need access to area 3
+	AREA_1 : AdsSocket := (PrgName := 'AREA_1', AmsNetId := '1.0.131.216.1.1', AmsPort := 851);
+	AREA_2 : AdsSocket := (PrgName := 'AREA_2', AmsNetId := '2.0.131.216.1.1', AmsPort := 851);
+	AREA_3 : AdsSocket := (PrgName := 'AREA_3', AmsNetId := '3.0.131.216.1.1', AmsPort := 851);
+	AREA_4 : AdsSocket := (PrgName := 'AREA_4', AmsNetId := '4.0.131.216.1.1', AmsPort := 851);
+	AREA_5 : AdsSocket := (PrgName := 'AREA_5', AmsNetId := '5.0.131.216.1.1', AmsPort := 851);
+	AREA_6 : AdsSocket := (PrgName := 'AREA_6', AmsNetId := '6.0.131.216.1.1', AmsPort := 851);
+END_VAR
+VAR	
+	tempSocket : REFERENCE TO AdsSocket;
+	(*
+	transmissons are queued into AdsTcpUnit, where all the preset sockets are
+	to send a transmission, place the data and a recipient name into an AdsMessage type
+	when a transmission is polled from the queue:
+		if the recipient does not exist, the message contents are discarded
+		if the recipient exists and is not busy writing, then the message contents are given to the socket to be written
+		if the recipient is busy, then the messsage is pushed back into the queue
+	*)
+	transmissionQueue : AdsMessageQueue;
+	nextTransmission : AdsMessage;
+	
+	i : INT(1..numSockets);
+END_VAR
+VAR CONSTANT
+	numSockets : INT := 6-1;
+END_VAR
+(*
+similar functionality to standard TCP communication - only writes to a single receiving buffer on the target system
+	no read/write functionality to any other symbol on target
+messages are entered into a queue which is polled cyclically and passed to the appropriate socket
+*)]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[areaSockets[1] := ADR(AREA_1);
+areaSockets[2] := ADR(AREA_2);
+areaSockets[3] := ADR(AREA_3);
+areaSockets[4] := ADR(AREA_4);
+areaSockets[5] := ADR(AREA_5);
+areaSockets[6] := ADR(AREA_6);
+
+blocks();
+
+nextTransmission := transmissionQueue.poll(getSize => );
+
+tempSocket REF= findSocket(recipient := nextTransmission.recipient);
+
+IF __ISVALIDREF(tempSocket) THEN
+	
+	IF NOT tempSocket.writeBusy THEN
+		tempSocket.send(data := nextTransmission.contents);
+	ELSE //if socket is busy, then message is returned to the end of the line
+		transmissionQueue.push(value := nextTransmission);
+	END_IF
+	
+END_IF
+//if recipient does not exist, message is discarded]]></ST>
+    </Implementation>
+    <Folder Name="x_Obsolete" Id="{fb74af23-d461-4d24-8b9c-e00adf74ce64}" />
+    <Method Name="blocks" Id="{84a4da9e-7305-47f8-b050-02c3484c700e}">
+      <Declaration><![CDATA[METHOD PRIVATE blocks : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[AREA_1(
+	PrgName=> , 
+	AmsNetId=> , 
+	AmsPort=> , 
+	receivingData=> , 
+	sendingData=> , 
+	readBusy=> , 
+	readError=> , 
+	readErrorId=> , 
+	writeBusy=> , 
+	writeError=> , 
+	writeErrorId=> );
+
+AREA_2(
+	PrgName=> , 
+	AmsNetId=> , 
+	AmsPort=> , 
+	receivingData=> , 
+	sendingData=> , 
+	readBusy=> , 
+	readError=> , 
+	readErrorId=> , 
+	writeBusy=> , 
+	writeError=> , 
+	writeErrorId=> );
+	
+AREA_3(
+	PrgName=> , 
+	AmsNetId=> , 
+	AmsPort=> , 
+	receivingData=> , 
+	sendingData=> , 
+	readBusy=> , 
+	readError=> , 
+	readErrorId=> , 
+	writeBusy=> , 
+	writeError=> , 
+	writeErrorId=> );
+	
+AREA_4(
+	PrgName=> , 
+	AmsNetId=> , 
+	AmsPort=> , 
+	receivingData=> , 
+	sendingData=> , 
+	readBusy=> , 
+	readError=> , 
+	readErrorId=> , 
+	writeBusy=> , 
+	writeError=> , 
+	writeErrorId=> );
+	
+AREA_5(
+	PrgName=> , 
+	AmsNetId=> , 
+	AmsPort=> , 
+	receivingData=> , 
+	sendingData=> , 
+	readBusy=> , 
+	readError=> , 
+	readErrorId=> , 
+	writeBusy=> , 
+	writeError=> , 
+	writeErrorId=> );
+	
+AREA_6(
+	PrgName=> , 
+	AmsNetId=> , 
+	AmsPort=> , 
+	receivingData=> , 
+	sendingData=> , 
+	readBusy=> , 
+	readError=> , 
+	readErrorId=> , 
+	writeBusy=> , 
+	writeError=> , 
+	writeErrorId=> );
+
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="findSocket" Id="{d8b3993d-426a-4e5d-a36f-587468829b99}">
+      <Declaration><![CDATA[METHOD PRIVATE findSocket : REFERENCE TO AdsSocket
+VAR_INPUT
+	recipient : STRING;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FOR i:=1 TO numSockets BY 1 DO
+	IF areaSockets[i]^.PrgName = recipient THEN
+		findSocket REF= areaSockets[i]^;
+		RETURN;
+	END_IF
+END_FOR]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="generateMessage" Id="{274f632b-3d8d-4634-a7ce-63ad07c36167}" FolderPath="x_Obsolete\">
+      <Declaration><![CDATA[METHOD generateMessage : BOOL
+VAR_INPUT
+	recipient : STRING;
+	description : EventsEnum;
+	timestamp : TIMESTRUCT;
+END_VAR
+VAR_IN_OUT
+	binaryData : ARRAY[*] OF BYTE;
+END_VAR
+VAR
+	newTransmission : AdsMessage;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[newTransmission.recipient := recipient;
+
+newTransmission.contents.description := description;
+newTransmission.contents.timestamp := timestamp;
+MEMCPY(
+	ADR(newTransmission.contents.binaryData),
+	binaryData,
+	MIN( TO_UDINT(UPPER_BOUND(binaryData, 1) - LOWER_BOUND(binaryData, 1) + 1), SIZEOF(newTransmission.contents.binaryData) ));]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="pollData" Id="{6144f990-d98d-4185-80a9-4af55f74b676}" FolderPath="x_Obsolete\">
+      <Declaration><![CDATA[METHOD pollData : BOOL
+VAR_INPUT
+	//remotePrgName : STRING;
+	buffer : PVOID;
+	bufferSize : UDINT;
+	
+	data : PVOID;
+	dataSize : UDINT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[MEMCPY(buffer, data, MIN(dataSize, bufferSize));
+MEMSET(data, 0, dataSize);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="queueMessage" Id="{20b0f168-c0bb-48be-90d8-084d1d464586}">
+      <Declaration><![CDATA[METHOD queueMessage : BOOL
+VAR_INPUT
+	recipient : STRING;
+	data : REFERENCE TO AdsData;
+END_VAR
+VAR
+	newMessage : AdsMessage;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF recipient <> '' THEN
+	newMessage.recipient := recipient;
+	newMessage.contents := data;
+	
+	transmissionQueue.push(newMessage);
+	
+	queueMessage := TRUE;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="retrieveData" Id="{2cc70b80-d3aa-4967-83df-e2063544db71}">
+      <Declaration><![CDATA[METHOD retrieveData : BOOL
+VAR_INPUT
+	name : STRING;
+END_VAR
+VAR_IN_OUT
+	genericBuffer : ARRAY[*] OF BYTE;
+END_VAR
+VAR
+	bufferSize : DINT;
+	
+	//reqHandle : REFERENCE TO AdsHandle;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[(*
+bufferSize := UPPER_BOUND(genericBuffer, 1) - LOWER_BOUND(genericBuffer, 1) + 1;
+
+reqHandle REF= findHandle('CLIENT_1');
+
+IF __ISVALIDREF(reqHandle) THEN
+	genericBuffer := ADR(reqHandle.genericBuffer);
+	stDemo := reqHandle.receiverStDemo;
+END_IF
+*)]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="AdsTcp_WinStd">
+      <LineId Id="3884" Count="0" />
+      <LineId Id="3887" Count="0" />
+      <LineId Id="3885" Count="0" />
+      <LineId Id="3888" Count="2" />
+      <LineId Id="3892" Count="0" />
+      <LineId Id="3891" Count="0" />
+      <LineId Id="3886" Count="0" />
+      <LineId Id="3768" Count="0" />
+      <LineId Id="3778" Count="0" />
+      <LineId Id="3811" Count="0" />
+      <LineId Id="3823" Count="0" />
+      <LineId Id="3770" Count="0" />
+      <LineId Id="3830" Count="0" />
+      <LineId Id="3771" Count="4" />
+      <LineId Id="3831" Count="0" />
+      <LineId Id="3776" Count="0" />
+      <LineId Id="3824" Count="0" />
+    </LineIds>
+    <LineIds Name="AdsTcp_WinStd.blocks">
+      <LineId Id="55" Count="10" />
+      <LineId Id="34" Count="0" />
+      <LineId Id="66" Count="11" />
+      <LineId Id="35" Count="0" />
+      <LineId Id="89" Count="0" />
+      <LineId Id="78" Count="10" />
+      <LineId Id="36" Count="0" />
+      <LineId Id="125" Count="0" />
+      <LineId Id="90" Count="10" />
+      <LineId Id="37" Count="0" />
+      <LineId Id="124" Count="0" />
+      <LineId Id="101" Count="10" />
+      <LineId Id="38" Count="0" />
+      <LineId Id="123" Count="0" />
+      <LineId Id="112" Count="10" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="42" Count="0" />
+    </LineIds>
+    <LineIds Name="AdsTcp_WinStd.findSocket">
+      <LineId Id="5" Count="0" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="22" Count="0" />
+    </LineIds>
+    <LineIds Name="AdsTcp_WinStd.generateMessage">
+      <LineId Id="5" Count="0" />
+      <LineId Id="16" Count="0" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="17" Count="0" />
+      <LineId Id="19" Count="3" />
+    </LineIds>
+    <LineIds Name="AdsTcp_WinStd.pollData">
+      <LineId Id="21" Count="0" />
+      <LineId Id="51" Count="0" />
+    </LineIds>
+    <LineIds Name="AdsTcp_WinStd.queueMessage">
+      <LineId Id="14" Count="0" />
+      <LineId Id="27" Count="1" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="16" Count="0" />
+      <LineId Id="8" Count="0" />
+    </LineIds>
+    <LineIds Name="AdsTcp_WinStd.retrieveData">
+      <LineId Id="35" Count="0" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="14" Count="0" />
+      <LineId Id="19" Count="0" />
+      <LineId Id="18" Count="0" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="36" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="MAIN" Id="{2cbdba0c-ad31-4c75-8f6b-289818655c29}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR_OUTPUT
+	currentTime : TIMESTRUCT;
+END_VAR
+VAR
+	sMessage : STRING := 'from SERVER to CLIENT';
+	newRecipient : STRING;
+	newData : AdsData;
+	retrievedData : AdsData;
+	
+	sendOnce : BOOL;
+	sendFastNum : BOOL;
+	
+	i : INT := 0;
+	
+	fbLocalSystemTime : FB_LocalSystemTime;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF NOT setup() THEN
+	RETURN;
+END_IF
+
+AdsTcp_WinStd(
+	bBusy=> , 
+	err=> , 
+	errid=> , 
+	areaSockets=> );
+	
+IF sendOnce OR sendFastNum THEN
+	MEMSET(ADR(newData), 0, SIZEOF(newData));
+	
+	sMessage := TO_STRING(i);
+	
+	newRecipient := TO_STRING(AreaNum.AREA_2);
+	newData.description := EventsEnum.TEST_COMMS;
+	newData.timestamp := currentTime;
+	MEMCPY(ADR(newData.binaryData), ADR(sMessage), LEN(sMessage));
+	
+	AdsTcp_WinStd.queueMessage(recipient := newRecipient, data := newData);
+	
+	i := i + 1;
+	sendOnce := FALSE;
+END_IF
+
+retrievedData := AdsTcp_WinStd.AREA_2.receivingData;]]></ST>
+    </Implementation>
+    <Method Name="setup" Id="{60067628-0974-47f6-84ab-860dda211b04}">
+      <Declaration><![CDATA[METHOD setup : BOOL
+VAR
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[fbLocalSystemTime(
+	sNetID:= , 
+	bEnable:= TRUE, 
+	dwCycle:= , 
+	dwOpt:= , 
+	tTimeout:= , 
+	bValid=> , 
+	systemTime=> currentTime, 
+	tzID=> );
+
+setup := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="MAIN">
+      <LineId Id="135" Count="3" />
+      <LineId Id="144" Count="0" />
+      <LineId Id="175" Count="3" />
+      <LineId Id="165" Count="0" />
+      <LineId Id="148" Count="0" />
+      <LineId Id="225" Count="1" />
+      <LineId Id="149" Count="0" />
+      <LineId Id="174" Count="0" />
+      <LineId Id="169" Count="2" />
+      <LineId Id="173" Count="0" />
+      <LineId Id="168" Count="0" />
+      <LineId Id="155" Count="0" />
+      <LineId Id="179" Count="1" />
+      <LineId Id="158" Count="1" />
+      <LineId Id="209" Count="0" />
+      <LineId Id="208" Count="0" />
+    </LineIds>
+    <LineIds Name="MAIN.setup">
+      <LineId Id="67" Count="7" />
+      <LineId Id="64" Count="0" />
+      <LineId Id="66" Count="0" />
+      <LineId Id="61" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
