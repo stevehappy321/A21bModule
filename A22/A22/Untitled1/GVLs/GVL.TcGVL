@@ -4,6 +4,7 @@
     <Declaration><![CDATA[{attribute 'qualified_only'}
 VAR_GLOBAL CONSTANT
 	maxQueue : INT := 16;
+	maxPairs : INT := 16;
 END_VAR]]></Declaration>
   </GVL>
 </TcPlcObject>

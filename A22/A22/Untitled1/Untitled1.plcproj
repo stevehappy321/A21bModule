@@ -17,6 +17,9 @@
     <LibraryReferences>{f7d8309a-3cf4-4218-b4c1-6eee97658c04}</LibraryReferences>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="DUTs\Bundle.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="DUTs\Enums\A22.TcDUT">
       <SubType>Code</SubType>
     </Compile>
@@ -66,10 +69,16 @@
     <Compile Include="DUTs\Insertion\Prototypes\I_PositionalDrive.TcIO">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DUTs\Interval.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="DUTs\Machines\FoldingMachine.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\Machines\Robot.TcPOU">
+    <Compile Include="DUTs\Machines\KukaRobot.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Machines\RobotA22.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DUTs\Machines\WrapMachine.TcPOU">
@@ -98,10 +107,16 @@
     <Compile Include="PlcTask.TcTTO">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\CardboardCornerGuardEx.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="POUs\MAIN.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\Module Calls\CallHardwareModules.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Module Calls\InsertionQuality.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\Module Calls\SetSuctions.TcPOU">
@@ -152,6 +167,10 @@
     <PlaceholderReference Include="Tc2_System">
       <DefaultResolution>Tc2_System, * (Beckhoff Automation GmbH)</DefaultResolution>
       <Namespace>Tc2_System</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_Utilities">
+      <DefaultResolution>Tc2_Utilities, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_Utilities</Namespace>
     </PlaceholderReference>
     <PlaceholderReference Include="Tc3_Module">
       <DefaultResolution>Tc3_Module, * (Beckhoff Automation GmbH)</DefaultResolution>

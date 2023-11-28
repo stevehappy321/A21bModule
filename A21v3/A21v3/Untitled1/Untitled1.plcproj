@@ -78,6 +78,12 @@
     <Compile Include="DUTs\Interval.TcDUT">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DUTs\Machines\Conveyor.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Machines\ConveyorMode.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="DUTs\Machines\KukaRobot.TcPOU">
       <SubType>Code</SubType>
     </Compile>
@@ -96,9 +102,6 @@
     <Compile Include="DUTs\Material Holders\WoodBunkTable.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\ONE_BIT.TcDUT">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="DUTs\PositionMaterials.TcDUT">
       <SubType>Code</SubType>
     </Compile>
@@ -111,6 +114,9 @@
       <LinkAlways>true</LinkAlways>
     </Compile>
     <Compile Include="PlcTask.TcTTO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Hardware Calls\InsertionQuality.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\MAIN.TcPOU">

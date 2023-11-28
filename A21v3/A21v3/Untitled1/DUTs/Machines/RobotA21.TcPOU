@@ -18,7 +18,7 @@ VAR_OUTPUT //from outputs array
 	strapSafetyOut : BOOL;
 END_VAR
 VAR_OUTPUT //from inputs array
-	tool : INT := SectionEnum.WOOD_BUNK;
+	tool : SectionEnum := SectionEnum.WOOD_BUNK;
 	suspendedMaterial : STRING;
 	//gripper : EOAT := (id := SectionEnum.WOOD_BUNK, material := '');
 	
@@ -77,26 +77,6 @@ Busy := taskID <> 0 OR completedTask <> 0;]]></ST>
         </Implementation>
       </Get>
     </Property>
-    <Property Name="CarryMaterial" Id="{b7730445-e283-4b48-b743-120832da12cc}" FolderPath="Properties\">
-      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
-PROPERTY CarryMaterial : STRING]]></Declaration>
-      <Get Name="Get" Id="{2762fd47-fa00-4290-9aa3-5efae0b94e11}">
-        <Declaration><![CDATA[VAR
-END_VAR
-]]></Declaration>
-        <Implementation>
-          <ST><![CDATA[CarryMaterial := suspendedMaterial;]]></ST>
-        </Implementation>
-      </Get>
-      <Set Name="Set" Id="{c55adcb1-d376-491b-861d-9a225fdfa230}">
-        <Declaration><![CDATA[VAR
-END_VAR
-]]></Declaration>
-        <Implementation>
-          <ST><![CDATA[suspendedMaterial := CarryMaterial;]]></ST>
-        </Implementation>
-      </Set>
-    </Property>
     <Method Name="changeEOAT" Id="{b34b1079-0991-4720-8e8b-1775bc7cb568}">
       <Declaration><![CDATA[METHOD changeEOAT : BOOL
 VAR_INPUT
@@ -137,6 +117,26 @@ Done :=
 	completedTask <> 0;]]></ST>
         </Implementation>
       </Get>
+    </Property>
+    <Property Name="HoldMaterial" Id="{b7730445-e283-4b48-b743-120832da12cc}" FolderPath="Properties\">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
+PROPERTY HoldMaterial : STRING]]></Declaration>
+      <Get Name="Get" Id="{2762fd47-fa00-4290-9aa3-5efae0b94e11}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[HoldMaterial := suspendedMaterial;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{c55adcb1-d376-491b-861d-9a225fdfa230}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[suspendedMaterial := HoldMaterial;]]></ST>
+        </Implementation>
+      </Set>
     </Property>
     <Property Name="Ready" Id="{2211afcd-b7d1-49c9-9ad3-74a2131f3c71}" FolderPath="Properties\">
       <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
@@ -252,12 +252,6 @@ refreshParameters();]]></ST>
       <LineId Id="6" Count="1" />
       <LineId Id="2" Count="0" />
     </LineIds>
-    <LineIds Name="RobotA21.CarryMaterial.Get">
-      <LineId Id="2" Count="0" />
-    </LineIds>
-    <LineIds Name="RobotA21.CarryMaterial.Set">
-      <LineId Id="2" Count="0" />
-    </LineIds>
     <LineIds Name="RobotA21.changeEOAT">
       <LineId Id="7" Count="0" />
       <LineId Id="5" Count="0" />
@@ -275,6 +269,12 @@ refreshParameters();]]></ST>
       <LineId Id="13" Count="0" />
       <LineId Id="15" Count="0" />
       <LineId Id="14" Count="0" />
+    </LineIds>
+    <LineIds Name="RobotA21.HoldMaterial.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="RobotA21.HoldMaterial.Set">
+      <LineId Id="2" Count="0" />
     </LineIds>
     <LineIds Name="RobotA21.Ready.Get">
       <LineId Id="5" Count="0" />

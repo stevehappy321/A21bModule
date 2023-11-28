@@ -9,7 +9,7 @@ VAR
 	manualSuction : BOOL;
 	
 	moduleWB : WoodBunkEx;
-	moduleCIP : ChipboardEx;
+	//moduleCIP : ChipboardEx;
 	exec1, exec2 : BOOL;
 END_VAR
 VAR
@@ -20,7 +20,7 @@ END_VAR]]></Declaration>
 CallHardwareModules(); //start program with hardware call
 
 moduleWB(
-	execute:= execute, 
+	execute:= exec1, 
 	stop:= stop, 
 	manualStep:= manualStep, 
 	manualSuction:= manualSuction,
@@ -39,17 +39,18 @@ moduleWB(
 	verticalDriveLeft:= verticalDriveA21Left, 
 	verticalDriveRight:= verticalDriveA21Right, 
 	pistonBottom:= pistonA21Bottom, 
-	topSuction:= suctionA21Top, 
-	leftSuction:= suctionA21Left, 
-	rightSuction:= suctionA21Right, 
-	bottomSuction:= suctionA21Bottom, 
+	suctionTop:= suctionA21Top, 
+	suctionLeft:= suctionA21Left, 
+	suctionRight:= suctionA21Right, 
+	suctionBottom:= suctionA21Bottom, 
 	
 	generalError=> test, 
 	failLeft=> test, 
 	failRight=> test);
-
+	
+(*
 moduleCIP(
-	execute:= execute, 
+	execute:= exec2, 
 	stop:= stop, 
 	manualStep:= manualStep, 
 	manualSuction:= manualSuction,
@@ -63,36 +64,13 @@ moduleCIP(
 	generalError=> test, 
 	failLeft=> test, 
 	failRight=> test);
-
+*)
 CallHardwareModules(); //end program with hardware call]]></ST>
     </Implementation>
     <LineIds Name="MAIN">
-      <LineId Id="3942" Count="0" />
-      <LineId Id="3758" Count="0" />
-      <LineId Id="3871" Count="0" />
-      <LineId Id="3873" Count="0" />
-      <LineId Id="3898" Count="2" />
-      <LineId Id="3877" Count="0" />
-      <LineId Id="3901" Count="0" />
-      <LineId Id="3903" Count="2" />
-      <LineId Id="3881" Count="0" />
-      <LineId Id="3906" Count="2" />
-      <LineId Id="3885" Count="0" />
-      <LineId Id="3909" Count="4" />
-      <LineId Id="3891" Count="0" />
-      <LineId Id="3914" Count="2" />
-      <LineId Id="3895" Count="0" />
-      <LineId Id="3902" Count="0" />
-      <LineId Id="3896" Count="1" />
-      <LineId Id="3872" Count="0" />
-      <LineId Id="3759" Count="0" />
-      <LineId Id="3917" Count="0" />
-      <LineId Id="3930" Count="2" />
-      <LineId Id="3921" Count="0" />
-      <LineId Id="3933" Count="3" />
-      <LineId Id="3925" Count="4" />
-      <LineId Id="3695" Count="0" />
-      <LineId Id="3762" Count="0" />
+      <LineId Id="4100" Count="30" />
+      <LineId Id="4175" Count="0" />
+      <LineId Id="4131" Count="16" />
       <LineId Id="3760" Count="0" />
     </LineIds>
   </POU>

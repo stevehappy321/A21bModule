@@ -25,8 +25,6 @@ STRUCT
 	manRE, autoRE : BOOL; //repacking - coming soon
 	manSS, autoSS : BOOL; //packaging
 	
-	currStep : USINT; //for runtime use only
-	
 	paperFront : BOOL;
 	paperBack : BOOL;
 	cardboardFront : BOOL;
@@ -54,6 +52,8 @@ STRUCT
 	woodBunk : ARRAY[0..GVL.maxPairs] OF PositionMaterials;
 	
 	cardboard_over_cornerGuard : BOOL;
+	
+	currStep : USINT; //for runtime use only
 	
 	//for production log database
 	timeStart : TIMESTRUCT;

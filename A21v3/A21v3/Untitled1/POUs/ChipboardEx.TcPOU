@@ -22,10 +22,6 @@ VAR_OUTPUT
 END_VAR
 VAR //local types
 	materialsArr : ARRAY[0..GVL.maxPairs] OF PositionMaterials;
-	
-	stagingTemplateLeft, stagingTemplateRight AT %M* : WoodBunkTable; //declaration with %M* overwrites addresses of local attributes
-	stagingArrayLeft, stagingArrayRight : ARRAY[0..GVL.maxPairs*2] OF STRING;
-	insertionLeft, insertionRight : Insertion;
 END_VAR
 VAR //for testing, to be removed when replaced with pressure sensors
 	latchLeft, latchRight : BOOL;
@@ -259,7 +255,7 @@ CASE loadStep OF
 			RETURN;
 		END_IF
 		
-		robot.setGroup(group := 1, value := A21.PLACE_CHIPBOARD_TO_TOP);
+		robot.setGroup(group := 1, value := A21.PLACE_CHIPBOARD_TOP);
 		robot.setGroup(group := 2, value := slot);
 	(*	
 	20: //in between pause

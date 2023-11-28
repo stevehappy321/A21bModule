@@ -7,14 +7,14 @@ VAR_INPUT
 END_VAR
 VAR_OUTPUT
 	enable AT %Q* : BOOL;
+	execute AT %Q* : BOOL;
+	reset AT %Q* : BOOL;
+	
 	error AT %I* : BOOL;
 	ready AT %I* : BOOL;
 	//busy (*AT %I**) : BOOL;
 	done AT %I* : BOOL;
 	home AT %I* : BOOL;
-	
-	execute AT %Q* : BOOL;
-	reset AT %Q* : BOOL;
 	
 	timeout : BOOL;
 	
@@ -45,19 +45,17 @@ IF delay.Q THEN
 	step := SETUP;
 END_IF
 
+enable := bEnable AND robot1.strapSafetyIn (*AND robot2.strapSafetyIn*);
+
 CASE step OF
 	SETUP:
 		//busy := FALSE;
-		enable := FALSE;
-		execute := FALSE;
-		
-		IF NOT clear() THEN
-			RETURN;
-		END_IF		
-		
-		enable := bEnable AND robot1.strapSafetyIn AND robot2.strapSafetyIn;
-		
-		IF start AND enable THEN
+		IF error THEN
+			enable := FALSE;
+			execute := FALSE;
+			clear();
+			
+		ELSIF start AND enable THEN
 			start := FALSE;
 			step := RUN;
 		END_IF
@@ -144,7 +142,15 @@ start := TRUE;]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="StrapMachine">
-      <LineId Id="1108" Count="71" />
+      <LineId Id="1108" Count="10" />
+      <LineId Id="1211" Count="0" />
+      <LineId Id="1210" Count="0" />
+      <LineId Id="1119" Count="3" />
+      <LineId Id="1128" Count="0" />
+      <LineId Id="1215" Count="1" />
+      <LineId Id="1212" Count="0" />
+      <LineId Id="1214" Count="0" />
+      <LineId Id="1132" Count="47" />
       <LineId Id="576" Count="0" />
     </LineIds>
     <LineIds Name="StrapMachine.clear">

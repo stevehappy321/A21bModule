@@ -3,36 +3,28 @@
   <POU Name="CallHardwareModules" Id="{d53bfde7-ef31-4033-a59e-17a8585cdf25}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION CallHardwareModules : BOOL //only purpose of this function is to call modules from Hardware]]></Declaration>
     <Implementation>
-      <ST><![CDATA[robotLeft();	
-robotRight();
+      <ST><![CDATA[robot3();	
+robot4();
 
-skidLeft();
-skidRight();
+skidA22Left();
+skidA22Right();
 
-magazineLeft();
-magazineRight();
+magazineA22Left();
+magazineA22Right();
 
-wrapper();
-benderLeft();
+wrapperA22();
+benderA22Left();
 
-horizontalDriveLeft();
-horizontalDriveRight();
+horizontalDriveA22Left();
+horizontalDriveA22Right();
 
-verticalDriveLeft();
-verticalDriveRight();
+verticalDriveA22Left();
+verticalDriveA22Right();
 
-insertionBottom();]]></ST>
+pistonA22Bottom();]]></ST>
     </Implementation>
     <LineIds Name="CallHardwareModules">
-      <LineId Id="8" Count="4" />
-      <LineId Id="19" Count="2" />
-      <LineId Id="25" Count="1" />
-      <LineId Id="56" Count="0" />
-      <LineId Id="33" Count="1" />
-      <LineId Id="36" Count="0" />
-      <LineId Id="38" Count="1" />
-      <LineId Id="37" Count="0" />
-      <LineId Id="40" Count="0" />
+      <LineId Id="57" Count="17" />
       <LineId Id="30" Count="0" />
     </LineIds>
   </POU>
