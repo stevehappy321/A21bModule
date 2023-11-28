@@ -28,6 +28,9 @@ VAR_IN_OUT //references to required hardware
 	suctionBottom : ARRAY[*(*1..2*)] OF SuctionPad;
 END_VAR
 VAR_OUTPUT
+	//ready : BOOL;
+	done : BOOL;
+	
 	generalError : BOOL;
 	failLeft, failRight : BOOL;
 END_VAR
@@ -47,9 +50,6 @@ VAR //for testing, to be removed when replaced with pressure sensors
 	suctionEnableLeft : BOOL;
 	suctionEnableRight : BOOL;
 	suctionEnableBottom : BOOL;
-	
-	ready : BOOL;
-	done : BOOL;
 	
 	demoPair : PositionMaterials := (
 		position := 0,
@@ -596,13 +596,13 @@ CASE loadStep OF
 			RETURN;
 		END_IF
 		
-		robot.setGroup(group := 9, value := robot.inputs[5]);
+		robot.setGroup(group := 9, value := robot.materialAtHoldingPosition);
 		
 		IF robot.materialAtHoldingPosition > 0 AND robot.HoldMaterial <> '' THEN //move from gripper to insertion
 			IF loadedMaterials[surfaceID] = '' THEN //transfer to insertion as is
-				loadedMaterials[surfaceID] := robot.suspendedMaterial;
+				loadedMaterials[surfaceID] := robot.HoldMaterial;
 			ELSE //join with existing material using underscore _
-				loadedMaterials[surfaceID] := JoinStrings(loadedMaterials[surfaceID], robot.suspendedMaterial, '_');
+				loadedMaterials[surfaceID] := JoinStrings(loadedMaterials[surfaceID], robot.HoldMaterial, '_');
 			END_IF
 			robot.HoldMaterial := '';
 		END_IF
