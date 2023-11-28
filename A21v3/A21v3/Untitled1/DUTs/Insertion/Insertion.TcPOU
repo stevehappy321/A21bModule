@@ -10,7 +10,7 @@ VAR_INPUT //interface references to existing drives
 	screw : I_ContinuousDrive;
 END_VAR
 VAR_OUTPUT
-	contact AT %I* : BOOL;
+	contact AT %I* : BOOL; //may be removed from this FB and put into a 3rd GVL for floating sensors
 	softContact : BOOL; //temporary
 	
 	busy : BOOL;
@@ -23,8 +23,8 @@ VAR_OUTPUT
 END_VAR
 (*
 this FB encapsulates 2 drives into a generic insertion machine
-the implementation of both drives should be called externally
-an Insertion instance should be called in the scope it is declared in
+both drives should be declared externally in Hardware GVL as a concrete FB
+Insertion instance should be declared and called in module scope, with the drives from Hardware GVL passed in by Interface reference
 *)]]></Declaration>
     <Implementation>
       <ST><![CDATA[softContact := slider.contact AND screw.contact; //temporary
@@ -86,7 +86,9 @@ END_VAR
       <Declaration><![CDATA[METHOD reset : BOOL
 VAR_INPUT
 END_VAR
-]]></Declaration>
+(*
+implementation TBD, drive interfaces currently do not specify a reset method
+*)]]></Declaration>
       <Implementation>
         <ST><![CDATA[//slider.reset();
 //screw.reset();]]></ST>

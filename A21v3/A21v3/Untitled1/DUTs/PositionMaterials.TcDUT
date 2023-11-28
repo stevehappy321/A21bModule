@@ -18,6 +18,14 @@ STRUCT
 	fixPoints : USINT; //wrapping/strapping points
 	fixRotations : USINT; //wrapping rotations, strapping does not use this number
 END_STRUCT
-END_TYPE]]></Declaration>
+END_TYPE
+(*
+1 position
+8 materials - 4 flat surfaces, 4 corners
+
+fixture points + rotations:
+	special fixture materials - film wrap + strap
+	rotations are only used for wrapping processes - strapping always only straps once regardless of the rotations value
+*)]]></Declaration>
   </DUT>
 </TcPlcObject>

@@ -75,17 +75,19 @@
 		</System>
 		<Plc>
 			<Project GUID="{D232006A-254D-4F35-9BFE-5131CC19FE71}" Name="Untitled1" PrjFilePath="Untitled1\Untitled1.plcproj" TmcFilePath="Untitled1\Untitled1.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{4C7365AD-D55B-B2FE-F15B-C34C8C4FEAC1}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{D99A32CA-5B0D-37BA-F514-BE4AA85DBD7E}">
 					<Name>Untitled1 Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
 						<Name>PlcTask Inputs</Name>
 						<Var>
 							<Name>MAIN.moduleWB.insertionLeft.contact</Name>
+							<Comment><![CDATA[may be removed from this FB and put into a 3rd GVL for floating sensors]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>MAIN.moduleWB.insertionRight.contact</Name>
+							<Comment><![CDATA[may be removed from this FB and put into a 3rd GVL for floating sensors]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>

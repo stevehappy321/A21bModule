@@ -55,7 +55,7 @@ CASE step OF
 			execute := FALSE;
 			clear();
 			
-		ELSIF start AND enable THEN
+		ELSIF start AND enable THEN //strapping does not start if error
 			start := FALSE;
 			step := RUN;
 		END_IF
@@ -66,12 +66,12 @@ CASE step OF
 			RETURN; //keeps execute TRUE for at least 1 cycle
 		END_IF
 		
-		IF execute AND NOT ready AND NOT home THEN
+		IF execute AND NOT ready (*AND NOT home*) THEN
 			execute := FALSE;
 			step := WAIT;
 		END_IF
 		
-	WAIT:
+	WAIT: //due to the use of DC motors instead of stepper motors in the machine, a short delay is required before next strap
 		IF home THEN
 			holdPost.IN := TRUE;
 			enable := FALSE;

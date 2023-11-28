@@ -30,7 +30,12 @@ VAR_OUTPUT //from inputs array
 	
 	strapSafetyIn : BOOL;
 	//robotEOAT : INT; //may not be used
-END_VAR]]></Declaration>
+END_VAR
+(*
+extends KukaRobot
+assigns descriptive labels to each IO group from the array
+additional section-specific methods to get/set IO groups
+*)]]></Declaration>
     <Implementation>
       <ST><![CDATA[(*
 parameters - aliases to IO elements
