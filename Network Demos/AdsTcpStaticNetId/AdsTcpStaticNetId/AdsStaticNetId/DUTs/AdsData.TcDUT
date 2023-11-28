@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
-  <DUT Name="AdsData" Id="{786bc738-f83b-4faf-a13f-bfee1139b87a}">
+  <DUT Name="AdsData" Id="{f5237567-f0d5-4783-8173-ee69d89ca101}">
     <Declaration><![CDATA[{attribute 'enable_dynamic_creation'}
 TYPE AdsData :
 STRUCT

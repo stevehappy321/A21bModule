@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="BytesToString" Id="{e92ba550-8e39-4b92-86ce-ab6936b7cf35}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION BytesToString : STRING(1000)
+VAR_IN_OUT
+	arr : ARRAY[*] OF BYTE;
+END_VAR
+VAR
+	i : DINT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[STRNCPY(
+	ADR(BytesToString), 
+	arr, 
+	MIN(SIZEOF(BytesToString), (UPPER_BOUND(arr, 1) - LOWER_BOUND(arr,1) + 1) * SIZEOF(arr^)) );]]></ST>
+    </Implementation>
+    <LineIds Name="BytesToString">
+      <LineId Id="10" Count="0" />
+      <LineId Id="18" Count="2" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

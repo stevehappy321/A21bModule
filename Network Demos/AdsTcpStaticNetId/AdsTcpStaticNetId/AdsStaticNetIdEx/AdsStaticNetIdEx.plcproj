@@ -2,41 +2,51 @@
   <PropertyGroup>
     <FileVersion>1.0.0.0</FileVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{67b14dae-005f-4f72-9029-aceba9bb2140}</ProjectGuid>
+    <ProjectGuid>{c6c629c6-d1bc-4a19-b660-7bdd02ac5f41}</ProjectGuid>
     <SubObjectsSortedByName>True</SubObjectsSortedByName>
     <DownloadApplicationInfo>true</DownloadApplicationInfo>
     <WriteProductVersion>true</WriteProductVersion>
     <GenerateTpy>false</GenerateTpy>
-    <Name>AdsStaticNetId</Name>
+    <Name>AdsStaticNetIdEx</Name>
     <ProgramVersion>3.1.4023.0</ProgramVersion>
-    <Application>{1248bc18-1641-4ff6-b274-c4b06bfa3d6e}</Application>
-    <TypeSystem>{606df153-93a0-4e87-a4d9-3a32f8769542}</TypeSystem>
-    <Implicit_Task_Info>{939f6f96-140d-4c20-860c-c4feae3b34aa}</Implicit_Task_Info>
-    <Implicit_KindOfTask>{16840cc2-f33b-4c31-baf9-dec00670a25f}</Implicit_KindOfTask>
-    <Implicit_Jitter_Distribution>{0bc2379a-210e-41d1-930d-4167f9a49109}</Implicit_Jitter_Distribution>
-    <LibraryReferences>{c9f22a11-f528-4e10-b858-12849d037cf6}</LibraryReferences>
+    <Application>{ad72a6fb-d3f0-4fd8-bc9d-745eadd49738}</Application>
+    <TypeSystem>{3726818e-38af-4ff1-9f4c-5ac3bf45c933}</TypeSystem>
+    <Implicit_Task_Info>{1c614252-b4a7-4b71-bae0-5b9422d438be}</Implicit_Task_Info>
+    <Implicit_KindOfTask>{9f8fb33d-1b91-4b73-96f9-70d21559b9d9}</Implicit_KindOfTask>
+    <Implicit_Jitter_Distribution>{ae138a39-f26c-413d-8f2b-3e487eb5b25a}</Implicit_Jitter_Distribution>
+    <LibraryReferences>{7c96b0ba-2fe1-420f-9d03-3265ba830281}</LibraryReferences>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="DUTs\AdsData.TcDUT">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DUTs\AdsMessageQueue.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\AdsMessage.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="DUTs\AdsSocket.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\Enums\AreaNum.TcDUT">
+    <Compile Include="DUTs\AreaNum.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\Enums\EventsEnum.TcTLEO">
+    <Compile Include="DUTs\EventsEnum.TcTLEO">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="GVLs\LocalSocket.TcGVL">
       <SubType>Code</SubType>
       <LinkAlways>true</LinkAlways>
     </Compile>
+    <Compile Include="GVLs\Sockets.TcGVL">
+      <SubType>Code</SubType>
+      <LinkAlways>true</LinkAlways>
+    </Compile>
     <Compile Include="PlcTask.TcTTO">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\AdsTcpUnit.TcPOU">
+    <Compile Include="POUs\AdsTcpUnitEx.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\BufferIsEmpty.TcPOU">
@@ -51,7 +61,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="DUTs" />
-    <Folder Include="DUTs\Enums" />
     <Folder Include="GVLs" />
     <Folder Include="VISUs" />
     <Folder Include="POUs" />
@@ -83,7 +92,7 @@
     </PlaceholderReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="AdsStaticNetId.tmc">
+    <None Include="AdsStaticNetIdEx.tmc">
       <SubType>Content</SubType>
     </None>
   </ItemGroup>
