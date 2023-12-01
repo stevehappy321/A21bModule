@@ -14,6 +14,8 @@ VAR
 END_VAR
 VAR
 	test : BOOL;
+	
+	systemMethods : FB_System;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[SetupHardware();

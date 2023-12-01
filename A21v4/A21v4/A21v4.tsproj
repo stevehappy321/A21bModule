@@ -11,21 +11,21 @@
 			</ArrayInfo>
 		</DataType>
 		<DataType>
-			<Name GUID="{FF46E77C-A1C9-160B-C563-9524E562D7F4}" IecBaseType="true" AutoDeleteType="true">ARRAY [1..20] OF INT</Name>
-			<BitSize>320</BitSize>
-			<BaseType GUID="{18071995-0000-0000-0000-000000000006}">INT</BaseType>
-			<ArrayInfo>
-				<LBound>1</LBound>
-				<Elements>20</Elements>
-			</ArrayInfo>
-		</DataType>
-		<DataType>
 			<Name GUID="{3D778266-9CB6-A2BC-B908-FC747FC8D738}" IecBaseType="true" AutoDeleteType="true">ARRAY [1..2] OF BOOL</Name>
 			<BitSize>16</BitSize>
 			<BaseType GUID="{18071995-0000-0000-0000-000000000030}">BOOL</BaseType>
 			<ArrayInfo>
 				<LBound>1</LBound>
 				<Elements>2</Elements>
+			</ArrayInfo>
+		</DataType>
+		<DataType>
+			<Name GUID="{FF46E77C-A1C9-160B-C563-9524E562D7F4}" IecBaseType="true" AutoDeleteType="true">ARRAY [1..20] OF INT</Name>
+			<BitSize>320</BitSize>
+			<BaseType GUID="{18071995-0000-0000-0000-000000000006}">INT</BaseType>
+			<ArrayInfo>
+				<LBound>1</LBound>
+				<Elements>20</Elements>
 			</ArrayInfo>
 		</DataType>
 		<DataType>
@@ -89,7 +89,7 @@
 		</System>
 		<Plc>
 			<Project GUID="{D232006A-254D-4F35-9BFE-5131CC19FE71}" Name="Untitled1" PrjFilePath="Untitled1\Untitled1.plcproj" TmcFilePath="Untitled1\Untitled1.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{DF3AE4E4-B600-57F4-DC9D-373C86E2C699}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{990ACD73-49EF-ED9C-1EC8-B002E15EB2E6}">
 					<Name>Untitled1 Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
@@ -129,22 +129,6 @@
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.robot1.offline</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.robot1.inputs</Name>
-							<Type GUID="{FF46E77C-A1C9-160B-C563-9524E562D7F4}">ARRAY [1..20] OF INT</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.robot2.offline</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.robot2.inputs</Name>
-							<Type GUID="{FF46E77C-A1C9-160B-C563-9524E562D7F4}">ARRAY [1..20] OF INT</Type>
-						</Var>
-						<Var>
 							<Name>Hardware.toolStorageA21Right.pos1ChipboardEOAT</Name>
 							<Type>BOOL</Type>
 						</Var>
@@ -173,15 +157,15 @@
 							<Type GUID="{3D778266-9CB6-A2BC-B908-FC747FC8D738}">ARRAY [1..2] OF BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.skidA21Right.inPosition</Name>
-							<Type GUID="{3D778266-9CB6-A2BC-B908-FC747FC8D738}">ARRAY [1..2] OF BOOL</Type>
-						</Var>
-						<Var>
 							<Name>Hardware.magazineA21Left.inPosition</Name>
 							<Type GUID="{3D778266-9CB6-A2BC-B908-FC747FC8D738}">ARRAY [1..2] OF BOOL</Type>
 						</Var>
 						<Var>
 							<Name>Hardware.magazineA21Right.inPosition</Name>
+							<Type GUID="{3D778266-9CB6-A2BC-B908-FC747FC8D738}">ARRAY [1..2] OF BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.skidA21Right.inPosition</Name>
 							<Type GUID="{3D778266-9CB6-A2BC-B908-FC747FC8D738}">ARRAY [1..2] OF BOOL</Type>
 						</Var>
 						<Var>
@@ -331,33 +315,25 @@
 							<Name>Hardware.suctionA21Right[4].occupied</Name>
 							<Type>BOOL</Type>
 						</Var>
+						<Var>
+							<Name>Hardware.robot1.offline</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.robot1.inputs</Name>
+							<Type GUID="{FF46E77C-A1C9-160B-C563-9524E562D7F4}">ARRAY [1..20] OF INT</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.robot2.offline</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.robot2.inputs</Name>
+							<Type GUID="{FF46E77C-A1C9-160B-C563-9524E562D7F4}">ARRAY [1..20] OF INT</Type>
+						</Var>
 					</Vars>
 					<Vars VarGrpType="2" AreaNo="1">
 						<Name>PlcTask Outputs</Name>
-						<Var>
-							<Name>Hardware.robot1.forceStop</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.robot1.resetSignal</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.robot1.outputs</Name>
-							<Type GUID="{3959AF2B-712F-4776-B31A-F615A7A6D72D}">ARRAY [1..50] OF INT</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.robot2.forceStop</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.robot2.resetSignal</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.robot2.outputs</Name>
-							<Type GUID="{3959AF2B-712F-4776-B31A-F615A7A6D72D}">ARRAY [1..50] OF INT</Type>
-						</Var>
 						<Var>
 							<Name>Hardware.suctionA21Bottom[1].enable</Name>
 							<Type>BOOL</Type>
@@ -471,6 +447,30 @@
 						<Var>
 							<Name>Hardware.suctionA21Right[4].enable</Name>
 							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.robot1.forceStop</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.robot1.resetSignal</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.robot1.outputs</Name>
+							<Type GUID="{3959AF2B-712F-4776-B31A-F615A7A6D72D}">ARRAY [1..50] OF INT</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.robot2.forceStop</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.robot2.resetSignal</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.robot2.outputs</Name>
+							<Type GUID="{3959AF2B-712F-4776-B31A-F615A7A6D72D}">ARRAY [1..50] OF INT</Type>
 						</Var>
 					</Vars>
 					<Contexts>
