@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="MAIN" Id="{9caf58b7-eccf-4a65-a3e3-2c8d81beb312}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	execute : BOOL;
+	stop : BOOL;
+	manualStep : BOOL := TRUE;
+	manualSuction : BOOL;
+	
+	moduleWB : WoodBunkEx;
+	moduleCIP : ChipboardEx;
+	exec1, exec2 : BOOL;
+END_VAR
+VAR
+	test : BOOL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[CallHardwareModules(); //start program with hardware call
+
+SetupHardware();
+
+callModules();
+	
+(*
+moduleCIP(
+	execute:= exec2, 
+	stop:= stop, 
+	manualStep:= manualStep, 
+	manualSuction:= manualSuction,
+	
+	robotLeft:= robot1, 
+	robotRight:= robot2, 
+	toolStorageLeft:= toolStorageA21Left, 
+	toolStorageRight:= toolStorageA21Right, 
+	skidLeft:= skidA21Left, 
+	skidRight:= skidA21Right, 
+	
+	generalError=> test, 
+	failLeft=> test, 
+	failRight=> test);
+*)
+CallHardwareModules(); //end program with hardware call]]></ST>
+    </Implementation>
+    <Method Name="callModules" Id="{35c682d2-aae6-4d68-94bc-1cd545e35a17}">
+      <Declaration><![CDATA[METHOD callModules : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[moduleWB(
+	execute:= exec1, 
+	stop:= stop, 
+	manualStep:= manualStep, 
+	manualSuction:= manualSuction,
+ 
+	robotLeft:= robot1, 
+	robotRight:= robot2, 
+	toolStorageLeft:= toolStorageA21Left, 
+	toolStorageRight:= toolStorageA21Right, 
+	stagingTableLeft:= stagingTableLeft, 
+	stagingTableRight:= stagingTableRight, 
+	magazineLeft:= magazineA21Left, 
+	magazineRight:= magazineA21Right, 
+	strapper:= strapperA21, 
+	horizontalDriveLeft:= horizontalDriveA21Left, 
+	horizontalDriveRight:= horizontalDriveA21Right, 
+	verticalDriveLeft:= verticalDriveA21Left, 
+	verticalDriveRight:= verticalDriveA21Right, 
+	pistonBottom:= pistonA21Bottom, 
+	suctionTop:= suctionA21Top, 
+	suctionLeft:= suctionA21Left, 
+	suctionRight:= suctionA21Right, 
+	suctionBottom:= suctionA21Bottom, 
+	
+	done=> test,
+	generalError=> test, 
+	failLeft=> test, 
+	failRight=> test);
+	
+moduleCIP(
+	execute:= exec2, 
+	stop:= stop, 
+	manualStep:= manualStep, 
+	
+	robotLeft:= robot1, 
+	robotRight:= robot2, 
+	toolStorageLeft:= toolStorageA21Left, 
+	toolStorageRight:= toolStorageA21Right,
+	skidLeft:= skidA21Left, 
+	skidRight:= skidA21Right, 
+	
+	done=> test, 
+	generalError=> test, 
+	failLeft=> test, 
+	failRight=> test);]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="MAIN">
+      <LineId Id="4101" Count="0" />
+      <LineId Id="4190" Count="0" />
+      <LineId Id="4189" Count="0" />
+      <LineId Id="4102" Count="0" />
+      <LineId Id="4130" Count="0" />
+      <LineId Id="4175" Count="0" />
+      <LineId Id="4131" Count="12" />
+      <LineId Id="4191" Count="0" />
+      <LineId Id="4144" Count="3" />
+      <LineId Id="3760" Count="0" />
+    </LineIds>
+    <LineIds Name="MAIN.callModules">
+      <LineId Id="6" Count="24" />
+      <LineId Id="54" Count="0" />
+      <LineId Id="31" Count="1" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="35" Count="3" />
+      <LineId Id="52" Count="0" />
+      <LineId Id="49" Count="2" />
+      <LineId Id="43" Count="2" />
+      <LineId Id="53" Count="0" />
+      <LineId Id="46" Count="2" />
+      <LineId Id="34" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
