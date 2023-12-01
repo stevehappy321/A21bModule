@@ -1,5 +1,5 @@
 {
-  "$schema": "./../../Packages/Beckhoff.TwinCAT.HMI.Framework.12.760.48/runtimes/native1.12-tchmi/Schema/TchmiConfig.Schema.json",
+  "$schema": "./../../../A21v3/Packages/Beckhoff.TwinCAT.HMI.Framework.12.760.48/runtimes/native1.12-tchmi/Schema/TchmiConfig.Schema.json",
   "basePath": "./framework",
   "scaleMode": "None",
   "startupView": "Desktop.view",
@@ -257,24 +257,7 @@
   "binding": {
     "symbolError": "Ignore"
   },
-  "packages": [
-    {
-      "name": "Beckhoff.TwinCAT.HMI.BaseTemplate",
-      "basePath": "/Beckhoff.TwinCAT.HMI.BaseTemplate"
-    },
-    {
-      "name": "Beckhoff.TwinCAT.HMI.Controls",
-      "basePath": "/Beckhoff.TwinCAT.HMI.Controls"
-    },
-    {
-      "name": "Beckhoff.TwinCAT.HMI.Framework",
-      "basePath": "/framework"
-    },
-    {
-      "name": "Beckhoff.TwinCAT.HMI.Functions",
-      "basePath": "/Beckhoff.TwinCAT.HMI.Functions"
-    }
-  ],
+  "packages": [],
   "keyboardLayouts": [
     {
       "url": "KeyboardLayouts/German - compact.keyboard.json"

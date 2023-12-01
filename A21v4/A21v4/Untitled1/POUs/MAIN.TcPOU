@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
   <POU Name="MAIN" Id="{9caf58b7-eccf-4a65-a3e3-2c8d81beb312}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM MAIN
 VAR
@@ -16,9 +16,9 @@ VAR
 	test : BOOL;
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[CallHardwareModules(); //start program with hardware call
+      <ST><![CDATA[SetupHardware();
 
-SetupHardware();
+CallHardwareModules(); //start program with hardware call
 
 callModules();
 	
@@ -97,10 +97,8 @@ moduleCIP(
       </Implementation>
     </Method>
     <LineIds Name="MAIN">
-      <LineId Id="4101" Count="0" />
-      <LineId Id="4190" Count="0" />
-      <LineId Id="4189" Count="0" />
-      <LineId Id="4102" Count="0" />
+      <LineId Id="4208" Count="1" />
+      <LineId Id="4101" Count="1" />
       <LineId Id="4130" Count="0" />
       <LineId Id="4175" Count="0" />
       <LineId Id="4131" Count="12" />
