@@ -53,7 +53,8 @@ valveRetract := valveRetract OR brakePulse.Q; //from mode or brake]]></ST>
     </Implementation>
     <Folder Name="Properties" Id="{669624c0-4281-4400-bae4-85e7fdf7ac6d}" />
     <Property Name="Busy" Id="{22957210-b761-4111-803e-aaadd405ae90}" FolderPath="Properties\">
-      <Declaration><![CDATA[PROPERTY Busy : BOOL]]></Declaration>
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY Busy : BOOL]]></Declaration>
       <Get Name="Get" Id="{5b6c8e85-c34d-419a-b0de-f334097cf117}">
         <Declaration><![CDATA[VAR
 END_VAR
@@ -66,7 +67,8 @@ END_VAR
       </Get>
     </Property>
     <Property Name="Error" Id="{230cce02-1702-429c-9486-e59a94594ced}" FolderPath="Properties\">
-      <Declaration><![CDATA[PROPERTY Error : BOOL]]></Declaration>
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY Error : BOOL]]></Declaration>
       <Get Name="Get" Id="{085385ed-a3e2-4a8f-934d-c13a4afa77c0}">
         <Declaration><![CDATA[VAR
 END_VAR

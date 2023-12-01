@@ -54,19 +54,19 @@
       <SubType>Code</SubType>
       <LinkAlways>true</LinkAlways>
     </Compile>
-    <Compile Include="DUTs\Insertion\Prototypes\FBA_Drive.TcPOU">
+    <Compile Include="DUTs\Insertion\ABSTRACT\FBA_Drive.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\Insertion\Prototypes\I_ContinuousDrive.TcIO">
+    <Compile Include="DUTs\Insertion\ABSTRACT\I_ContinuousDrive.TcIO">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\Insertion\Prototypes\I_Drive.TcIO">
+    <Compile Include="DUTs\Insertion\ABSTRACT\I_Drive.TcIO">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\Insertion\Prototypes\I_EncodedDrive.TcIO">
+    <Compile Include="DUTs\Insertion\ABSTRACT\I_EncodedDrive.TcIO">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\Insertion\Prototypes\I_PositionalDrive.TcIO">
+    <Compile Include="DUTs\Insertion\ABSTRACT\I_PositionalDrive.TcIO">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DUTs\Interval.TcDUT">
@@ -87,6 +87,9 @@
     <Compile Include="DUTs\Material Holders\MaterialHolder.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DUTs\Material Holders\MaterialSlot.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="DUTs\Material Holders\SkidMagazine.TcPOU">
       <SubType>Code</SubType>
     </Compile>
@@ -95,6 +98,10 @@
     </Compile>
     <Compile Include="DUTs\SuctionPad.TcDUT">
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GVLs\ContainerArrays.TcGVL">
+      <SubType>Code</SubType>
+      <LinkAlways>true</LinkAlways>
     </Compile>
     <Compile Include="GVLs\GVL.TcGVL">
       <SubType>Code</SubType>
@@ -111,6 +118,21 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\MAIN.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Materials\GetMaterialLength.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Materials\GetMaterialLengthFromCode.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Materials\GetPairMasterLength.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Materials\GetPositionMasterLength.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Materials\MatchesMaterialType.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\Module Calls\CallHardwareModules.TcPOU">
@@ -134,9 +156,6 @@
     <Compile Include="POUs\Utility\IntegerToBoolArray.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\Utility\MatchesMaterialType.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="POUs\Utility\WithinTolerance.TcPOU">
       <SubType>Code</SubType>
     </Compile>
@@ -146,11 +165,12 @@
     <Folder Include="DUTs\Enums" />
     <Folder Include="DUTs\Insertion" />
     <Folder Include="DUTs\Insertion\Drives" />
-    <Folder Include="DUTs\Insertion\Prototypes" />
+    <Folder Include="DUTs\Insertion\ABSTRACT" />
     <Folder Include="DUTs\Machines" />
     <Folder Include="DUTs\Material Holders" />
     <Folder Include="GVLs" />
     <Folder Include="POUs\Module Calls" />
+    <Folder Include="POUs\Materials" />
     <Folder Include="POUs\Utility" />
     <Folder Include="VISUs" />
     <Folder Include="POUs" />

@@ -19,7 +19,7 @@ VAR_GLOBAL
 	
 	suctionA21Top : ARRAY[1..3] OF SuctionPad;
 	suctionA21Left : ARRAY[1..4] OF SuctionPad;
-	suctionA21Right : ARRAY[1..4] OF SuctionPad; 
+	suctionA21Right : ARRAY[1..4] OF SuctionPad;
 	suctionA21Bottom : ARRAY[1..2] OF SuctionPad;
 END_VAR]]></Declaration>
   </GVL>

@@ -31,6 +31,11 @@ VAR_OUTPUT //from inputs array
 	strapSafetyIn : BOOL;
 	//robotEOAT : INT; //may not be used
 END_VAR
+VAR
+	reservationEnum : SectionEnum;
+	hmiTask : STRING;
+	hmiTool : STRING;
+END_VAR
 (*
 extends KukaRobot
 assigns descriptive labels to each IO group from the array
@@ -61,7 +66,19 @@ outputs[11] := inspectionValue;
 
 outputs[8].15 := strapSafetyOut;
 
-refreshParameters();]]></ST>
+refreshParameters();
+
+
+reservationEnum := reservation;
+IF reservationEnum = SectionEnum.NO_SECTION THEN
+	hmiReservation := 'N/A';
+ELSE
+	hmiReservation := TO_STRING(reservationEnum);
+END_IF
+
+
+hmiTask := TO_STRING(taskID);
+hmiTool := TO_STRING(tool);]]></ST>
     </Implementation>
     <Folder Name="Command" Id="{cb2e89bb-772a-46f5-9ebd-5a57212e6237}" />
     <Folder Name="Parameters" Id="{a5b46e1c-8533-46ed-a8ad-d62fff793a82}" />
@@ -250,8 +267,13 @@ refreshParameters();]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="RobotA21">
-      <LineId Id="458" Count="23" />
-      <LineId Id="332" Count="0" />
+      <LineId Id="644" Count="24" />
+      <LineId Id="674" Count="2" />
+      <LineId Id="717" Count="0" />
+      <LineId Id="719" Count="3" />
+      <LineId Id="669" Count="0" />
+      <LineId Id="718" Count="0" />
+      <LineId Id="670" Count="1" />
     </LineIds>
     <LineIds Name="RobotA21.Busy.Get">
       <LineId Id="6" Count="1" />

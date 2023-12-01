@@ -8,13 +8,16 @@ VAR_OUTPUT
 	
 	offline AT %I* : BOOL;
 	operational : BOOL;
-	reservation : INT := SectionEnum.NULL_SECTION;
+	reservation : INT := SectionEnum.NO_SECTION;
 	
 	error : BOOL;
 	errId : DINT;
 	
 	outputs AT %Q* : ARRAY[1..50] OF INT;
 	inputs AT %I* : ARRAY[1..20] OF INT;
+END_VAR
+VAR
+	hmiReservation : STRING;
 END_VAR
 (*
 generic KUKA robot with 50 WORD outputs and 20 WORD inputs
@@ -129,7 +132,7 @@ END_VAR
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[IF reservation = sectionReservation THEN
-	reservation := SectionEnum.NULL_SECTION;
+	reservation := SectionEnum.NO_SECTION;
 	release := TRUE;
 END_IF]]></ST>
       </Implementation>
@@ -162,7 +165,7 @@ PROPERTY Reserved : BOOL]]></Declaration>
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[Reserved := reservation <> SectionEnum.NULL_SECTION;]]></ST>
+          <ST><![CDATA[Reserved := reservation <> SectionEnum.NO_SECTION;]]></ST>
         </Implementation>
       </Get>
     </Property>

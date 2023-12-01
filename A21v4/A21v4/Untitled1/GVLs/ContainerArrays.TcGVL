@@ -2,7 +2,7 @@
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
   <GVL Name="ContainerArrays" Id="{a41ac828-3b90-4453-b6ae-c19c2ca38393}">
     <Declaration><![CDATA[//{attribute 'qualified_only'}
-VAR_GLOBAL //freefloating arrays to be passed into function blocks - do not access directly
+VAR_GLOBAL //data arrays to be passed into material holder FBs - do not access directly
 	
 	skidSlotsA21Left, skidSlotsA21Right : ARRAY[1..2] OF STRING; //chipboard skid
 	skidOccupancyA21Left, skidOccupancyA21Right : ARRAY[1..2] OF BOOL;

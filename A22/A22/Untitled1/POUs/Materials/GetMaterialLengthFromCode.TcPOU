@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="GetMaterialLengthFromCode" Id="{8bc76473-7909-4f63-aec3-56c20496ed83}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION GetMaterialLengthFromCode : INT
+VAR_INPUT
+	materialID : STRING;
+END_VAR
+VAR
+	temp : STRING;
+	getNumFromString : FB_EnumStringNumbers;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[getNumFromString(
+	sSearch:= materialID, 
+	eCmd:= eEnumCmd_First, 
+	eType:= eNumGroup_Unsigned, 
+	sNumber=> temp, 
+	nPos=> , 
+	bEOS=> );
+	
+GetMaterialLengthFromCode := TO_INT(TO_INT(temp) * 25.4); //inch to mm]]></ST>
+    </Implementation>
+    <LineIds Name="GetMaterialLengthFromCode">
+      <LineId Id="10" Count="5" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="17" Count="1" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

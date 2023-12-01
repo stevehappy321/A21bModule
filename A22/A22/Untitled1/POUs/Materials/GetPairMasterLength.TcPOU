@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="GetPairMasterLength" Id="{dbc8a7af-74ed-4d15-8420-ed1202648c80}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION GetPairMasterLength : INT
+VAR_INPUT
+	pair : REFERENCE TO PositionMaterials;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[GetPairMasterLength := MAX(
+	GetMaterialLengthFromCode(pair.top),
+	GetMaterialLengthFromCode(pair.left),
+	GetMaterialLengthFromCode(pair.right),
+	GetMaterialLengthFromCode(pair.bottom),
+	GetMaterialLengthFromCode(pair.topLeft),
+	GetMaterialLengthFromCode(pair.topRight),
+	GetMaterialLengthFromCode(pair.bottomLeft),
+	GetMaterialLengthFromCode(pair.bottomRight));]]></ST>
+    </Implementation>
+    <LineIds Name="GetPairMasterLength">
+      <LineId Id="7" Count="0" />
+      <LineId Id="10" Count="7" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

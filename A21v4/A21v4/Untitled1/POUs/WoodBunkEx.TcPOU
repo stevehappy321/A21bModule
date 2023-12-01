@@ -34,7 +34,32 @@ VAR_OUTPUT
 	generalError : BOOL;
 	failLeft, failRight : BOOL;
 END_VAR
+VAR //for testing, to be removed when replaced with pressure sensors
+	latchLeft, latchRight : BOOL; //prevents SMC sliders from overshooting the inner limit sensor
+	
+	suctionEnableTop : BOOL;
+	suctionEnableLeft : BOOL;
+	suctionEnableRight : BOOL;
+	suctionEnableBottom : BOOL;
+END_VAR
+VAR	
+	topSuctionDelay : TON;
+	
+	step : (IDLE, STAGING, LOAD_WB, PUSH, STRAP, RELEASE, COMPLETE := 1050);
+	iPair : INT;
+	//these 2 ints should replace the 4 ints after
+	masterStep : INT;
+	subStepLeft, subStepRight : INT;
+	
+	loadSet : INT;
+	loadStepLeft, loadStepRight : INT;
+	
+	stageSet : INT;	
+	stageStepLeft, stageStepRight : INT;
+	iSlotLeft, iSlotRight : INT;
+END_VAR
 VAR //local types
+	demoHeight : REAL := 600; //mm
 	materialsArr : ARRAY[0..GVL.maxPairs] OF PositionMaterials := [
 		(
 			position := 69,
@@ -52,32 +77,6 @@ VAR //local types
 	
 	insertionLeft, insertionRight : Insertion;
 	loadedMaterials : ARRAY[Surface.TOP..Surface.BOTTOM] OF STRING;
-END_VAR
-VAR //for testing, to be removed when replaced with pressure sensors
-	latchLeft, latchRight : BOOL; //prevents SMC sliders from overshooting the inner limit sensor
-	
-	suctionEnableTop : BOOL;
-	suctionEnableLeft : BOOL;
-	suctionEnableRight : BOOL;
-	suctionEnableBottom : BOOL;
-		
-	demoHeight : REAL := 600; //mm
-END_VAR
-VAR	
-	topSuctionDelay : TON;
-	
-	step : (IDLE, STAGING, LOAD_WB, PUSH, STRAP, RELEASE, COMPLETE := 1050);
-	iPair : INT;
-	//these 2 ints should replace the 4 ints after
-	masterStep : INT;
-	subStepLeft, subStepRight : INT;
-	
-	loadSet : INT;
-	loadStepLeft, loadStepRight : INT;
-	
-	stageSet : INT;	
-	stageStepLeft, stageStepRight : INT;
-	iSlotLeft, iSlotRight : INT;
 END_VAR
 VAR CONSTANT
 	sectionID : SectionEnum := SectionEnum.WOOD_BUNK;

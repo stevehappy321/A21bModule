@@ -1001,13 +1001,34 @@ External Setpoint Generation:
 		</System>
 		<Plc>
 			<Project GUID="{9EBFE716-1EFF-4899-8C57-2D56B56C6F29}" Name="Untitled1" PrjFilePath="Untitled1\Untitled1.plcproj" TmcFilePath="Untitled1\Untitled1.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{13EFF9F8-E668-71B7-8CF9-104552911A0F}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{5CEC95E8-FF15-9D81-CD8F-E8C438BF0A54}">
 					<Name>Untitled1 Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
 						<Name>PlcTask Inputs</Name>
 						<Var>
-							<Name>Hardware.suctionA22Bottom.readback</Name>
+							<Name>Hardware.insertionA22LeftContact</Name>
+							<Comment><![CDATA[additional freefloating sensors]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.moduleA22.insertionLeft.contact</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.moduleA22.insertionRight.contact</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.suctionA22TopLeft[1].readback</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.suctionA22TopLeft[2].readback</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.suctionA22TopLeft[3].readback</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
@@ -1087,15 +1108,19 @@ External Setpoint Generation:
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.suctionA22TopLeft[1].readback</Name>
+							<Name>Hardware.suctionA22TopRight[1].readback</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.suctionA22TopLeft[2].readback</Name>
+							<Name>Hardware.suctionA22TopRight[2].readback</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.suctionA22TopLeft[3].readback</Name>
+							<Name>Hardware.suctionA22TopRight[3].readback</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.insertionA22RightContact</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
@@ -1189,18 +1214,6 @@ External Setpoint Generation:
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.suctionA22TopRight[1].readback</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.suctionA22TopRight[2].readback</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.suctionA22TopRight[3].readback</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
 							<Name>Hardware.suctionA22BottomLeft[1].readback</Name>
 							<Type>BOOL</Type>
 						</Var>
@@ -1225,18 +1238,22 @@ External Setpoint Generation:
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.moduleA22.insertionLeft.contact</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.moduleA22.insertionRight.contact</Name>
+							<Name>Hardware.suctionA22Bottom.readback</Name>
 							<Type>BOOL</Type>
 						</Var>
 					</Vars>
 					<Vars VarGrpType="2" AreaNo="1">
 						<Name>PlcTask Outputs</Name>
 						<Var>
-							<Name>Hardware.suctionA22Bottom.enable</Name>
+							<Name>Hardware.suctionA22TopLeft[1].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.suctionA22TopLeft[2].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.suctionA22TopLeft[3].enable</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
@@ -1293,15 +1310,15 @@ External Setpoint Generation:
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.suctionA22TopLeft[1].enable</Name>
+							<Name>Hardware.suctionA22TopRight[1].enable</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.suctionA22TopLeft[2].enable</Name>
+							<Name>Hardware.suctionA22TopRight[2].enable</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.suctionA22TopLeft[3].enable</Name>
+							<Name>Hardware.suctionA22TopRight[3].enable</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
@@ -1347,18 +1364,6 @@ External Setpoint Generation:
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.suctionA22TopRight[1].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.suctionA22TopRight[2].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.suctionA22TopRight[3].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
 							<Name>Hardware.suctionA22BottomLeft[1].enable</Name>
 							<Type>BOOL</Type>
 						</Var>
@@ -1380,6 +1385,10 @@ External Setpoint Generation:
 						</Var>
 						<Var>
 							<Name>Hardware.suctionA22BottomRight[3].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.suctionA22Bottom.enable</Name>
 							<Type>BOOL</Type>
 						</Var>
 					</Vars>

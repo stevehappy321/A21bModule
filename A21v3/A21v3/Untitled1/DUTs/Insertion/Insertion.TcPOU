@@ -61,7 +61,7 @@ IF NOT screw.homeSet THEN
 	screw.homingSequence();
 END_IF
 
-homingSequence := homingComplete;]]></ST>
+homingSequence := homingComplete := screw.HomeSet AND slider.HomeSet;]]></ST>
       </Implementation>
     </Method>
     <Method Name="press" Id="{4b68a98e-5d52-4750-8c51-39e9aab9887f}">

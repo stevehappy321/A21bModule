@@ -48,11 +48,21 @@
 		</System>
 		<Plc>
 			<Project GUID="{D232006A-254D-4F35-9BFE-5131CC19FE71}" Name="Untitled1" PrjFilePath="Untitled1\Untitled1.plcproj" TmcFilePath="Untitled1\Untitled1.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{E10D50C9-769D-553F-AA1F-06FE967B2730}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{B38175FF-5768-5B65-6218-E95B8E912BF0}">
 					<Name>Untitled1 Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
 						<Name>PlcTask Inputs</Name>
+						<Var>
+							<Name>MAIN.moduleWB.insertionLeft.contact</Name>
+							<Comment><![CDATA[may be removed from this FB and put into a 3rd GVL for floating sensors]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.moduleWB.insertionRight.contact</Name>
+							<Comment><![CDATA[may be removed from this FB and put into a 3rd GVL for floating sensors]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
 						<Var>
 							<Name>ContainerArrays.tableOccupancyA21Left</Name>
 							<Type GUID="{22728B82-A99E-1178-70C3-33731C966BD6}">ARRAY [1..10] OF BOOL</Type>
@@ -278,16 +288,6 @@
 						</Var>
 						<Var>
 							<Name>Hardware.suctionA21Bottom[2].occupied</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.moduleWB.insertionLeft.contact</Name>
-							<Comment><![CDATA[may be removed from this FB and put into a 3rd GVL for floating sensors]]></Comment>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.moduleWB.insertionRight.contact</Name>
-							<Comment><![CDATA[may be removed from this FB and put into a 3rd GVL for floating sensors]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 					</Vars>

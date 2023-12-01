@@ -35,7 +35,14 @@ VAR_OUTPUT
 	failLeft, failRight : BOOL;
 END_VAR
 VAR //local types
-	materialsArr : ARRAY[0..GVL.maxPairs] OF PositionMaterials;
+	materialsArr : ARRAY[0..GVL.maxPairs] OF PositionMaterials := [
+		(
+			position := 0,
+			top := 'WDS20',
+			left := 'WDS20',
+			right := 'WDS20',
+			bottom := 'WDS14'
+		)];
 	
 	stagingTemplateLeft, stagingTemplateRight AT %M* : WoodBunkTable; //declaration with %M* overwrites addresses of local attributes
 	stagingArrayLeft, stagingArrayRight : ARRAY[0..GVL.maxPairs*2] OF STRING;
@@ -50,21 +57,22 @@ VAR //for testing, to be removed when replaced with pressure sensors
 	suctionEnableLeft : BOOL;
 	suctionEnableRight : BOOL;
 	suctionEnableBottom : BOOL;
-	
+	(*
 	demoPair : PositionMaterials := (
 		position := 0,
 		top := 'WDS20',
 		left := 'WDS20',
 		right := 'WDS20',
 		bottom := 'WDS14');
-		
+	*)
 	demoHeight : REAL := 600; //mm
 END_VAR
 VAR	
 	topSuctionDelay : TON;
 	
-	step : (IDLE, LOAD_CIP, STAGING, LOAD_WB, PUSH, STRAP, RELEASE, COMPLETE := 1050);
+	step : (IDLE, STAGING, LOAD_WB, PUSH, STRAP, RELEASE, COMPLETE := 1050);
 	
+	iPair : INT;
 	//these 2 ints should replace the 4 ints after
 	masterStep : INT;
 	subStepLeft, subStepRight : INT;
@@ -83,7 +91,7 @@ END_VAR]]></Declaration>
       <ST><![CDATA[{warning disable C0371} //supress [external reference] warnings
 callLocalModules();
 
-materialsArr[0] := demoPair;
+//materialsArr[0] := demoPair;
 
 IF stop THEN //may need to turn off suction
 	insertionLeft.stop();
@@ -94,14 +102,14 @@ IF stop THEN //may need to turn off suction
 	robotRight.clearCommand();
 	RETURN;
 END_IF
-
-IF NOT insertionLeft.screw.HomeSet AND insertionRight.screw.HomeSet THEN
+(*
+IF NOT insertionLeft.screw.HomeSet OR NOT insertionRight.screw.HomeSet THEN
 	insertionLeft.homingSequence();
 	insertionRight.homingSequence();
 	pistonBottom.retract();
 	RETURN;
 END_IF
-
+*)
 CASE step OF
 	IDLE:
 		IF execute THEN
@@ -131,7 +139,7 @@ CASE step OF
 	
 	LOAD_WB:
 		IF NOT done THEN
-			done := load(pair := demoPair, error => generalError);
+			done := load(pair := materialsArr[iPair], error => generalError);
 		END_IF
 		
 		IF manualSuction THEN
@@ -163,8 +171,16 @@ CASE step OF
 		END_IF
 		
 		IF NOT(
-			InsertionQuality(suctions:= suctionTop, insertionMaterial:= loadedMaterials[Surface.TOP], recipeMaterial:= demoPair.top) AND
-			InsertionQuality(suctions:= suctionLeft, insertionMaterial:= loadedMaterials[Surface.LEFT], recipeMaterial:= demoPair.left)) //AND
+			InsertionQuality(
+				suctions:= suctionTop, 
+				insertionMaterial:= loadedMaterials[Surface.TOP], 
+				recipeMaterial:= materialsArr[iPair].top)
+			AND
+			InsertionQuality(
+				suctions:= suctionLeft, 
+				insertionMaterial:= loadedMaterials[Surface.LEFT], 
+				recipeMaterial:= materialsArr[iPair].left))
+			//AND
 			//InsertionQuality(suctions:= rightSuction, insertionMaterial:= insertionMaterials[Surface.RIGHT], recipeMaterial:= demoPair.right) AND
 			//InsertionQuality(suctions:= bottomSuction, insertionMaterial:= insertionMaterials[Surface.BOTTOM], recipeMaterial:= demoPair.bottom))
 		THEN
@@ -243,6 +259,7 @@ CASE step OF
 	
 	COMPLETE:
 		//reset everything
+		iPair := (iPair + 1) MOD GVL.maxPairs;
 		step := IDLE;
 		
 END_CASE]]></ST>
@@ -788,7 +805,7 @@ THEN
 	RETURN;
 END_IF
 
-iSlot := MIN(1, iSlot); //ensures iSlot is at least 1
+iSlot := MAX(1, iSlot); //ensures iSlot is at least 1
 
 //follow the template as is
 CASE stageStep OF
@@ -1064,7 +1081,15 @@ END_CASE]]></ST>
     <LineIds Name="WoodBunkEx">
       <LineId Id="5471" Count="13" />
       <LineId Id="5487" Count="6" />
-      <LineId Id="5495" Count="143" />
+      <LineId Id="5495" Count="62" />
+      <LineId Id="5729" Count="3" />
+      <LineId Id="5558" Count="0" />
+      <LineId Id="5735" Count="0" />
+      <LineId Id="5733" Count="1" />
+      <LineId Id="5736" Count="0" />
+      <LineId Id="5559" Count="77" />
+      <LineId Id="5728" Count="0" />
+      <LineId Id="5637" Count="1" />
       <LineId Id="4805" Count="0" />
     </LineIds>
     <LineIds Name="WoodBunkEx.callLocalModules">

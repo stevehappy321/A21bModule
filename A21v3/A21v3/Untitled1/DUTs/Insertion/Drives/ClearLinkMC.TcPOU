@@ -85,7 +85,8 @@ sequence();]]></ST>
     <Folder Name="Private" Id="{8d4dfb4b-1bc0-44fe-833d-9a6610663d13}" />
     <Folder Name="Properties" Id="{f4fb86df-136f-4996-9daa-b3b8a4b4fe75}" />
     <Property Name="Busy" Id="{76e617c1-1707-418c-afd8-37e3d0a70099}" FolderPath="Properties\">
-      <Declaration><![CDATA[PROPERTY Busy : BOOL]]></Declaration>
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY Busy : BOOL]]></Declaration>
       <Get Name="Get" Id="{9821e814-6021-4995-a4d6-e74adde35b23}">
         <Declaration><![CDATA[VAR
 END_VAR
@@ -96,7 +97,8 @@ END_VAR
       </Get>
     </Property>
     <Property Name="CurrentPosition" Id="{552cdbb0-b891-4b67-ad01-a8cfc1c516eb}" FolderPath="Properties\">
-      <Declaration><![CDATA[PROPERTY CurrentPosition : LREAL]]></Declaration>
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY CurrentPosition : LREAL]]></Declaration>
       <Get Name="Get" Id="{f42f05dd-f56e-4930-a286-1888d4d594cd}">
         <Declaration><![CDATA[VAR
 END_VAR
@@ -115,7 +117,8 @@ END_VAR
       </Set>
     </Property>
     <Property Name="Error" Id="{7daf4b31-4ccd-4ebb-b598-fd16e9795a78}" FolderPath="Properties\">
-      <Declaration><![CDATA[PROPERTY Error : BOOL]]></Declaration>
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY Error : BOOL]]></Declaration>
       <Get Name="Get" Id="{edbd4fca-a224-4fe5-ba01-ff917580b072}">
         <Declaration><![CDATA[VAR
 END_VAR
@@ -300,7 +303,8 @@ END_VAR
       </Implementation>
     </Method>
     <Property Name="TargetPosition" Id="{222c0d80-2607-4af6-8461-be098758948d}" FolderPath="Properties\">
-      <Declaration><![CDATA[PROPERTY TargetPosition : LREAL]]></Declaration>
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY TargetPosition : LREAL]]></Declaration>
       <Get Name="Get" Id="{b917e1f8-7faf-4ca9-8c30-5bfbcfdfaf97}">
         <Declaration><![CDATA[VAR
 END_VAR
