@@ -71,7 +71,6 @@ VAR //local types
 	
 	templateSlotsLeft, templateSlotsRight : ARRAY[1..10] OF STRING;
 	templateOccupancyLeft, templateOccupancyRight : ARRAY[1..10] OF BOOL;
-	
 	stagingTemplateLeft, stagingTemplateRight AT %M* : GenericStagingTable;	
 	stagingArrayLeft, stagingArrayRight : ARRAY[0..(GVL.maxPairs+1)*2] OF STRING;
 	
@@ -85,9 +84,7 @@ END_VAR]]></Declaration>
       <ST><![CDATA[{warning disable C0371} //supress [external reference] warnings
 callLocalModules();
 
-//materialsArr[0] := demoPair;
-
-IF stop THEN //may need to turn off suction
+IF stop THEN
 	insertionLeft.stop();
 	insertionRight.stop();
 	pistonBottom.stop();
@@ -96,14 +93,14 @@ IF stop THEN //may need to turn off suction
 	robotRight.clearCommand();
 	RETURN;
 END_IF
-(*
+
 IF NOT insertionLeft.screw.HomeSet AND insertionRight.screw.HomeSet THEN
 	insertionLeft.homingSequence();
 	insertionRight.homingSequence();
 	pistonBottom.retract();
 	RETURN;
 END_IF
-*)
+
 CASE step OF
 	IDLE:
 		IF execute THEN
@@ -634,7 +631,9 @@ CASE loadStep OF
 	
 	COMPLETE:
 		robot.clearCommand();
-		
+		loadingSequence := TRUE;
+		loadStep := 0;
+		(*
 		//check insertion quality
 		IF InsertionQuality(suctions := suctions, insertionMaterial := loadedMaterials[surfaceID], recipeMaterial := material) THEN
 			loadingSequence := TRUE;
@@ -644,7 +643,7 @@ CASE loadStep OF
 			//loadStep := 0;
 			//SetSuctions(suctionPads := suctions, state := FALSE);
 		END_IF
-		
+		*)
 END_CASE]]></ST>
       </Implementation>
     </Method>
@@ -811,7 +810,6 @@ END_IF
 CASE stageStep OF
 	0:
 		robot.clearCommand();
-		
 		IF robot.Ready THEN
 			stageStep := 10;
 		END_IF
@@ -874,14 +872,17 @@ CASE stageStep OF
 	COMPLETE:
 		//if staging is successful, stage next slot
 		//otherwise, repeat slot
+		robot.clearCommand();
 		IF table.isOccupied(iSlot) AND table.getSlot(i := iSlot) = template.getSlot(i := iSlot) THEN
 			iSlot := iSlot + 1;
 		END_IF
+		stageStep := 0;
 END_CASE]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="WoodBunkEx">
-      <LineId Id="5471" Count="13" />
+      <LineId Id="5471" Count="1" />
+      <LineId Id="5475" Count="9" />
       <LineId Id="5487" Count="6" />
       <LineId Id="5495" Count="62" />
       <LineId Id="5729" Count="1" />
@@ -960,7 +961,11 @@ END_CASE]]></ST>
       <LineId Id="278" Count="0" />
     </LineIds>
     <LineIds Name="WoodBunkEx.loadingSequence">
-      <LineId Id="1313" Count="90" />
+      <LineId Id="1313" Count="79" />
+      <LineId Id="1419" Count="0" />
+      <LineId Id="1393" Count="0" />
+      <LineId Id="1418" Count="0" />
+      <LineId Id="1394" Count="9" />
       <LineId Id="5" Count="0" />
     </LineIds>
     <LineIds Name="WoodBunkEx.splitCombinedMaterials">
@@ -1000,9 +1005,13 @@ END_CASE]]></ST>
       <LineId Id="387" Count="4" />
       <LineId Id="521" Count="0" />
       <LineId Id="395" Count="13" />
-      <LineId Id="411" Count="10" />
+      <LineId Id="411" Count="4" />
+      <LineId Id="417" Count="4" />
       <LineId Id="553" Count="0" />
-      <LineId Id="423" Count="58" />
+      <LineId Id="423" Count="55" />
+      <LineId Id="584" Count="0" />
+      <LineId Id="479" Count="2" />
+      <LineId Id="583" Count="0" />
       <LineId Id="5" Count="0" />
     </LineIds>
   </POU>

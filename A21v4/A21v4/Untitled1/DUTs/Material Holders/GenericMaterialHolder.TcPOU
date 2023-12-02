@@ -7,11 +7,20 @@ VAR_IN_OUT
 	occupied : ARRAY[*] OF BOOL;
 	
 	hmiTable : ARRAY[*] OF MaterialSlot;
+END_VAR
+VAR
+	numSlots : INT;
+	
+	test : INT;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[IF hmiTable <> 0 THEN
 	writeHmiTable();
-END_IF]]></ST>
+END_IF
+
+numSlots := TO_INT(UPPER_BOUND(slots, 1) - LOWER_BOUND(slots, 1) + 1);
+
+//test := SIZEOF(slots);]]></ST>
     </Implementation>
     <Folder Name="HMI" Id="{e0175151-2858-4df9-807d-10c6bd8b5349}" />
     <Method Name="clear" Id="{0079e54a-4897-43fe-babe-0b16afa40b6d}">
@@ -90,8 +99,8 @@ END_IF
 isOccupied := occupied[i];]]></ST>
       </Implementation>
     </Method>
-    <Method Name="setupSlots" Id="{2ad8ecf9-54a8-4b91-9a89-b2557ee7cf42}">
-      <Declaration><![CDATA[METHOD setupSlots : BOOL
+    <Method Name="setSlots" Id="{2ad8ecf9-54a8-4b91-9a89-b2557ee7cf42}">
+      <Declaration><![CDATA[METHOD setSlots : BOOL
 VAR_IN_OUT
 	newSlots : ARRAY[*] OF STRING;
 END_VAR
@@ -100,9 +109,7 @@ VAR
 	j : DINT;
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[//slots := setSlots;
-
-MEMCPY(
+        <ST><![CDATA[MEMCPY(
 	slots, 
 	newSlots, 
 	SIZEOF(STRING) * MIN(
@@ -126,6 +133,10 @@ END_FOR]]></ST>
     <LineIds Name="GenericMaterialHolder">
       <LineId Id="21" Count="1" />
       <LineId Id="17" Count="0" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="37" Count="0" />
+      <LineId Id="36" Count="0" />
     </LineIds>
     <LineIds Name="GenericMaterialHolder.clear">
       <LineId Id="5" Count="0" />
@@ -145,8 +156,8 @@ END_FOR]]></ST>
       <LineId Id="21" Count="5" />
       <LineId Id="13" Count="0" />
     </LineIds>
-    <LineIds Name="GenericMaterialHolder.setupSlots">
-      <LineId Id="35" Count="7" />
+    <LineIds Name="GenericMaterialHolder.setSlots">
+      <LineId Id="37" Count="5" />
       <LineId Id="27" Count="0" />
     </LineIds>
     <LineIds Name="GenericMaterialHolder.writeHmiTable">

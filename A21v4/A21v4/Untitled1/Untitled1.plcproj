@@ -15,6 +15,7 @@
     <Implicit_KindOfTask>{c60eb9fc-b01f-4930-94f1-4d5b31a17495}</Implicit_KindOfTask>
     <Implicit_Jitter_Distribution>{2c1e3ab9-4ef9-4f2b-bf74-21a70035d750}</Implicit_Jitter_Distribution>
     <LibraryReferences>{f62c19b3-1473-478c-a08b-595ea0789968}</LibraryReferences>
+    <Released>false</Released>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="DUTs\A21ToolStorage.TcDUT">
@@ -123,13 +124,16 @@
     <Compile Include="PlcTask.TcTTO">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\FB_System.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="POUs\Hardware Calls\InsertionQuality.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\MAIN.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\Hardware Calls\CallHardwareModules.TcPOU">
+    <Compile Include="POUs\Hardware Calls\CallHardware.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\Hardware Calls\SetSuctions.TcPOU">
@@ -138,16 +142,19 @@
     <Compile Include="POUs\Hardware Calls\SetupHardware.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\Utility\AddToStringArray.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Utility\BoolVariableArrayToInteger.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="POUs\WoodBunkEx.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\ChipboardEx.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\Utility\BoolArrayToInteger.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\Utility\CEILING.TcPOU">
+    <Compile Include="POUs\Utility\BoolPointerArrayToInteger.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\Utility\IntegerBitAccess.TcPOU">
@@ -157,18 +164,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\Utility\JoinStrings.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\Utility\String Array\AddToStringArray.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\Utility\String Array\RemoveElementFromStringArray.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\Utility\String Array\RemoveIndexFromStringArray.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\Utility\String Array\StringArrayCloseGaps.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\Utility\WithinTolerance.TcPOU">
@@ -186,7 +181,6 @@
     <Folder Include="GVLs" />
     <Folder Include="POUs\Hardware Calls" />
     <Folder Include="POUs\Utility" />
-    <Folder Include="POUs\Utility\String Array" />
     <Folder Include="VISUs" />
     <Folder Include="POUs" />
   </ItemGroup>

@@ -14,10 +14,11 @@ VAR
 END_VAR
 VAR
 	test : BOOL;
+	
+	systemMethods : FB_System;
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[CallHardwareModules(); //start program with hardware call
-
+      <ST><![CDATA[CallHardware(); //start program with hardware call
 SetupHardware();
 
 callModules();
@@ -40,7 +41,8 @@ moduleCIP(
 	failLeft=> test, 
 	failRight=> test);
 *)
-CallHardwareModules(); //end program with hardware call]]></ST>
+
+CallHardware(); //end program with hardware call]]></ST>
     </Implementation>
     <Method Name="callModules" Id="{35c682d2-aae6-4d68-94bc-1cd545e35a17}">
       <Declaration><![CDATA[METHOD callModules : BOOL
@@ -98,14 +100,14 @@ moduleCIP(
     </Method>
     <LineIds Name="MAIN">
       <LineId Id="4101" Count="0" />
-      <LineId Id="4190" Count="0" />
-      <LineId Id="4189" Count="0" />
+      <LineId Id="4225" Count="0" />
       <LineId Id="4102" Count="0" />
       <LineId Id="4130" Count="0" />
       <LineId Id="4175" Count="0" />
       <LineId Id="4131" Count="12" />
       <LineId Id="4191" Count="0" />
       <LineId Id="4144" Count="3" />
+      <LineId Id="4227" Count="0" />
       <LineId Id="3760" Count="0" />
     </LineIds>
     <LineIds Name="MAIN.callModules">

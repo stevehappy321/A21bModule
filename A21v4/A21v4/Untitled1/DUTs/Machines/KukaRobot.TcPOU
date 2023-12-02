@@ -13,8 +13,8 @@ VAR_OUTPUT
 	error : BOOL;
 	errId : DINT;
 	
-	outputs AT %Q* : ARRAY[1..50] OF INT;
-	inputs AT %I* : ARRAY[1..20] OF INT;
+	outputs AT %Q* : ARRAY[1..50] OF WORD;
+	inputs AT %I* : ARRAY[1..20] OF WORD;
 END_VAR
 VAR
 	hmiReservation : STRING;
@@ -79,7 +79,7 @@ eStop := TRUE;]]></ST>
     <Method Name="fullCommand" Id="{4580bd0b-7468-4f0a-8a12-9d7d084c177b}">
       <Declaration><![CDATA[METHOD fullCommand : BOOL
 VAR_INPUT
-	newOutputs : REFERENCE TO ARRAY[1..50] OF INT;
+	newOutputs : REFERENCE TO ARRAY[1..50] OF WORD;
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[//IF NOT Busy THEN

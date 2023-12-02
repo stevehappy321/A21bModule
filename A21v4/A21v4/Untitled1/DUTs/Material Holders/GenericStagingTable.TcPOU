@@ -1,24 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
   <POU Name="GenericStagingTable" Id="{86f30268-c033-4b26-ab89-12e7cd4acf96}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK GenericStagingTable EXTENDS GenericMaterialHolder
-VAR_OUTPUT
-	//hmiSlots : ARRAY[1..numSlots] OF MaterialSlot;
-END_VAR
-VAR
-	i : DINT(1..10);
-END_VAR
-VAR_STAT CONSTANT
-	numSlots : UINT := SIZEOF(tableSlotsA21Left)/SIZEOF(tableSlotsA21Left[1]);
-END_VAR]]></Declaration>
+    <Declaration><![CDATA[FUNCTION_BLOCK GenericStagingTable EXTENDS GenericMaterialHolder]]></Declaration>
     <Implementation>
-      <ST><![CDATA[SUPER^();
-(*
-FOR i:=LOWER_BOUND(slots, 1) TO UPPER_BOUND(slots, 1) BY 1 DO
-	hmiSlots[i].material := slots[i];
-	hmiSlots[i].occupied := occupied[i];
-END_FOR
-*)]]></ST>
+      <ST><![CDATA[SUPER^();]]></ST>
     </Implementation>
     <Method Name="autofill" Id="{85f89965-dfb3-421e-9fdd-f8a8434c5c09}">
       <Declaration><![CDATA[METHOD autofill : BOOL
@@ -159,10 +144,7 @@ slots[i] := '';
       </Implementation>
     </Method>
     <LineIds Name="GenericStagingTable">
-      <LineId Id="80" Count="1" />
-      <LineId Id="85" Count="2" />
-      <LineId Id="83" Count="0" />
-      <LineId Id="44" Count="0" />
+      <LineId Id="80" Count="0" />
     </LineIds>
     <LineIds Name="GenericStagingTable.autofill">
       <LineId Id="5" Count="0" />

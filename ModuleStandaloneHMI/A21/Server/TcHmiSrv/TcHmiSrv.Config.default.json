@@ -33,8 +33,8 @@
                 "generate_implicit_init_function": "",
                 "qualified_only": "",
                 "to_string": "",
-                "to_string_function": "__TO_STRING__159",
-                "to_wstring_function": "__TO_WSTRING__159"
+                "to_string_function": "__TO_STRING__165",
+                "to_wstring_function": "__TO_WSTRING__165"
             },
             "enum": [
                 0,
@@ -406,6 +406,15 @@
             "startOffset": 1,
             "type": "array"
         },
+        "PLC1.ARRAY_1..15_OF-BOOL": {
+            "items": {
+                "$ref": "tchmi:general#/definitions/BOOL"
+            },
+            "maxItems": 15,
+            "minItems": 15,
+            "startOffset": 1,
+            "type": "array"
+        },
         "PLC1.ARRAY_1..15_OF-MaterialSlot": {
             "items": {
                 "$ref": "#/definitions/PLC1.MaterialSlot"
@@ -436,6 +445,15 @@
         "PLC1.ARRAY_1..20_OF-INT": {
             "items": {
                 "$ref": "tchmi:general#/definitions/INT"
+            },
+            "maxItems": 20,
+            "minItems": 20,
+            "startOffset": 1,
+            "type": "array"
+        },
+        "PLC1.ARRAY_1..20_OF-WORD": {
+            "items": {
+                "$ref": "tchmi:general#/definitions/WORD"
             },
             "maxItems": 20,
             "minItems": 20,
@@ -526,6 +544,15 @@
         "PLC1.ARRAY_1..50_OF-INT": {
             "items": {
                 "$ref": "tchmi:general#/definitions/INT"
+            },
+            "maxItems": 50,
+            "minItems": 50,
+            "startOffset": 1,
+            "type": "array"
+        },
+        "PLC1.ARRAY_1..50_OF-WORD": {
+            "items": {
+                "$ref": "tchmi:general#/definitions/WORD"
             },
             "maxItems": 50,
             "minItems": 50,
@@ -1591,6 +1618,16 @@
                             "attributes": {
                                 "TcAddressType": "Input"
                             },
+                            "propertyOrder": 6
+                        }
+                    ]
+                },
+                "numSlots": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/INT"
+                        },
+                        {
                             "propertyOrder": 4
                         }
                     ]
@@ -1622,14 +1659,21 @@
                             "propertyOrder": 1
                         }
                     ]
+                },
+                "test": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/INT"
+                        },
+                        {
+                            "propertyOrder": 5
+                        }
+                    ]
                 }
             },
             "type": "object"
         },
         "PLC1.GenericStagingTable": {
-            "attributes": {
-                "generate_implicit_init_function": ""
-            },
             "properties": {
                 "hmiTable": {
                     "allOf": [
@@ -1645,14 +1689,12 @@
                         }
                     ]
                 },
-                "i": {
+                "numSlots": {
                     "allOf": [
                         {
-                            "$ref": "tchmi:general#/definitions/INT32"
+                            "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
-                            "maximum": 10.0,
-                            "minimum": 1.0,
                             "propertyOrder": 4
                         }
                     ]
@@ -1682,6 +1724,16 @@
                                 "variable_length_array": ""
                             },
                             "propertyOrder": 1
+                        }
+                    ]
+                },
+                "test": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/INT"
+                        },
+                        {
+                            "propertyOrder": 5
                         }
                     ]
                 }
@@ -2262,6 +2314,16 @@
                 }
             },
             "type": "object"
+        },
+        "PLC1.METHOD-RETURNING-BOOL": {
+            "allOf": [
+                {
+                    "$ref": "tchmi:general#/definitions/BOOL"
+                },
+                {
+                    "function": true
+                }
+            ]
         },
         "PLC1.MaterialSlot": {
             "properties": {
@@ -2977,16 +3039,52 @@
         "PLC1.RobotA21": {
             "properties": {
                 "Busy": {
-                    "$ref": "#/definitions/PLC1.PROPERTY-GET-BOOL"
+                    "allOf": [
+                        {
+                            "attributes": {
+                                "suppress_warning_0": "C0195"
+                            }
+                        },
+                        {
+                            "$ref": "#/definitions/PLC1.PROPERTY-GET-BOOL"
+                        }
+                    ]
                 },
                 "Done": {
-                    "$ref": "#/definitions/PLC1.PROPERTY-GET-BOOL"
+                    "allOf": [
+                        {
+                            "attributes": {
+                                "suppress_warning_0": "C0195"
+                            }
+                        },
+                        {
+                            "$ref": "#/definitions/PLC1.PROPERTY-GET-BOOL"
+                        }
+                    ]
                 },
                 "HoldMaterial": {
-                    "$ref": "#/definitions/PLC1.PROPERTY-GET-SET-STRING-80"
+                    "allOf": [
+                        {
+                            "attributes": {
+                                "suppress_warning_0": "C0195"
+                            }
+                        },
+                        {
+                            "$ref": "#/definitions/PLC1.PROPERTY-GET-SET-STRING-80"
+                        }
+                    ]
                 },
                 "Ready": {
-                    "$ref": "#/definitions/PLC1.PROPERTY-GET-BOOL"
+                    "allOf": [
+                        {
+                            "attributes": {
+                                "suppress_warning_0": "C0195"
+                            }
+                        },
+                        {
+                            "$ref": "#/definitions/PLC1.PROPERTY-GET-BOOL"
+                        }
+                    ]
                 },
                 "Reserved": {
                     "$ref": "#/definitions/PLC1.PROPERTY-GET-BOOL"
@@ -2997,6 +3095,9 @@
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
+                            "attributes": {
+                                "suppress_warning_0": "C0195"
+                            },
                             "propertyOrder": 14
                         }
                     ]
@@ -3007,6 +3108,9 @@
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
+                            "attributes": {
+                                "suppress_warning_0": "C0195"
+                            },
                             "propertyOrder": 15
                         }
                     ]
@@ -3017,6 +3121,9 @@
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
+                            "attributes": {
+                                "suppress_warning_0": "C0195"
+                            },
                             "propertyOrder": 16
                         }
                     ]
@@ -3027,16 +3134,22 @@
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
+                            "attributes": {
+                                "suppress_warning_0": "C0195"
+                            },
                             "propertyOrder": 17
                         }
                     ]
                 },
-                "chipboardSkidInPosition": {
+                "chipboardAvailability": {
                     "allOf": [
                         {
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
+                            "attributes": {
+                                "suppress_warning_0": "C0195"
+                            },
                             "propertyOrder": 28
                         }
                     ]
@@ -3047,6 +3160,9 @@
                             "$ref": "#/definitions/PLC1.A21"
                         },
                         {
+                            "attributes": {
+                                "suppress_warning_0": "C0195"
+                            },
                             "comment": "gripper : EOAT := (id := SectionEnum.WOOD_BUNK, material := '');",
                             "propertyOrder": 25
                         }
@@ -3058,6 +3174,9 @@
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
+                            "attributes": {
+                                "suppress_warning_0": "C0195"
+                            },
                             "propertyOrder": 26
                         }
                     ]
@@ -3111,6 +3230,9 @@
                             "$ref": "tchmi:general#/definitions/STRING%2880%29"
                         },
                         {
+                            "attributes": {
+                                "suppress_warning_0": "C0195"
+                            },
                             "propertyOrder": 32
                         }
                     ]
@@ -3121,6 +3243,9 @@
                             "$ref": "tchmi:general#/definitions/STRING%2880%29"
                         },
                         {
+                            "attributes": {
+                                "suppress_warning_0": "C0195"
+                            },
                             "propertyOrder": 33
                         }
                     ]
@@ -3128,7 +3253,7 @@
                 "inputs": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/PLC1.ARRAY_1..20_OF-INT"
+                            "$ref": "#/definitions/PLC1.ARRAY_1..20_OF-WORD"
                         },
                         {
                             "attributes": {
@@ -3144,6 +3269,9 @@
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
+                            "attributes": {
+                                "suppress_warning_0": "C0195"
+                            },
                             "propertyOrder": 19
                         }
                     ]
@@ -3154,17 +3282,10 @@
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
+                            "attributes": {
+                                "suppress_warning_0": "C0195"
+                            },
                             "propertyOrder": 21
-                        }
-                    ]
-                },
-                "magazineAvailability": {
-                    "allOf": [
-                        {
-                            "$ref": "tchmi:general#/definitions/INT"
-                        },
-                        {
-                            "propertyOrder": 27
                         }
                     ]
                 },
@@ -3174,6 +3295,9 @@
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
+                            "attributes": {
+                                "suppress_warning_0": "C0195"
+                            },
                             "comment": "unused",
                             "propertyOrder": 20
                         }
@@ -3185,6 +3309,9 @@
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
+                            "attributes": {
+                                "suppress_warning_0": "C0195"
+                            },
                             "propertyOrder": 29
                         }
                     ]
@@ -3215,7 +3342,7 @@
                 "outputs": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/PLC1.ARRAY_1..50_OF-INT"
+                            "$ref": "#/definitions/PLC1.ARRAY_1..50_OF-WORD"
                         },
                         {
                             "attributes": {
@@ -3231,6 +3358,9 @@
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
+                            "attributes": {
+                                "suppress_warning_0": "C0195"
+                            },
                             "propertyOrder": 12
                         }
                     ]
@@ -3241,6 +3371,9 @@
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
+                            "attributes": {
+                                "suppress_warning_0": "C0195"
+                            },
                             "propertyOrder": 13
                         }
                     ]
@@ -3261,6 +3394,9 @@
                             "$ref": "#/definitions/PLC1.SectionEnum"
                         },
                         {
+                            "attributes": {
+                                "suppress_warning_0": "C0195"
+                            },
                             "propertyOrder": 31
                         }
                     ]
@@ -3284,6 +3420,9 @@
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
+                            "attributes": {
+                                "suppress_warning_0": "C0195"
+                            },
                             "propertyOrder": 18
                         }
                     ]
@@ -3294,6 +3433,9 @@
                             "$ref": "tchmi:general#/definitions/BOOL"
                         },
                         {
+                            "attributes": {
+                                "suppress_warning_0": "C0195"
+                            },
                             "propertyOrder": 30
                         }
                     ]
@@ -3304,6 +3446,9 @@
                             "$ref": "tchmi:general#/definitions/BOOL"
                         },
                         {
+                            "attributes": {
+                                "suppress_warning_0": "C0195"
+                            },
                             "propertyOrder": 22
                         }
                     ]
@@ -3314,6 +3459,9 @@
                             "$ref": "tchmi:general#/definitions/STRING%2880%29"
                         },
                         {
+                            "attributes": {
+                                "suppress_warning_0": "C0195"
+                            },
                             "propertyOrder": 24
                         }
                     ]
@@ -3324,6 +3472,9 @@
                             "$ref": "#/definitions/PLC1.A21"
                         },
                         {
+                            "attributes": {
+                                "suppress_warning_0": "C0195"
+                            },
                             "comment": "from outputs array",
                             "propertyOrder": 11
                         }
@@ -3335,8 +3486,24 @@
                             "$ref": "#/definitions/PLC1.SectionEnum"
                         },
                         {
+                            "attributes": {
+                                "suppress_warning_0": "C0195"
+                            },
                             "comment": "from inputs array",
                             "propertyOrder": 23
+                        }
+                    ]
+                },
+                "woodBunkAvailability": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/INT"
+                        },
+                        {
+                            "attributes": {
+                                "suppress_warning_0": "C0195"
+                            },
+                            "propertyOrder": 27
                         }
                     ]
                 }
@@ -3348,8 +3515,8 @@
                 "generate_implicit_init_function": "",
                 "qualified_only": "",
                 "to_string": "",
-                "to_string_function": "__TO_STRING__156",
-                "to_wstring_function": "__TO_WSTRING__156"
+                "to_string_function": "__TO_STRING__172",
+                "to_wstring_function": "__TO_WSTRING__172"
             },
             "enum": [
                 0,
@@ -4163,7 +4330,7 @@
                         },
                         {
                             "comment": "mm",
-                            "propertyOrder": 45
+                            "propertyOrder": 47
                         }
                     ]
                 },
@@ -4245,7 +4412,7 @@
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
-                            "propertyOrder": 48
+                            "propertyOrder": 35
                         }
                     ]
                 },
@@ -4255,7 +4422,7 @@
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
-                            "propertyOrder": 58
+                            "propertyOrder": 45
                         }
                     ]
                 },
@@ -4265,7 +4432,7 @@
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
-                            "propertyOrder": 59
+                            "propertyOrder": 46
                         }
                     ]
                 },
@@ -4275,7 +4442,7 @@
                             "$ref": "#/definitions/PLC1.Insertion"
                         },
                         {
-                            "propertyOrder": 36
+                            "propertyOrder": 57
                         }
                     ]
                 },
@@ -4285,7 +4452,7 @@
                             "$ref": "#/definitions/PLC1.Insertion"
                         },
                         {
-                            "propertyOrder": 37
+                            "propertyOrder": 58
                         }
                     ]
                 },
@@ -4296,7 +4463,7 @@
                         },
                         {
                             "comment": "prevents SMC sliders from overshooting the inner limit sensor",
-                            "propertyOrder": 39
+                            "propertyOrder": 27
                         }
                     ]
                 },
@@ -4307,7 +4474,7 @@
                         },
                         {
                             "comment": "prevents SMC sliders from overshooting the inner limit sensor",
-                            "propertyOrder": 40
+                            "propertyOrder": 28
                         }
                     ]
                 },
@@ -4317,7 +4484,7 @@
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
-                            "propertyOrder": 52
+                            "propertyOrder": 39
                         }
                     ]
                 },
@@ -4327,7 +4494,7 @@
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
-                            "propertyOrder": 53
+                            "propertyOrder": 40
                         }
                     ]
                 },
@@ -4337,7 +4504,7 @@
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
-                            "propertyOrder": 54
+                            "propertyOrder": 41
                         }
                     ]
                 },
@@ -4347,7 +4514,7 @@
                             "$ref": "#/definitions/PLC1.ARRAY_1..4_OF-STRING-80"
                         },
                         {
-                            "propertyOrder": 38
+                            "propertyOrder": 59
                         }
                     ]
                 },
@@ -4398,7 +4565,7 @@
                         },
                         {
                             "comment": "these 2 ints should replace the 4 ints after",
-                            "propertyOrder": 49
+                            "propertyOrder": 36
                         }
                     ]
                 },
@@ -4408,8 +4575,7 @@
                             "$ref": "#/definitions/PLC1.ARRAY_0..16_OF-PositionMaterials"
                         },
                         {
-                            "comment": "local types",
-                            "propertyOrder": 27
+                            "propertyOrder": 48
                         }
                     ]
                 },
@@ -4460,7 +4626,7 @@
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
-                            "propertyOrder": 55
+                            "propertyOrder": 42
                         }
                     ]
                 },
@@ -4470,7 +4636,7 @@
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
-                            "propertyOrder": 56
+                            "propertyOrder": 43
                         }
                     ]
                 },
@@ -4480,7 +4646,7 @@
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
-                            "propertyOrder": 57
+                            "propertyOrder": 44
                         }
                     ]
                 },
@@ -4490,7 +4656,7 @@
                             "$ref": "#/definitions/PLC1.ARRAY_0..34_OF-STRING-80"
                         },
                         {
-                            "propertyOrder": 34
+                            "propertyOrder": 55
                         }
                     ]
                 },
@@ -4500,7 +4666,7 @@
                             "$ref": "#/definitions/PLC1.ARRAY_0..34_OF-STRING-80"
                         },
                         {
-                            "propertyOrder": 35
+                            "propertyOrder": 56
                         }
                     ]
                 },
@@ -4533,7 +4699,7 @@
                             "attributes": {
                                 "TcAddressType": "Memory"
                             },
-                            "propertyOrder": 32
+                            "propertyOrder": 53
                         }
                     ]
                 },
@@ -4546,7 +4712,7 @@
                             "attributes": {
                                 "TcAddressType": "Memory"
                             },
-                            "propertyOrder": 33
+                            "propertyOrder": 54
                         }
                     ]
                 },
@@ -4559,7 +4725,7 @@
                             "attributes": {
                                 "implicit_enum_type": ""
                             },
-                            "propertyOrder": 47
+                            "propertyOrder": 34
                         }
                     ]
                 },
@@ -4589,7 +4755,7 @@
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
-                            "propertyOrder": 50
+                            "propertyOrder": 37
                         }
                     ]
                 },
@@ -4599,7 +4765,7 @@
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
-                            "propertyOrder": 51
+                            "propertyOrder": 38
                         }
                     ]
                 },
@@ -4623,7 +4789,7 @@
                             "$ref": "tchmi:general#/definitions/BOOL"
                         },
                         {
-                            "propertyOrder": 44
+                            "propertyOrder": 32
                         }
                     ]
                 },
@@ -4633,7 +4799,7 @@
                             "$ref": "tchmi:general#/definitions/BOOL"
                         },
                         {
-                            "propertyOrder": 42
+                            "propertyOrder": 30
                         }
                     ]
                 },
@@ -4643,7 +4809,7 @@
                             "$ref": "tchmi:general#/definitions/BOOL"
                         },
                         {
-                            "propertyOrder": 43
+                            "propertyOrder": 31
                         }
                     ]
                 },
@@ -4653,7 +4819,7 @@
                             "$ref": "tchmi:general#/definitions/BOOL"
                         },
                         {
-                            "propertyOrder": 41
+                            "propertyOrder": 29
                         }
                     ]
                 },
@@ -4705,7 +4871,7 @@
                             "$ref": "#/definitions/PLC1.ARRAY_1..10_OF-BOOL"
                         },
                         {
-                            "propertyOrder": 30
+                            "propertyOrder": 51
                         }
                     ]
                 },
@@ -4715,7 +4881,7 @@
                             "$ref": "#/definitions/PLC1.ARRAY_1..10_OF-BOOL"
                         },
                         {
-                            "propertyOrder": 31
+                            "propertyOrder": 52
                         }
                     ]
                 },
@@ -4725,7 +4891,7 @@
                             "$ref": "#/definitions/PLC1.ARRAY_1..10_OF-STRING-80"
                         },
                         {
-                            "propertyOrder": 28
+                            "propertyOrder": 49
                         }
                     ]
                 },
@@ -4735,7 +4901,7 @@
                             "$ref": "#/definitions/PLC1.ARRAY_1..10_OF-STRING-80"
                         },
                         {
-                            "propertyOrder": 29
+                            "propertyOrder": 50
                         }
                     ]
                 },
@@ -4765,7 +4931,7 @@
                             "$ref": "#/definitions/PLC1.Tc2_Standard.TON"
                         },
                         {
-                            "propertyOrder": 46
+                            "propertyOrder": 33
                         }
                     ]
                 },
@@ -4854,7 +5020,7 @@
     "ENABLE_SERVER_UPDATE": true,
     "ENDPOINTS": [
         "http://127.0.0.1:13000",
-        "http://127.0.0.1:3001"
+        "http://127.0.0.1:3002"
     ],
     "ETAGENABLED": true,
     "EXTENSIONS": {
@@ -7327,16 +7493,6 @@
             },
             "USEMAPPING": true
         },
-        "PLC1.ContainerArrays.magazineHmiA21Left": {
-            "ACCESS": 3,
-            "DOMAIN": "ADS",
-            "DYNAMIC": true,
-            "MAPPING": "PLC1::ContainerArrays::magazineHmiA21Left",
-            "SCHEMA": {
-                "$ref": "tchmi:server#/definitions/PLC1.ARRAY_1..15_OF-MaterialSlot"
-            },
-            "USEMAPPING": true
-        },
         "PLC1.ContainerArrays.magazineHmiA21Right": {
             "ACCESS": 3,
             "DOMAIN": "ADS",
@@ -7347,23 +7503,13 @@
             },
             "USEMAPPING": true
         },
-        "PLC1.ContainerArrays.magazineHmiA22Left": {
+        "PLC1.ContainerArrays.magazineOccupancyA21Left": {
             "ACCESS": 3,
             "DOMAIN": "ADS",
             "DYNAMIC": true,
-            "MAPPING": "PLC1::ContainerArrays::magazineHmiA22Left",
+            "MAPPING": "PLC1::ContainerArrays::magazineOccupancyA21Left",
             "SCHEMA": {
-                "$ref": "tchmi:server#/definitions/PLC1.ARRAY_1..2_OF-HmiSlotOccupancy"
-            },
-            "USEMAPPING": true
-        },
-        "PLC1.ContainerArrays.magazineHmiA22Right": {
-            "ACCESS": 3,
-            "DOMAIN": "ADS",
-            "DYNAMIC": true,
-            "MAPPING": "PLC1::ContainerArrays::magazineHmiA22Right",
-            "SCHEMA": {
-                "$ref": "tchmi:server#/definitions/PLC1.ARRAY_1..2_OF-HmiSlotOccupancy"
+                "$ref": "tchmi:server#/definitions/PLC1.ARRAY_1..15_OF-BOOL"
             },
             "USEMAPPING": true
         },
@@ -7384,26 +7530,6 @@
             "MAPPING": "PLC1::ContainerArrays::skidHmiA21Right",
             "SCHEMA": {
                 "$ref": "tchmi:server#/definitions/PLC1.ARRAY_1..2_OF-MaterialSlot"
-            },
-            "USEMAPPING": true
-        },
-        "PLC1.ContainerArrays.skidHmiA22Left": {
-            "ACCESS": 3,
-            "DOMAIN": "ADS",
-            "DYNAMIC": true,
-            "MAPPING": "PLC1::ContainerArrays::skidHmiA22Left",
-            "SCHEMA": {
-                "$ref": "tchmi:server#/definitions/PLC1.ARRAY_1..6_OF-HmiSlotOccupancy"
-            },
-            "USEMAPPING": true
-        },
-        "PLC1.ContainerArrays.skidHmiA22Right": {
-            "ACCESS": 3,
-            "DOMAIN": "ADS",
-            "DYNAMIC": true,
-            "MAPPING": "PLC1::ContainerArrays::skidHmiA22Right",
-            "SCHEMA": {
-                "$ref": "tchmi:server#/definitions/PLC1.ARRAY_1..6_OF-HmiSlotOccupancy"
             },
             "USEMAPPING": true
         },
@@ -7494,254 +7620,6 @@
             "MAPPING": "PLC1::Hardware::robot2",
             "SCHEMA": {
                 "$ref": "tchmi:server#/definitions/PLC1.RobotA21"
-            },
-            "USEMAPPING": true
-        },
-        "PLC1.Hardware.robot3.Busy": {
-            "ACCESS": 3,
-            "DOMAIN": "ADS",
-            "DYNAMIC": true,
-            "MAPPING": "PLC1::Hardware::robot3::Busy",
-            "SCHEMA": {
-                "$ref": "tchmi:server#/definitions/PLC1.PROPERTY-GET-BOOL"
-            },
-            "USEMAPPING": true
-        },
-        "PLC1.Hardware.robot3.Done": {
-            "ACCESS": 3,
-            "DOMAIN": "ADS",
-            "DYNAMIC": true,
-            "MAPPING": "PLC1::Hardware::robot3::Done",
-            "SCHEMA": {
-                "$ref": "tchmi:server#/definitions/PLC1.PROPERTY-GET-BOOL"
-            },
-            "USEMAPPING": true
-        },
-        "PLC1.Hardware.robot3.Ready": {
-            "ACCESS": 3,
-            "DOMAIN": "ADS",
-            "DYNAMIC": true,
-            "MAPPING": "PLC1::Hardware::robot3::Ready",
-            "SCHEMA": {
-                "$ref": "tchmi:server#/definitions/PLC1.PROPERTY-GET-BOOL"
-            },
-            "USEMAPPING": true
-        },
-        "PLC1.Hardware.robot3.error": {
-            "ACCESS": 3,
-            "DOMAIN": "ADS",
-            "DYNAMIC": true,
-            "MAPPING": "PLC1::Hardware::robot3::error",
-            "SCHEMA": {
-                "allOf": [
-                    {
-                        "$ref": "tchmi:general#/definitions/BOOL"
-                    },
-                    {
-                        "propertyOrder": 6
-                    }
-                ]
-            },
-            "USEMAPPING": true
-        },
-        "PLC1.Hardware.robot3.hmiReservation": {
-            "ACCESS": 3,
-            "DOMAIN": "ADS",
-            "DYNAMIC": true,
-            "MAPPING": "PLC1::Hardware::robot3::hmiReservation",
-            "SCHEMA": {
-                "allOf": [
-                    {
-                        "$ref": "tchmi:general#/definitions/STRING%2880%29"
-                    },
-                    {
-                        "propertyOrder": 10
-                    }
-                ]
-            },
-            "USEMAPPING": true
-        },
-        "PLC1.Hardware.robot3.hmiTask": {
-            "ACCESS": 3,
-            "DOMAIN": "ADS",
-            "DYNAMIC": true,
-            "MAPPING": "PLC1::Hardware::robot3::hmiTask",
-            "SCHEMA": {
-                "allOf": [
-                    {
-                        "$ref": "tchmi:general#/definitions/STRING%2880%29"
-                    },
-                    {
-                        "propertyOrder": 25
-                    }
-                ]
-            },
-            "USEMAPPING": true
-        },
-        "PLC1.Hardware.robot3.param1": {
-            "ACCESS": 3,
-            "DOMAIN": "ADS",
-            "DYNAMIC": true,
-            "MAPPING": "PLC1::Hardware::robot3::param1",
-            "SCHEMA": {
-                "allOf": [
-                    {
-                        "$ref": "tchmi:general#/definitions/INT"
-                    },
-                    {
-                        "propertyOrder": 12
-                    }
-                ]
-            },
-            "USEMAPPING": true
-        },
-        "PLC1.Hardware.robot3.param2": {
-            "ACCESS": 3,
-            "DOMAIN": "ADS",
-            "DYNAMIC": true,
-            "MAPPING": "PLC1::Hardware::robot3::param2",
-            "SCHEMA": {
-                "allOf": [
-                    {
-                        "$ref": "tchmi:general#/definitions/INT"
-                    },
-                    {
-                        "propertyOrder": 13
-                    }
-                ]
-            },
-            "USEMAPPING": true
-        },
-        "PLC1.Hardware.robot3.taskID": {
-            "ACCESS": 3,
-            "DOMAIN": "ADS",
-            "DYNAMIC": true,
-            "MAPPING": "PLC1::Hardware::robot3::taskID",
-            "SCHEMA": {
-                "allOf": [
-                    {
-                        "$ref": "tchmi:server#/definitions/PLC1.A22"
-                    },
-                    {
-                        "comment": "from outputs array",
-                        "propertyOrder": 10
-                    }
-                ]
-            },
-            "USEMAPPING": true
-        },
-        "PLC1.Hardware.robot4.Busy": {
-            "ACCESS": 3,
-            "DOMAIN": "ADS",
-            "DYNAMIC": true,
-            "MAPPING": "PLC1::Hardware::robot4::Busy",
-            "SCHEMA": {
-                "$ref": "tchmi:server#/definitions/PLC1.PROPERTY-GET-BOOL"
-            },
-            "USEMAPPING": true
-        },
-        "PLC1.Hardware.robot4.Done": {
-            "ACCESS": 3,
-            "DOMAIN": "ADS",
-            "DYNAMIC": true,
-            "MAPPING": "PLC1::Hardware::robot4::Done",
-            "SCHEMA": {
-                "$ref": "tchmi:server#/definitions/PLC1.PROPERTY-GET-BOOL"
-            },
-            "USEMAPPING": true
-        },
-        "PLC1.Hardware.robot4.Ready": {
-            "ACCESS": 3,
-            "DOMAIN": "ADS",
-            "DYNAMIC": true,
-            "MAPPING": "PLC1::Hardware::robot4::Ready",
-            "SCHEMA": {
-                "$ref": "tchmi:server#/definitions/PLC1.PROPERTY-GET-BOOL"
-            },
-            "USEMAPPING": true
-        },
-        "PLC1.Hardware.robot4.error": {
-            "ACCESS": 3,
-            "DOMAIN": "ADS",
-            "DYNAMIC": true,
-            "MAPPING": "PLC1::Hardware::robot4::error",
-            "SCHEMA": {
-                "allOf": [
-                    {
-                        "$ref": "tchmi:general#/definitions/BOOL"
-                    },
-                    {
-                        "propertyOrder": 6
-                    }
-                ]
-            },
-            "USEMAPPING": true
-        },
-        "PLC1.Hardware.robot4.hmiReservation": {
-            "ACCESS": 3,
-            "DOMAIN": "ADS",
-            "DYNAMIC": true,
-            "MAPPING": "PLC1::Hardware::robot4::hmiReservation",
-            "SCHEMA": {
-                "allOf": [
-                    {
-                        "$ref": "tchmi:general#/definitions/STRING%2880%29"
-                    },
-                    {
-                        "propertyOrder": 10
-                    }
-                ]
-            },
-            "USEMAPPING": true
-        },
-        "PLC1.Hardware.robot4.hmiTask": {
-            "ACCESS": 3,
-            "DOMAIN": "ADS",
-            "DYNAMIC": true,
-            "MAPPING": "PLC1::Hardware::robot4::hmiTask",
-            "SCHEMA": {
-                "allOf": [
-                    {
-                        "$ref": "tchmi:general#/definitions/STRING%2880%29"
-                    },
-                    {
-                        "propertyOrder": 25
-                    }
-                ]
-            },
-            "USEMAPPING": true
-        },
-        "PLC1.Hardware.robot4.param1": {
-            "ACCESS": 3,
-            "DOMAIN": "ADS",
-            "DYNAMIC": true,
-            "MAPPING": "PLC1::Hardware::robot4::param1",
-            "SCHEMA": {
-                "allOf": [
-                    {
-                        "$ref": "tchmi:general#/definitions/INT"
-                    },
-                    {
-                        "propertyOrder": 12
-                    }
-                ]
-            },
-            "USEMAPPING": true
-        },
-        "PLC1.Hardware.robot4.param2": {
-            "ACCESS": 3,
-            "DOMAIN": "ADS",
-            "DYNAMIC": true,
-            "MAPPING": "PLC1::Hardware::robot4::param2",
-            "SCHEMA": {
-                "allOf": [
-                    {
-                        "$ref": "tchmi:general#/definitions/INT"
-                    },
-                    {
-                        "propertyOrder": 13
-                    }
-                ]
             },
             "USEMAPPING": true
         },
@@ -7955,13 +7833,23 @@
             },
             "USEMAPPING": true
         },
-        "PLC1.MAIN.test": {
+        "PLC1.MAIN.systemMethods.startRuntime": {
             "ACCESS": 3,
             "DOMAIN": "ADS",
             "DYNAMIC": true,
-            "MAPPING": "PLC1::MAIN::test",
+            "MAPPING": "PLC1::MAIN::systemMethods::startRuntime",
             "SCHEMA": {
-                "$ref": "tchmi:general#/definitions/BOOL"
+                "$ref": "tchmi:server#/definitions/PLC1.METHOD-RETURNING-BOOL"
+            },
+            "USEMAPPING": true
+        },
+        "PLC1.MAIN.systemMethods.stopRuntime": {
+            "ACCESS": 3,
+            "DOMAIN": "ADS",
+            "DYNAMIC": true,
+            "MAPPING": "PLC1::MAIN::systemMethods::stopRuntime",
+            "SCHEMA": {
+                "$ref": "tchmi:server#/definitions/PLC1.METHOD-RETURNING-BOOL"
             },
             "USEMAPPING": true
         },
@@ -8889,6 +8777,7 @@
                 "PLC1.ContainerArrays.magazineHmiA21Right": 3,
                 "PLC1.ContainerArrays.magazineHmiA22Left": 3,
                 "PLC1.ContainerArrays.magazineHmiA22Right": 3,
+                "PLC1.ContainerArrays.magazineOccupancyA21Left": 3,
                 "PLC1.ContainerArrays.skidHmiA21Left": 3,
                 "PLC1.ContainerArrays.skidHmiA21Right": 3,
                 "PLC1.ContainerArrays.skidHmiA22Left": 3,
@@ -8976,6 +8865,8 @@
                 "PLC1.MAIN.step": 3,
                 "PLC1.MAIN.stop": 3,
                 "PLC1.MAIN.strapper": 3,
+                "PLC1.MAIN.systemMethods.startRuntime": 3,
+                "PLC1.MAIN.systemMethods.stopRuntime": 3,
                 "PLC1.MAIN.test": 3,
                 "PLC1.MAIN.toolStorageLeft": 3,
                 "PLC1.MAIN.toolStorageRight": 3,
