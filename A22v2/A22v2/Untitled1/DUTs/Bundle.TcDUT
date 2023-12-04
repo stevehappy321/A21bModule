@@ -56,6 +56,7 @@ STRUCT
 	currStep : USINT; //for runtime use only
 	
 	//for production log database
+	
 	timeStart : TIMESTRUCT;
 	timeDone : TIMESTRUCT;
 END_STRUCT

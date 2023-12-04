@@ -89,7 +89,7 @@
 		</System>
 		<Plc>
 			<Project GUID="{D232006A-254D-4F35-9BFE-5131CC19FE71}" Name="Untitled1" PrjFilePath="Untitled1\Untitled1.plcproj" TmcFilePath="Untitled1\Untitled1.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{D8394EDA-505B-8978-F15E-A6AEA794B586}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{40D29FB7-8BDF-7FD2-EA8B-9B64918FEA69}">
 					<Name>Untitled1 Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
@@ -259,27 +259,6 @@
 							<Type>REAL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.verticalDriveA21Right.contactSensor</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA21Right.outerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA21Right.home</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA21Right.innerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA21Right.hlfb</Name>
-							<Comment><![CDATA[high level feedback, if -9999 then servo is idle]]></Comment>
-							<Type>REAL</Type>
-						</Var>
-						<Var>
 							<Name>Hardware.pistonA21Bottom.extended</Name>
 							<Type>BOOL</Type>
 						</Var>
@@ -330,6 +309,27 @@
 						<Var>
 							<Name>Hardware.suctionA21Right[4].occupied</Name>
 							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA21Right.contactSensor</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA21Right.outerLimit</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA21Right.home</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA21Right.innerLimit</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA21Right.hlfb</Name>
+							<Comment><![CDATA[high level feedback, if -9999 then servo is idle]]></Comment>
+							<Type>REAL</Type>
 						</Var>
 					</Vars>
 					<Vars VarGrpType="2" AreaNo="1">
@@ -408,19 +408,6 @@
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.verticalDriveA21Right.pulse</Name>
-							<Comment><![CDATA[num pulses]]></Comment>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA21Right.outputRegister</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA21Right.brakeRelease</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
 							<Name>Hardware.pistonA21Bottom.pistonExtend</Name>
 							<Type>BOOL</Type>
 						</Var>
@@ -470,6 +457,19 @@
 						</Var>
 						<Var>
 							<Name>Hardware.suctionA21Right[4].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA21Right.pulse</Name>
+							<Comment><![CDATA[num pulses]]></Comment>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA21Right.outputRegister</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA21Right.brakeRelease</Name>
 							<Type>BOOL</Type>
 						</Var>
 					</Vars>

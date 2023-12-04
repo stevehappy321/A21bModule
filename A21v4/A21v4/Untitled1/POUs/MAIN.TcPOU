@@ -22,33 +22,10 @@ END_VAR]]></Declaration>
 SetupHardware();
 
 callModules();
-	
-(*
-moduleCIP(
-	execute:= exec2, 
-	stop:= stop, 
-	manualStep:= manualStep, 
-	manualSuction:= manualSuction,
-	
-	robotLeft:= robot1, 
-	robotRight:= robot2, 
-	toolStorageLeft:= toolStorageA21Left, 
-	toolStorageRight:= toolStorageA21Right, 
-	skidLeft:= skidA21Left, 
-	skidRight:= skidA21Right, 
-	
-	generalError=> test, 
-	failLeft=> test, 
-	failRight=> test);
-*)
 
 CallHardware(); //end program with hardware call]]></ST>
     </Implementation>
-    <Method Name="callModules" Id="{35c682d2-aae6-4d68-94bc-1cd545e35a17}">
-      <Declaration><![CDATA[METHOD callModules : BOOL
-VAR_INPUT
-END_VAR
-]]></Declaration>
+    <Action Name="callModules" Id="{3bfb8053-bd3a-41f1-92ca-bb3cb5200abe}">
       <Implementation>
         <ST><![CDATA[moduleWB(
 	execute:= exec1, 
@@ -80,6 +57,7 @@ END_VAR
 	failLeft=> test, 
 	failRight=> test);
 	
+
 moduleCIP(
 	execute:= exec2, 
 	stop:= stop, 
@@ -97,32 +75,20 @@ moduleCIP(
 	failLeft=> test, 
 	failRight=> test);]]></ST>
       </Implementation>
-    </Method>
+    </Action>
     <LineIds Name="MAIN">
       <LineId Id="4101" Count="0" />
       <LineId Id="4225" Count="0" />
       <LineId Id="4102" Count="0" />
       <LineId Id="4130" Count="0" />
-      <LineId Id="4175" Count="0" />
-      <LineId Id="4131" Count="12" />
-      <LineId Id="4191" Count="0" />
-      <LineId Id="4144" Count="3" />
       <LineId Id="4227" Count="0" />
       <LineId Id="3760" Count="0" />
     </LineIds>
     <LineIds Name="MAIN.callModules">
-      <LineId Id="6" Count="24" />
-      <LineId Id="54" Count="0" />
-      <LineId Id="31" Count="1" />
-      <LineId Id="5" Count="0" />
-      <LineId Id="33" Count="0" />
-      <LineId Id="35" Count="3" />
-      <LineId Id="52" Count="0" />
-      <LineId Id="49" Count="2" />
-      <LineId Id="43" Count="2" />
-      <LineId Id="53" Count="0" />
-      <LineId Id="46" Count="2" />
-      <LineId Id="34" Count="0" />
+      <LineId Id="2" Count="29" />
+      <LineId Id="47" Count="0" />
+      <LineId Id="32" Count="14" />
+      <LineId Id="1" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>

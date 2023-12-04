@@ -2,6 +2,9 @@
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
   <POU Name="MAIN" Id="{bb23f57b-bfaa-4807-862f-695fb779bd1d}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM MAIN
+VAR_OUTPUT
+	currentTime : TIMESTRUCT;
+END_VAR
 VAR
 	execute : BOOL;
 	manualStep : BOOL := TRUE;
@@ -11,11 +14,31 @@ VAR
 	moduleA22 : CardboardCornerGuardEx;
 END_VAR
 VAR
+	getLocalTime : FB_LocalSystemTime;
 	test : BOOL;
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[SetupHardware();
-CallHardwareModules(); //start program with hardware call
+      <ST><![CDATA[CallHardwareModules(); //start program with hardware call
+
+SetupHardware();
+
+callModules();
+
+CallHardwareModules(); //end program with hardware call
+
+BundleJsonDemo();]]></ST>
+    </Implementation>
+    <Action Name="callModules" Id="{524a05bd-aa5d-4749-8232-9d95fc7a69c5}">
+      <Implementation>
+        <ST><![CDATA[getLocalTime(
+	sNetID:= '', 
+	bEnable:= TRUE, 
+	dwCycle:= , 
+	dwOpt:= , 
+	tTimeout:= , 
+	bValid=> , 
+	systemTime=> currentTime, 
+	tzID=> );
 
 moduleA22(
 	execute:= execute, 
@@ -43,17 +66,18 @@ moduleA22(
 	
 	generalError=> test, 
 	failLeft=> test, 
-	failRight=> test);
-
-CallHardwareModules(); //end program with hardware call]]></ST>
-    </Implementation>
+	failRight=> test);]]></ST>
+      </Implementation>
+    </Action>
     <LineIds Name="MAIN">
-      <LineId Id="1035" Count="7" />
-      <LineId Id="1075" Count="0" />
-      <LineId Id="1043" Count="16" />
-      <LineId Id="1076" Count="0" />
-      <LineId Id="1060" Count="3" />
-      <LineId Id="983" Count="0" />
+      <LineId Id="1095" Count="7" />
+      <LineId Id="1093" Count="0" />
+    </LineIds>
+    <LineIds Name="MAIN.callModules">
+      <LineId Id="30" Count="7" />
+      <LineId Id="28" Count="1" />
+      <LineId Id="2" Count="25" />
+      <LineId Id="1" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>

@@ -96,6 +96,9 @@
     <Compile Include="DUTs\PositionMaterials.TcDUT">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DUTs\ST_Values.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="DUTs\SuctionPad.TcDUT">
       <SubType>Code</SubType>
     </Compile>
@@ -147,6 +150,9 @@
     <Compile Include="POUs\Module Calls\SetupHardware.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\BundleJsonDemo.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="POUs\Utility\CEILING.TcPOU">
       <SubType>Code</SubType>
     </Compile>
@@ -191,6 +197,10 @@
     <PlaceholderReference Include="Tc2_Utilities">
       <DefaultResolution>Tc2_Utilities, * (Beckhoff Automation GmbH)</DefaultResolution>
       <Namespace>Tc2_Utilities</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc3_JsonXml">
+      <DefaultResolution>Tc3_JsonXml, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc3_JsonXml</Namespace>
     </PlaceholderReference>
     <PlaceholderReference Include="Tc3_Module">
       <DefaultResolution>Tc3_Module, * (Beckhoff Automation GmbH)</DefaultResolution>

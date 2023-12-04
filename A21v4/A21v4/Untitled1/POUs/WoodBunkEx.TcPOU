@@ -776,6 +776,7 @@ VAR_STAT
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[{warning disable C0371}
+{warning disable C0195}
 iSlot := MAX(1, iSlot); //ensures iSlot is at least 1
 
 IF //staging table is full or matches staging template
@@ -998,6 +999,7 @@ END_CASE]]></ST>
     </LineIds>
     <LineIds Name="WoodBunkEx.stagingSequence">
       <LineId Id="382" Count="0" />
+      <LineId Id="614" Count="0" />
       <LineId Id="552" Count="0" />
       <LineId Id="551" Count="0" />
       <LineId Id="384" Count="2" />
