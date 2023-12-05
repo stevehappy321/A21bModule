@@ -149,7 +149,7 @@
     <Compile Include="POUs\Utility\AddToStringArray.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\Utility\BoolVariableArrayToInteger.TcPOU">
+    <Compile Include="POUs\Utility\BoolVLArrayToInteger.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\WoodBunkEx.TcPOU">
@@ -158,7 +158,7 @@
     <Compile Include="POUs\ChipboardEx.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\Utility\BoolPointerArrayToInteger.TcPOU">
+    <Compile Include="POUs\Utility\BoolPtrArrayToInteger.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\Utility\IntegerBitAccess.TcPOU">
@@ -189,6 +189,10 @@
     <Folder Include="POUs" />
   </ItemGroup>
   <ItemGroup>
+    <PlaceholderReference Include="CmpBitmapPool">
+      <DefaultResolution>CmpBitmapPool, * (System)</DefaultResolution>
+      <Namespace>CmpBitmapPool</Namespace>
+    </PlaceholderReference>
     <PlaceholderReference Include="Tc2_MC2">
       <DefaultResolution>Tc2_MC2, * (Beckhoff Automation GmbH)</DefaultResolution>
       <Namespace>Tc2_MC2</Namespace>

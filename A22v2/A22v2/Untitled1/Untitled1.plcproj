@@ -96,9 +96,6 @@
     <Compile Include="DUTs\PositionMaterials.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\ST_Values.TcDUT">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="DUTs\SuctionPad.TcDUT">
       <SubType>Code</SubType>
     </Compile>

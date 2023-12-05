@@ -20,32 +20,29 @@ VAR_OUTPUT
 	generalError : BOOL;
 	failLeft, failRight : BOOL;
 END_VAR
-VAR //local types
-	materialsArr : ARRAY[0..GVL.maxPairs] OF PositionMaterials;
-END_VAR
 VAR //for testing, to be removed when replaced with pressure sensors
 	latchLeft, latchRight : BOOL;
-		
-	demoPair : PositionMaterials := (
-		position := 0,
-		top := 'CIP54',
-		bottom := 'CIP18');
 	
 	demoHeight : REAL := 600; //mm
 END_VAR
 VAR
-	loadedMaterials : ARRAY[Surface.TOP..Surface.BOTTOM] OF STRING;
-	
 	step : (IDLE, RETRACT_CONVEYOR, LOAD_CIP, EXTEND_CONVEYOR, COMPLETE := 1050);
-	
-	//these 2 ints should replace the 4 ints after
-	commandSet : INT;
-	commandStepLeft, commandStepRight : INT;
+	iPair : INT;
 	
 	loadSet : INT;
 	loadStepLeft, loadStepRight : INT;
 	
-	iSlotLeft, iSlotRight : INT(1..10);
+	iSlotLeft, iSlotRight : INT;
+END_VAR
+VAR //local types
+	materialsArr : ARRAY[0..GVL.maxPairs] OF PositionMaterials := [
+		(
+			position := 0,
+			top := 'CIP54',
+			bottom := 'CIP18'
+		)];
+		
+	loadedMaterials : ARRAY[Surface.TOP..Surface.BOTTOM] OF STRING;
 END_VAR
 VAR CONSTANT
 	sectionID : SectionEnum := SectionEnum.CHIPBOARD;
@@ -53,8 +50,6 @@ END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[{warning disable C0371}
 callLocalModules();
-
-materialsArr[0] := demoPair;
 
 IF stop THEN //may need to turn off suction	
 	robotLeft.clearCommand();
@@ -94,7 +89,7 @@ CASE step OF
 		step := LOAD_CIP;
 	LOAD_CIP:
 		IF NOT done THEN
-			done := load(pair:= demoPair, error=> generalError);
+			done := load(pairIndex:= iPair, error=> generalError);
 		END_IF
 		
 		IF
@@ -137,10 +132,13 @@ END_CASE]]></ST>
     <Method Name="load" Id="{fb843105-64e1-44e7-8bcd-619ab2de166a}">
       <Declaration><![CDATA[METHOD load : BOOL
 VAR_INPUT
-	pair : REFERENCE TO PositionMaterials;
+	pairIndex : INT;
 END_VAR
 VAR_OUTPUT
 	error : BOOL;
+END_VAR
+VAR
+	pair : REFERENCE TO PositionMaterials REF= materialsArr[pairIndex];
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[{warning disable C0371}
@@ -313,7 +311,8 @@ END_CASE]]></ST>
     </Method>
     <LineIds Name="ChipboardEx">
       <LineId Id="4957" Count="0" />
-      <LineId Id="4887" Count="21" />
+      <LineId Id="4887" Count="0" />
+      <LineId Id="4890" Count="18" />
       <LineId Id="5006" Count="0" />
       <LineId Id="4909" Count="15" />
       <LineId Id="5009" Count="0" />

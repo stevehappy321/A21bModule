@@ -33,8 +33,8 @@
                 "generate_implicit_init_function": "",
                 "qualified_only": "",
                 "to_string": "",
-                "to_string_function": "__TO_STRING__168",
-                "to_wstring_function": "__TO_WSTRING__168"
+                "to_string_function": "__TO_STRING__165",
+                "to_wstring_function": "__TO_WSTRING__165"
             },
             "enum": [
                 0,
@@ -643,9 +643,6 @@
                     "$ref": "#/definitions/PLC1.PROPERTY-GET-BOOL"
                 },
                 "Error": {
-                    "$ref": "#/definitions/PLC1.PROPERTY-GET-BOOL"
-                },
-                "HomeSet": {
                     "$ref": "#/definitions/PLC1.PROPERTY-GET-BOOL"
                 },
                 "bEnable": {
@@ -1362,37 +1359,6 @@
                 "contains_implicit_enum": ""
             },
             "properties": {
-                "commandSet": {
-                    "allOf": [
-                        {
-                            "$ref": "tchmi:general#/definitions/INT"
-                        },
-                        {
-                            "comment": "these 2 ints should replace the 4 ints after",
-                            "propertyOrder": 21
-                        }
-                    ]
-                },
-                "commandStepLeft": {
-                    "allOf": [
-                        {
-                            "$ref": "tchmi:general#/definitions/INT"
-                        },
-                        {
-                            "propertyOrder": 22
-                        }
-                    ]
-                },
-                "commandStepRight": {
-                    "allOf": [
-                        {
-                            "$ref": "tchmi:general#/definitions/INT"
-                        },
-                        {
-                            "propertyOrder": 23
-                        }
-                    ]
-                },
                 "demoHeight": {
                     "allOf": [
                         {
@@ -1400,17 +1366,7 @@
                         },
                         {
                             "comment": "mm",
-                            "propertyOrder": 18
-                        }
-                    ]
-                },
-                "demoPair": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/PLC1.PositionMaterials"
-                        },
-                        {
-                            "propertyOrder": 17
+                            "propertyOrder": 16
                         }
                     ]
                 },
@@ -1466,27 +1422,33 @@
                         }
                     ]
                 },
+                "iPair": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/INT"
+                        },
+                        {
+                            "propertyOrder": 18
+                        }
+                    ]
+                },
                 "iSlotLeft": {
                     "allOf": [
                         {
-                            "$ref": "tchmi:general#/definitions/INT16"
+                            "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
-                            "maximum": 10.0,
-                            "minimum": 1.0,
-                            "propertyOrder": 27
+                            "propertyOrder": 22
                         }
                     ]
                 },
                 "iSlotRight": {
                     "allOf": [
                         {
-                            "$ref": "tchmi:general#/definitions/INT16"
+                            "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
-                            "maximum": 10.0,
-                            "minimum": 1.0,
-                            "propertyOrder": 28
+                            "propertyOrder": 23
                         }
                     ]
                 },
@@ -1497,7 +1459,7 @@
                         },
                         {
                             "comment": "for testing, to be removed when replaced with pressure sensors",
-                            "propertyOrder": 15
+                            "propertyOrder": 14
                         }
                     ]
                 },
@@ -1507,7 +1469,7 @@
                             "$ref": "tchmi:general#/definitions/BOOL"
                         },
                         {
-                            "propertyOrder": 16
+                            "propertyOrder": 15
                         }
                     ]
                 },
@@ -1517,7 +1479,7 @@
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
-                            "propertyOrder": 24
+                            "propertyOrder": 19
                         }
                     ]
                 },
@@ -1527,7 +1489,7 @@
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
-                            "propertyOrder": 25
+                            "propertyOrder": 20
                         }
                     ]
                 },
@@ -1537,7 +1499,7 @@
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
-                            "propertyOrder": 26
+                            "propertyOrder": 21
                         }
                     ]
                 },
@@ -1547,7 +1509,7 @@
                             "$ref": "#/definitions/PLC1.ARRAY_1..4_OF-STRING-80"
                         },
                         {
-                            "propertyOrder": 19
+                            "propertyOrder": 25
                         }
                     ]
                 },
@@ -1568,7 +1530,7 @@
                         },
                         {
                             "comment": "local types",
-                            "propertyOrder": 14
+                            "propertyOrder": 24
                         }
                     ]
                 },
@@ -1599,7 +1561,7 @@
                             "$ref": "#/definitions/PLC1.SectionEnum"
                         },
                         {
-                            "propertyOrder": 29
+                            "propertyOrder": 26
                         }
                     ]
                 },
@@ -1632,7 +1594,7 @@
                             "attributes": {
                                 "implicit_enum_type": ""
                             },
-                            "propertyOrder": 20
+                            "propertyOrder": 17
                         }
                     ]
                 },
@@ -1994,17 +1956,8 @@
                 "Contact": {
                     "$ref": "#/definitions/PLC1.PROPERTY-GET-BOOL"
                 },
-                "CurrentPosition": {
-                    "$ref": "#/definitions/PLC1.PROPERTY-GET-SET-LREAL"
-                },
                 "Error": {
                     "$ref": "#/definitions/PLC1.PROPERTY-GET-BOOL"
-                },
-                "HomeSet": {
-                    "$ref": "#/definitions/PLC1.PROPERTY-GET-BOOL"
-                },
-                "TargetPosition": {
-                    "$ref": "#/definitions/PLC1.PROPERTY-GET-SET-LREAL"
                 },
                 "bEnable": {
                     "allOf": [
@@ -2215,6 +2168,50 @@
                             "propertyOrder": 16
                         }
                     ]
+                }
+            },
+            "type": "object"
+        },
+        "PLC1.FB_System": {
+            "properties": {
+                "plcReset": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc2_Utilities.PLC_Reset"
+                        },
+                        {
+                            "propertyOrder": 3
+                        }
+                    ]
+                },
+                "plcStart": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc2_Utilities.PLC_Start"
+                        },
+                        {
+                            "propertyOrder": 1
+                        }
+                    ]
+                },
+                "plcStop": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc2_Utilities.PLC_Stop"
+                        },
+                        {
+                            "propertyOrder": 2
+                        }
+                    ]
+                },
+                "resetRuntime": {
+                    "$ref": "#/definitions/PLC1.METHOD-RETURNING-BOOL"
+                },
+                "startRuntime": {
+                    "$ref": "#/definitions/PLC1.METHOD-RETURNING-BOOL"
+                },
+                "stopRuntime": {
+                    "$ref": "#/definitions/PLC1.METHOD-RETURNING-BOOL"
                 }
             },
             "type": "object"
@@ -6042,8 +6039,8 @@
                 "generate_implicit_init_function": "",
                 "qualified_only": "",
                 "to_string": "",
-                "to_string_function": "__TO_STRING__175",
-                "to_wstring_function": "__TO_WSTRING__175"
+                "to_string_function": "__TO_STRING__172",
+                "to_wstring_function": "__TO_WSTRING__172"
             },
             "enum": [
                 0,
@@ -11502,6 +11499,139 @@
             },
             "type": "object"
         },
+        "PLC1.Tc2_System.ADSWRTCTL": {
+            "attributes": {
+                "hide_all_locals": ""
+            },
+            "properties": {
+                "ADSSTATE": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/UINT"
+                        },
+                        {
+                            "comment": "ADS state",
+                            "propertyOrder": 3
+                        }
+                    ]
+                },
+                "BUSY": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "comment": "Busy flag",
+                            "propertyOrder": 9
+                        }
+                    ]
+                },
+                "DEVSTATE": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/UINT"
+                        },
+                        {
+                            "comment": "Device state",
+                            "propertyOrder": 4
+                        }
+                    ]
+                },
+                "ERR": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "comment": "Error flag",
+                            "propertyOrder": 10
+                        }
+                    ]
+                },
+                "ERRID": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/UDINT"
+                        },
+                        {
+                            "comment": "ADS error code",
+                            "propertyOrder": 11
+                        }
+                    ]
+                },
+                "LEN": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/UDINT"
+                        },
+                        {
+                            "comment": "Max. number of data bytes to write ( LEN <= max. size of source buffer)",
+                            "propertyOrder": 5
+                        }
+                    ]
+                },
+                "NETID": {
+                    "allOf": [
+                        {
+                            "comment": "Ams net id",
+                            "maxLength": 23,
+                            "propertyOrder": 1
+                        },
+                        {
+                            "$ref": "tchmi:general#/definitions/String"
+                        }
+                    ]
+                },
+                "PORT": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/UINT16"
+                        },
+                        {
+                            "comment": "Ads communication port",
+                            "propertyOrder": 2
+                        }
+                    ]
+                },
+                "SRCADDR": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.PVOID"
+                        },
+                        {
+                            "attributes": {
+                                "TcIgnorePersistent": ""
+                            },
+                            "comment": "Pointer to source buffer",
+                            "propertyOrder": 6
+                        }
+                    ]
+                },
+                "TMOUT": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/TIME"
+                        },
+                        {
+                            "comment": "Maximum time allowed for the execution of this ADS command",
+                            "propertyOrder": 8
+                        }
+                    ]
+                },
+                "WRITE": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "comment": "Rising edge starts command execution",
+                            "propertyOrder": 7
+                        }
+                    ]
+                }
+            },
+            "type": "object"
+        },
         "PLC1.Tc2_System.FW_GetCurTaskIndex": {
             "attributes": {
                 "conditionalshow": ""
@@ -11554,6 +11684,294 @@
         },
         "PLC1.Tc2_System.T_AmsNetIdArr": {
             "$ref": "#/definitions/PLC1.AMSNETID"
+        },
+        "PLC1.Tc2_Utilities.PLC_Reset": {
+            "attributes": {
+                "conditionalshow_all_locals": ""
+            },
+            "properties": {
+                "BUSY": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 5
+                        }
+                    ]
+                },
+                "ERR": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 6
+                        }
+                    ]
+                },
+                "ERRID": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/UDINT"
+                        },
+                        {
+                            "propertyOrder": 7
+                        }
+                    ]
+                },
+                "NETID": {
+                    "allOf": [
+                        {
+                            "comment": "TwinCAT network address (ams net id)",
+                            "maxLength": 23,
+                            "propertyOrder": 1
+                        },
+                        {
+                            "$ref": "tchmi:general#/definitions/String"
+                        }
+                    ]
+                },
+                "PORT": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/UINT"
+                        },
+                        {
+                            "comment": "TwinCAT PLC runtime port number",
+                            "propertyOrder": 2
+                        }
+                    ]
+                },
+                "RESET": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "comment": "Rising edge on this input activates the fb execution",
+                            "propertyOrder": 3
+                        }
+                    ]
+                },
+                "TMOUT": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/TIME"
+                        },
+                        {
+                            "comment": "Max fb execution time",
+                            "propertyOrder": 4
+                        }
+                    ]
+                },
+                "fbAdsWrtCtl": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc2_System.ADSWRTCTL"
+                        },
+                        {
+                            "attributes": {
+                                "conditionalshow": ""
+                            },
+                            "propertyOrder": 8
+                        }
+                    ]
+                }
+            },
+            "type": "object"
+        },
+        "PLC1.Tc2_Utilities.PLC_Start": {
+            "attributes": {
+                "conditionalshow_all_locals": ""
+            },
+            "properties": {
+                "BUSY": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 5
+                        }
+                    ]
+                },
+                "ERR": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 6
+                        }
+                    ]
+                },
+                "ERRID": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/UDINT"
+                        },
+                        {
+                            "propertyOrder": 7
+                        }
+                    ]
+                },
+                "NETID": {
+                    "allOf": [
+                        {
+                            "comment": "TwinCAT network address (ams net id)",
+                            "maxLength": 23,
+                            "propertyOrder": 1
+                        },
+                        {
+                            "$ref": "tchmi:general#/definitions/String"
+                        }
+                    ]
+                },
+                "PORT": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/UINT"
+                        },
+                        {
+                            "comment": "TwinCAT PLC runtime port number",
+                            "propertyOrder": 2
+                        }
+                    ]
+                },
+                "START": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "comment": "Rising edge on this input activates the fb execution",
+                            "propertyOrder": 3
+                        }
+                    ]
+                },
+                "TMOUT": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/TIME"
+                        },
+                        {
+                            "comment": "Max fb execution time",
+                            "propertyOrder": 4
+                        }
+                    ]
+                },
+                "fbAdsWrtCtl": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc2_System.ADSWRTCTL"
+                        },
+                        {
+                            "attributes": {
+                                "conditionalshow": ""
+                            },
+                            "propertyOrder": 8
+                        }
+                    ]
+                }
+            },
+            "type": "object"
+        },
+        "PLC1.Tc2_Utilities.PLC_Stop": {
+            "attributes": {
+                "conditionalshow_all_locals": ""
+            },
+            "properties": {
+                "BUSY": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 5
+                        }
+                    ]
+                },
+                "ERR": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 6
+                        }
+                    ]
+                },
+                "ERRID": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/UDINT"
+                        },
+                        {
+                            "propertyOrder": 7
+                        }
+                    ]
+                },
+                "NETID": {
+                    "allOf": [
+                        {
+                            "comment": "TwinCAT network address (ams net id)",
+                            "maxLength": 23,
+                            "propertyOrder": 1
+                        },
+                        {
+                            "$ref": "tchmi:general#/definitions/String"
+                        }
+                    ]
+                },
+                "PORT": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/UINT"
+                        },
+                        {
+                            "comment": "TwinCAT PLC runtime port number",
+                            "propertyOrder": 2
+                        }
+                    ]
+                },
+                "STOP": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "comment": "Rising edge on this input activates the fb execution",
+                            "propertyOrder": 3
+                        }
+                    ]
+                },
+                "TMOUT": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/TIME"
+                        },
+                        {
+                            "comment": "Max fb execution time",
+                            "propertyOrder": 4
+                        }
+                    ]
+                },
+                "fbAdsWrtCtl": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc2_System.ADSWRTCTL"
+                        },
+                        {
+                            "attributes": {
+                                "conditionalshow": ""
+                            },
+                            "propertyOrder": 8
+                        }
+                    ]
+                }
+            },
+            "type": "object"
         },
         "PLC1.TeknicHardWire": {
             "attributes": {
@@ -11814,6 +12232,46 @@
                 "contains_implicit_enum": ""
             },
             "properties": {
+                "a": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 61
+                        }
+                    ]
+                },
+                "b": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 62
+                        }
+                    ]
+                },
+                "c": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 63
+                        }
+                    ]
+                },
+                "d": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 64
+                        }
+                    ]
+                },
                 "demoHeight": {
                     "allOf": [
                         {
@@ -11836,18 +12294,17 @@
                         }
                     ]
                 },
-                "execute": {
+                "e": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/PLC1.REFERENCE-TO-BOOL"
+                            "$ref": "tchmi:general#/definitions/BOOL"
                         },
                         {
-                            "comment": "controls",
-                            "propertyOrder": 1
+                            "propertyOrder": 65
                         }
                     ]
                 },
-                "failLeft": {
+                "errorLeft": {
                     "allOf": [
                         {
                             "$ref": "tchmi:general#/definitions/BOOL"
@@ -11857,13 +12314,24 @@
                         }
                     ]
                 },
-                "failRight": {
+                "errorRight": {
                     "allOf": [
                         {
                             "$ref": "tchmi:general#/definitions/BOOL"
                         },
                         {
                             "propertyOrder": 26
+                        }
+                    ]
+                },
+                "execute": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.REFERENCE-TO-BOOL"
+                        },
+                        {
+                            "comment": "controls",
+                            "propertyOrder": 1
                         }
                     ]
                 },
@@ -12270,6 +12738,7 @@
                                 "Dimensions": "1",
                                 "variable_length_array": ""
                             },
+                            "comment": "1..2",
                             "propertyOrder": 22
                         }
                     ]
@@ -12324,6 +12793,7 @@
                                 "Dimensions": "1",
                                 "variable_length_array": ""
                             },
+                            "comment": "1..4",
                             "propertyOrder": 20
                         }
                     ]
@@ -12338,7 +12808,28 @@
                                 "Dimensions": "1",
                                 "variable_length_array": ""
                             },
+                            "comment": "1..4",
                             "propertyOrder": 21
+                        }
+                    ]
+                },
+                "suctionTimerLeft": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc2_Standard.TON"
+                        },
+                        {
+                            "propertyOrder": 66
+                        }
+                    ]
+                },
+                "suctionTimerRight": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc2_Standard.TON"
+                        },
+                        {
+                            "propertyOrder": 67
                         }
                     ]
                 },
@@ -12352,6 +12843,7 @@
                                 "Dimensions": "1",
                                 "variable_length_array": ""
                             },
+                            "comment": "1..3",
                             "propertyOrder": 19
                         }
                     ]
@@ -15783,6 +16275,26 @@
             },
             "USEMAPPING": true
         },
+        "PLC1.MAIN.moduleCIP": {
+            "ACCESS": 3,
+            "DOMAIN": "ADS",
+            "DYNAMIC": true,
+            "MAPPING": "PLC1::MAIN::moduleCIP",
+            "SCHEMA": {
+                "$ref": "tchmi:server#/definitions/PLC1.ChipboardEx"
+            },
+            "USEMAPPING": true
+        },
+        "PLC1.MAIN.moduleWB": {
+            "ACCESS": 3,
+            "DOMAIN": "ADS",
+            "DYNAMIC": true,
+            "MAPPING": "PLC1::MAIN::moduleWB",
+            "SCHEMA": {
+                "$ref": "tchmi:server#/definitions/PLC1.WoodBunkEx"
+            },
+            "USEMAPPING": true
+        },
         "PLC1.MAIN.stop": {
             "ACCESS": 3,
             "DOMAIN": "ADS",
@@ -15793,23 +16305,13 @@
             },
             "USEMAPPING": true
         },
-        "PLC1.MAIN.systemMethods.startRuntime": {
+        "PLC1.Misc.systemMethods": {
             "ACCESS": 3,
             "DOMAIN": "ADS",
             "DYNAMIC": true,
-            "MAPPING": "PLC1::MAIN::systemMethods::startRuntime",
+            "MAPPING": "PLC1::Misc::systemMethods",
             "SCHEMA": {
-                "$ref": "tchmi:server#/definitions/PLC1.METHOD-RETURNING-BOOL"
-            },
-            "USEMAPPING": true
-        },
-        "PLC1.MAIN.systemMethods.stopRuntime": {
-            "ACCESS": 3,
-            "DOMAIN": "ADS",
-            "DYNAMIC": true,
-            "MAPPING": "PLC1::MAIN::systemMethods::stopRuntime",
-            "SCHEMA": {
-                "$ref": "tchmi:server#/definitions/PLC1.METHOD-RETURNING-BOOL"
+                "$ref": "tchmi:server#/definitions/PLC1.FB_System"
             },
             "USEMAPPING": true
         },
@@ -16855,6 +17357,7 @@
                 "PLC1.MAIN.toolStorageLeft": 3,
                 "PLC1.MAIN.toolStorageRight": 3,
                 "PLC1.MAIN.topSuction": 3,
+                "PLC1.Misc.systemMethods": 3,
                 "SetLocale": 3,
                 "SubscribeEvents": 3,
                 "TcHmiSqliteLogger.Diagnostics": 1,
