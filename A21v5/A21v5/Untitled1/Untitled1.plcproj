@@ -94,13 +94,13 @@
     <Compile Include="DUTs\Machines\StrapMachine.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\Material Holders\GenericMaterialHolder.TcPOU">
+    <Compile Include="DUTs\Material Holders\MaterialHolder.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\Material Holders\GenericSkidMagazine.TcPOU">
+    <Compile Include="DUTs\Material Holders\SkidMagazine.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\Material Holders\GenericStagingTable.TcPOU">
+    <Compile Include="DUTs\Material Holders\StagingTable.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DUTs\Material Holders\MaterialSlot.TcDUT">

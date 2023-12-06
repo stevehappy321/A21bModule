@@ -6,10 +6,10 @@ VAR_GLOBAL
 	robot1, robot2 : RobotA21;
 	toolStorageA21Left, toolStorageA21Right : A21ToolStorage;
 	
-	skidA21Left, skidA21Right : GenericSkidMagazine;
+	skidA21Left, skidA21Right : SkidMagazine;
 	
-	magazineA21Left, magazineA21Right : GenericSkidMagazine;
-	stagingTableLeft, stagingTableRight : GenericStagingTable;
+	magazineA21Left, magazineA21Right : SkidMagazine;
+	stagingTableLeft, stagingTableRight : StagingTable;
 	
 	strapperA21 : StrapMachine;
 	

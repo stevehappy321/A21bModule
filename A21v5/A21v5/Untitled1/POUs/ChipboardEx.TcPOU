@@ -12,7 +12,7 @@ VAR_IN_OUT //references to required hardware
 	robotLeft, robotRight : RobotA21;
 	toolStorageLeft, toolStorageRight : A21ToolStorage;
 	
-	skidLeft, skidRight : GenericSkidMagazine;
+	skidLeft, skidRight : SkidMagazine;
 END_VAR
 VAR_OUTPUT
 	//ready : BOOL;
@@ -225,7 +225,7 @@ END_CASE]]></ST>
       <Declaration><![CDATA[METHOD loadingSequence : BOOL
 VAR_IN_OUT
 	robot : RobotA21;
-	storage : GenericSkidMagazine;
+	storage : SkidMagazine;
 	loadStep : INT;
 END_VAR
 VAR_INPUT
@@ -263,7 +263,7 @@ CASE loadStep OF
 		loadStep := 10;
 		
 	10: //grab from chipboard skid
-		IF NOT storage.findSlot(materialID := material, atSlot => slot) THEN
+		IF NOT storage.findSlot(materialID := material, atPosition => slot) THEN
 			fail := TRUE;
 			RETURN;
 		(*
