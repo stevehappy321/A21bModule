@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<TcSmProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4024.50">
+<TcSmProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4024.32">
 	<DataTypes>
 		<DataType>
 			<Name GUID="{22728B82-A99E-1178-70C3-33731C966BD6}" IecBaseType="true" AutoDeleteType="true">ARRAY [1..10] OF BOOL</Name>
@@ -8,6 +8,15 @@
 			<ArrayInfo>
 				<LBound>1</LBound>
 				<Elements>10</Elements>
+			</ArrayInfo>
+		</DataType>
+		<DataType>
+			<Name GUID="{0CC845D8-9BA1-18CF-F192-2496916AED96}" IecBaseType="true" AutoDeleteType="true">ARRAY [1..20] OF WORD</Name>
+			<BitSize>320</BitSize>
+			<BaseType GUID="{18071995-0000-0000-0000-000000000004}">WORD</BaseType>
+			<ArrayInfo>
+				<LBound>1</LBound>
+				<Elements>20</Elements>
 			</ArrayInfo>
 		</DataType>
 		<DataType>
@@ -20,18 +29,9 @@
 			</ArrayInfo>
 		</DataType>
 		<DataType>
-			<Name GUID="{FF46E77C-A1C9-160B-C563-9524E562D7F4}" IecBaseType="true" AutoDeleteType="true">ARRAY [1..20] OF INT</Name>
-			<BitSize>320</BitSize>
-			<BaseType GUID="{18071995-0000-0000-0000-000000000006}">INT</BaseType>
-			<ArrayInfo>
-				<LBound>1</LBound>
-				<Elements>20</Elements>
-			</ArrayInfo>
-		</DataType>
-		<DataType>
-			<Name GUID="{3959AF2B-712F-4776-B31A-F615A7A6D72D}" IecBaseType="true" AutoDeleteType="true">ARRAY [1..50] OF INT</Name>
+			<Name GUID="{FCDAFB1E-2CF0-0830-625A-4C0917D98604}" IecBaseType="true" AutoDeleteType="true">ARRAY [1..50] OF WORD</Name>
 			<BitSize>800</BitSize>
-			<BaseType GUID="{18071995-0000-0000-0000-000000000006}">INT</BaseType>
+			<BaseType GUID="{18071995-0000-0000-0000-000000000004}">WORD</BaseType>
 			<ArrayInfo>
 				<LBound>1</LBound>
 				<Elements>50</Elements>
@@ -74,7 +74,7 @@
 		<ImageData Id="1005">424dd6020000000000003600000028000000100000000e0000000100180000000000a0020000c40e0000c40e00000000000000000000ff00ffff00ffff00ffff00ffff00ffff00ff808080808080808080ff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffc0c0c0c0c0c0808080ff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffc0c0c0c0c0c0808080ff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffc0c0c0c0c0c0808080ff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffc0c0c0c0c0c0808080ff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffc0c0c0c0c0c0808080ff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffc0c0c0c0c0c0808080ff00ffff00ffff00ffff00ffff00ffff00ffff00ff007fff007fff007fff007fff007fff007fffc0c0c0c0c0c0808080ff00ffff00ffff00ffff00ffff00ffff00ffff00ff007fff007fff007fff007fff007fff007fffc0c0c0c0c0c0808080ff00ffff00ffff00ffff00ffff00ffff00ffff00ff007fff007fff007fff007fff007fff007fffc0c0c0c0c0c0808080ff00ffff00ffff00ffff00ffff00ffff00ffff00ff007fff007fff007fff007fff007fff007fffc0c0c0c0c0c0808080ff00ffff00ffff00ffff00ffff00ffff00ffff00ff007fff007fff007fff007fff007fff007fffc0c0c0c0c0c0808080ff00ffff00ffff00ffff00ffff00ffff00ffff00ff007fff007fff007fff007fff007fff007fffc0c0c0c0c0c0808080ff00ffff00ffff00ffff00ffff00ffff00ffff00ff007fff007fff007fff007fff007fff007fffc0c0c0c0c0c0808080ff00ffff00ffff00ffff00ffff00ffff00ffff00ff</ImageData>
 		<ImageData Id="1006">424de6000000000000007600000028000000100000000e000000010004000000000070000000c30e0000c30e000010000000100000000000ff00ff00ff00ff000000ffff000000ff000000ffff0000008000800080008000000080800000008000000080800080808000c0c0c000ffffff00000000001111111111111111fffffffffffffffffcfcfcfcfffff44ff4f4f4f4fffff44ffffffffffffffffffffffffffffffffffcfcfcfcfffff44ff4f4f4f4fffff44fffffffffffffffff55555511111111115555551111111111555555111111111155555511111111115555551111111111</ImageData>
 	</ImageDatas>
-	<Project ProjectGUID="{63D773D5-E190-47BB-8D0F-C9240581DCE7}" TargetNetId="5.131.216.41.1.1" Target64Bit="true" ShowHideConfigurations="#x106">
+	<Project ProjectGUID="{63D773D5-E190-47BB-8D0F-C9240581DCE7}" Target64Bit="true" ShowHideConfigurations="#x106">
 		<System>
 			<Licenses>
 				<Target>
@@ -89,7 +89,7 @@
 		</System>
 		<Plc>
 			<Project GUID="{D232006A-254D-4F35-9BFE-5131CC19FE71}" Name="Untitled1" PrjFilePath="Untitled1\Untitled1.plcproj" TmcFilePath="Untitled1\Untitled1.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{7C0C7727-A461-E866-1289-9E1BC6185283}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{86B9F59C-040D-ACBB-43D0-D1FEB2D9C36A}">
 					<Name>Untitled1 Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
@@ -129,6 +129,22 @@
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
+							<Name>Hardware.robot1.offline</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.robot1.inputs</Name>
+							<Type GUID="{0CC845D8-9BA1-18CF-F192-2496916AED96}">ARRAY [1..20] OF WORD</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.robot2.offline</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.robot2.inputs</Name>
+							<Type GUID="{0CC845D8-9BA1-18CF-F192-2496916AED96}">ARRAY [1..20] OF WORD</Type>
+						</Var>
+						<Var>
 							<Name>Hardware.toolStorageA21Right.pos1ChipboardEOAT</Name>
 							<Type>BOOL</Type>
 						</Var>
@@ -157,15 +173,15 @@
 							<Type GUID="{3D778266-9CB6-A2BC-B908-FC747FC8D738}">ARRAY [1..2] OF BOOL</Type>
 						</Var>
 						<Var>
+							<Name>Hardware.skidA21Right.inPosition</Name>
+							<Type GUID="{3D778266-9CB6-A2BC-B908-FC747FC8D738}">ARRAY [1..2] OF BOOL</Type>
+						</Var>
+						<Var>
 							<Name>Hardware.magazineA21Left.inPosition</Name>
 							<Type GUID="{3D778266-9CB6-A2BC-B908-FC747FC8D738}">ARRAY [1..2] OF BOOL</Type>
 						</Var>
 						<Var>
 							<Name>Hardware.magazineA21Right.inPosition</Name>
-							<Type GUID="{3D778266-9CB6-A2BC-B908-FC747FC8D738}">ARRAY [1..2] OF BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.skidA21Right.inPosition</Name>
 							<Type GUID="{3D778266-9CB6-A2BC-B908-FC747FC8D738}">ARRAY [1..2] OF BOOL</Type>
 						</Var>
 						<Var>
@@ -222,48 +238,6 @@
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.verticalDriveA21Left.contactSensor</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA21Left.outerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA21Left.home</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA21Left.innerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA21Left.hlfb</Name>
-							<Comment><![CDATA[high level feedback, if -9999 then servo is idle]]></Comment>
-							<Type>REAL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA21Right.contactSensor</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA21Right.outerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA21Right.home</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA21Right.innerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA21Right.hlfb</Name>
-							<Comment><![CDATA[high level feedback, if -9999 then servo is idle]]></Comment>
-							<Type>REAL</Type>
-						</Var>
-						<Var>
 							<Name>Hardware.pistonA21Bottom.extended</Name>
 							<Type>BOOL</Type>
 						</Var>
@@ -316,24 +290,74 @@
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.robot1.offline</Name>
+							<Name>Hardware.verticalDriveA21Left.contactSensor</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.robot1.inputs</Name>
-							<Type GUID="{FF46E77C-A1C9-160B-C563-9524E562D7F4}">ARRAY [1..20] OF INT</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.robot2.offline</Name>
+							<Name>Hardware.verticalDriveA21Left.outerLimit</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.robot2.inputs</Name>
-							<Type GUID="{FF46E77C-A1C9-160B-C563-9524E562D7F4}">ARRAY [1..20] OF INT</Type>
+							<Name>Hardware.verticalDriveA21Left.home</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA21Left.innerLimit</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA21Left.hlfb</Name>
+							<Comment><![CDATA[high level feedback, if -9999 then servo is idle]]></Comment>
+							<Type>REAL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA21Right.contactSensor</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA21Right.outerLimit</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA21Right.home</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA21Right.innerLimit</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA21Right.hlfb</Name>
+							<Comment><![CDATA[high level feedback, if -9999 then servo is idle]]></Comment>
+							<Type>REAL</Type>
 						</Var>
 					</Vars>
 					<Vars VarGrpType="2" AreaNo="1">
 						<Name>PlcTask Outputs</Name>
+						<Var>
+							<Name>Hardware.robot1.forceStop</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.robot1.resetSignal</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.robot1.outputs</Name>
+							<Type GUID="{FCDAFB1E-2CF0-0830-625A-4C0917D98604}">ARRAY [1..50] OF WORD</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.robot2.forceStop</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.robot2.resetSignal</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.robot2.outputs</Name>
+							<Type GUID="{FCDAFB1E-2CF0-0830-625A-4C0917D98604}">ARRAY [1..50] OF WORD</Type>
+						</Var>
 						<Var>
 							<Name>Hardware.suctionA21Bottom[1].enable</Name>
 							<Type>BOOL</Type>
@@ -368,32 +392,6 @@
 						</Var>
 						<Var>
 							<Name>Hardware.horizontalDriveA21Right.valveRetract</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA21Left.pulse</Name>
-							<Comment><![CDATA[num pulses]]></Comment>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA21Left.outputRegister</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA21Left.brakeRelease</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA21Right.pulse</Name>
-							<Comment><![CDATA[num pulses]]></Comment>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA21Right.outputRegister</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA21Right.brakeRelease</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
@@ -449,33 +447,35 @@
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.robot1.forceStop</Name>
+							<Name>Hardware.verticalDriveA21Left.pulse</Name>
+							<Comment><![CDATA[num pulses]]></Comment>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA21Left.outputRegister</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA21Left.brakeRelease</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.robot1.resetSignal</Name>
+							<Name>Hardware.verticalDriveA21Right.pulse</Name>
+							<Comment><![CDATA[num pulses]]></Comment>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA21Right.outputRegister</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA21Right.brakeRelease</Name>
 							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.robot1.outputs</Name>
-							<Type GUID="{3959AF2B-712F-4776-B31A-F615A7A6D72D}">ARRAY [1..50] OF INT</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.robot2.forceStop</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.robot2.resetSignal</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.robot2.outputs</Name>
-							<Type GUID="{3959AF2B-712F-4776-B31A-F615A7A6D72D}">ARRAY [1..50] OF INT</Type>
 						</Var>
 					</Vars>
 					<Contexts>
 						<Context>
-							<Id>0</Id>
+							<Id NeedCalleeCall="true">0</Id>
 							<Name>PlcTask</Name>
 							<ManualConfig>
 								<OTCID>#x02010030</OTCID>
@@ -491,7 +491,7 @@
 			</Project>
 		</Plc>
 		<Io>
-			<Device Id="1" DevType="111" DevFlags="#x0003" AmsPort="28673" AmsNetId="5.131.216.41.2.1" RemoteName="Device 1 (EtherCAT)" InfoImageId="2">
+			<Device Id="1" Disabled="true" DevType="111" DevFlags="#x0003" AmsPort="28673" AmsNetId="192.168.101.188.2.1" RemoteName="Device 1 (EtherCAT)" InfoImageId="2">
 				<Name>Device 1 (EtherCAT)</Name>
 				<AddressInfo>
 					<Ccat>
@@ -891,7 +891,7 @@
 							<Box Id="3" BoxType="9099" BoxFlags="#x00000020">
 								<Name>BRIDGE_ROBOT1</Name>
 								<ImageId>1004</ImageId>
-								<EtherCAT SlaveType="3" AdsServerAddress="0583d8290204ef03" PdiType="#x0008" MboxDataLinkLayer="true" StateMBoxPolling="true" CycleMBoxPollingTime="0" CoeType="63" EoeType="1" FoeType="1" VendorId="#x00000002" ProductCode="#x1a273052" RevisionNo="#x00060000" InfoDataAddr="true" InfoDataNetId="true" TimeoutMailbox2="2000" GenerateOwnNetId="true" CheckRevisionNoType="3" PortPhys="51" DcTimeLoopControlOnly="true" MaxSlotCount="256" MaxSlotGroupCount="1" SlotPdoIncrement="1" SlotIndexIncrement="16" Type="EL6695 EtherCAT Bridge terminal (Primary)" Desc="EL6695" PortABoxInfo="#x0100000b">
+								<EtherCAT SlaveType="3" AdsServerAddress="0583d8290204ef03" FixedAdsServerNetId="true" PdiType="#x0008" MboxDataLinkLayer="true" StateMBoxPolling="true" CycleMBoxPollingTime="0" CoeType="63" EoeType="1" FoeType="1" VendorId="#x00000002" ProductCode="#x1a273052" RevisionNo="#x00060000" InfoDataAddr="true" InfoDataNetId="true" TimeoutMailbox2="2000" GenerateOwnNetId="true" CheckRevisionNoType="3" PortPhys="51" DcTimeLoopControlOnly="true" MaxSlotCount="256" MaxSlotGroupCount="1" SlotPdoIncrement="1" SlotIndexIncrement="16" Type="EL6695 EtherCAT Bridge terminal (Primary)" Desc="EL6695" PortABoxInfo="#x0100000b">
 									<SyncMan>0010000426000100010000008000da050004001026010000</SyncMan>
 									<SyncMan>0016000422000100020000008000da050004001622010000</SyncMan>
 									<SyncMan>001c64006400010003000000000000000000001c64010000</SyncMan>
@@ -1679,7 +1679,7 @@
 							<Box Id="22" BoxType="9099" BoxFlags="#x00000020">
 								<Name>BRIDGE_ROBOT2</Name>
 								<ImageId>1004</ImageId>
-								<EtherCAT SlaveType="3" AdsServerAddress="0583d8290217f703" PdiType="#x0008" MboxDataLinkLayer="true" StateMBoxPolling="true" CycleMBoxPollingTime="0" CoeType="63" EoeType="1" FoeType="1" VendorId="#x00000002" ProductCode="#x1a273052" RevisionNo="#x00060000" InfoDataAddr="true" InfoDataNetId="true" TimeoutMailbox2="2000" GenerateOwnNetId="true" CheckRevisionNoType="3" PortPhys="51" DcTimeLoopControlOnly="true" MaxSlotCount="256" MaxSlotGroupCount="1" SlotPdoIncrement="1" SlotIndexIncrement="16" Type="EL6695 EtherCAT Bridge terminal (Primary)" Desc="EL6695" PortABoxInfo="#x01000007">
+								<EtherCAT SlaveType="3" AdsServerAddress="0583d8290217f703" FixedAdsServerNetId="true" PdiType="#x0008" MboxDataLinkLayer="true" StateMBoxPolling="true" CycleMBoxPollingTime="0" CoeType="63" EoeType="1" FoeType="1" VendorId="#x00000002" ProductCode="#x1a273052" RevisionNo="#x00060000" InfoDataAddr="true" InfoDataNetId="true" TimeoutMailbox2="2000" GenerateOwnNetId="true" CheckRevisionNoType="3" PortPhys="51" DcTimeLoopControlOnly="true" MaxSlotCount="256" MaxSlotGroupCount="1" SlotPdoIncrement="1" SlotIndexIncrement="16" Type="EL6695 EtherCAT Bridge terminal (Primary)" Desc="EL6695" PortABoxInfo="#x01000007">
 									<SyncMan>0010000426000100010000008000da050004001026010000</SyncMan>
 									<SyncMan>0016000422000100020000008000da050004001622010000</SyncMan>
 									<SyncMan>001c64006400010003000000000000000000001c64010000</SyncMan>
@@ -2214,7 +2214,6 @@
 		</Io>
 	</Project>
 	<Mappings>
-		<MappingInfo Identifier="{00000000-2001-0850-0020-500810000403}" Id="#x02030010"/>
 		<OwnerA Name="TIPC^Untitled1^Untitled1 Instance">
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^EK1200^JUNC_A21^C1^BRIDGE_ROBOT2">
 				<Link VarA="PlcTask Inputs^Hardware.robot2.inputs[10]" VarB="IO Inputs^In_10"/>

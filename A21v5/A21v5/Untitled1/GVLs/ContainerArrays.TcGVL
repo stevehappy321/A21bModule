@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <GVL Name="ContainerArrays" Id="{a41ac828-3b90-4453-b6ae-c19c2ca38393}">
+    <Declaration><![CDATA[//{attribute 'qualified_only'}
+VAR_GLOBAL //data arrays to be passed into material holder FBs - do not access directly
+	
+	skidSlotsA21Left, skidSlotsA21Right : ARRAY[1..2] OF STRING; //chipboard skid
+	skidOccupancyA21Left, skidOccupancyA21Right : ARRAY[1..2] OF BOOL;
+	skidHmiA21Left, skidHmiA21Right : ARRAY[1..2] OF MaterialSlot;
+	
+	magazineSlotsA21Left, magazineSlotsA21Right : ARRAY[1..15] OF STRING; //wood bunk magazine
+	magazineOccupancyA21Left, magazineOccupancyA21Right : ARRAY[1..15] OF BOOL;
+	magazineHmiA21Left, magazineHmiA21Right : ARRAY[1..15] OF MaterialSlot;
+	
+	tableSlotsA21Left, tableSlotsA21Right : ARRAY[1..10] OF STRING; //staging table
+	tableOccupancyA21Left, tableOccupancyA21Right AT %I* : ARRAY[1..10] OF BOOL;
+	tableHmiA21Left, tableHmiA21Right : ARRAY[1..10] OF MaterialSlot;
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

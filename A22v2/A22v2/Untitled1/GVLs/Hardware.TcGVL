@@ -28,10 +28,6 @@ VAR_GLOBAL //complete modules
 	suctionA22BottomRight : ARRAY[1..3] OF SuctionPad;
 	
 	suctionA22Bottom : SuctionPad;
-END_VAR
-VAR_GLOBAL //additional freefloating values
-	insertionA22LeftContact, insertionA22RightContact AT %I* : BOOL;
-	magColA22Left, magColA22Right : ARRAY[1..10] OF STRING;
 END_VAR]]></Declaration>
   </GVL>
 </TcPlcObject>

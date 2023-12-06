@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="BundleJsonDemo" Id="{f60b91ab-2049-43d9-a925-115cd4098610}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM BundleJsonDemo
+VAR
+	fbJson : FB_JsonSaxWriter;
+	fbJsonDataType : FB_JsonReadWriteDataType;
+	jsonDoc : STRING(100000); //this wont even show up in online view as twincat cannot show strings this long
+	arrDoc : ARRAY[0..100000] OF BYTE;
+	
+	newBundle : Bundle;
+	getBundle : Bundle;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[newBundle.id := 'abcdefghijkl';
+newBundle.autoRE := TRUE;
+newBundle.cardboard := MAIN.moduleA22.materialsArr;
+newBundle.timeDone := MAIN.currentTime;
+
+fbJson.ResetDocument();
+fbJsonDataType.AddJsonValueFromSymbol(fbJson, 'Bundle', SIZEOF(newBundle), ADR(newBundle));
+fbJson.CopyDocument(jsonDoc, SIZEOF(jsonDoc));
+
+MEMCPY(
+	ADR(arrDoc), 
+	ADR(jsonDoc),
+	MIN(
+		SIZEOF(jsonDoc),
+		SIZEOF(arrDoc))
+	);
+	
+fbJsonDataType.SetSymbolFromJson(jsonDoc, 'Bundle', SIZEOF(getBundle), ADR(getBundle));]]></ST>
+    </Implementation>
+    <LineIds Name="BundleJsonDemo">
+      <LineId Id="65" Count="0" />
+      <LineId Id="67" Count="2" />
+      <LineId Id="66" Count="0" />
+      <LineId Id="52" Count="9" />
+      <LineId Id="79" Count="0" />
+      <LineId Id="64" Count="0" />
+      <LineId Id="37" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

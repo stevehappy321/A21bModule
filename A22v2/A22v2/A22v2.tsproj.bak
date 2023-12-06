@@ -2,12 +2,21 @@
 <TcSmProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4024.32">
 	<DataTypes>
 		<DataType>
-			<Name GUID="{FF46E77C-A1C9-160B-C563-9524E562D7F4}" IecBaseType="true" AutoDeleteType="true">ARRAY [1..20] OF INT</Name>
+			<Name GUID="{0CC845D8-9BA1-18CF-F192-2496916AED96}" IecBaseType="true" AutoDeleteType="true">ARRAY [1..20] OF WORD</Name>
 			<BitSize>320</BitSize>
-			<BaseType GUID="{18071995-0000-0000-0000-000000000006}">INT</BaseType>
+			<BaseType GUID="{18071995-0000-0000-0000-000000000004}">WORD</BaseType>
 			<ArrayInfo>
 				<LBound>1</LBound>
 				<Elements>20</Elements>
+			</ArrayInfo>
+		</DataType>
+		<DataType>
+			<Name GUID="{3D778266-9CB6-A2BC-B908-FC747FC8D738}" IecBaseType="true" AutoDeleteType="true">ARRAY [1..2] OF BOOL</Name>
+			<BitSize>16</BitSize>
+			<BaseType GUID="{18071995-0000-0000-0000-000000000030}">BOOL</BaseType>
+			<ArrayInfo>
+				<LBound>1</LBound>
+				<Elements>2</Elements>
 			</ArrayInfo>
 		</DataType>
 		<DataType>
@@ -795,18 +804,9 @@ External Setpoint Generation:
 			</Relations>
 		</DataType>
 		<DataType>
-			<Name GUID="{3D778266-9CB6-A2BC-B908-FC747FC8D738}" IecBaseType="true" AutoDeleteType="true">ARRAY [1..2] OF BOOL</Name>
-			<BitSize>16</BitSize>
-			<BaseType GUID="{18071995-0000-0000-0000-000000000030}">BOOL</BaseType>
-			<ArrayInfo>
-				<LBound>1</LBound>
-				<Elements>2</Elements>
-			</ArrayInfo>
-		</DataType>
-		<DataType>
-			<Name GUID="{3959AF2B-712F-4776-B31A-F615A7A6D72D}" IecBaseType="true" AutoDeleteType="true">ARRAY [1..50] OF INT</Name>
+			<Name GUID="{FCDAFB1E-2CF0-0830-625A-4C0917D98604}" IecBaseType="true" AutoDeleteType="true">ARRAY [1..50] OF WORD</Name>
 			<BitSize>800</BitSize>
-			<BaseType GUID="{18071995-0000-0000-0000-000000000006}">INT</BaseType>
+			<BaseType GUID="{18071995-0000-0000-0000-000000000004}">WORD</BaseType>
 			<ArrayInfo>
 				<LBound>1</LBound>
 				<Elements>50</Elements>
@@ -1010,26 +1010,21 @@ External Setpoint Generation:
 		</System>
 		<Plc>
 			<Project GUID="{9EBFE716-1EFF-4899-8C57-2D56B56C6F29}" Name="Untitled1" PrjFilePath="Untitled1\Untitled1.plcproj" TmcFilePath="Untitled1\Untitled1.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{B37981C2-24B2-6D48-C6D2-879136F672E1}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{56DFE63E-F64A-8FB9-5BBE-A45640F2F941}">
 					<Name>Untitled1 Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
 						<Name>PlcTask Inputs</Name>
 						<Var>
-							<Name>Hardware.insertionA22LeftContact</Name>
-							<Comment><![CDATA[additional freefloating values]]></Comment>
+							<Name>MAIN.moduleA22.insertionLeft.contact</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.suctionA22TopLeft[1].readback</Name>
+							<Name>MAIN.moduleA22.insertionRight.contact</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.suctionA22TopLeft[2].readback</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.suctionA22TopLeft[3].readback</Name>
+							<Name>Hardware.suctionA22Bottom.readback</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
@@ -1038,7 +1033,15 @@ External Setpoint Generation:
 						</Var>
 						<Var>
 							<Name>Hardware.robot3.inputs</Name>
-							<Type GUID="{FF46E77C-A1C9-160B-C563-9524E562D7F4}">ARRAY [1..20] OF INT</Type>
+							<Type GUID="{0CC845D8-9BA1-18CF-F192-2496916AED96}">ARRAY [1..20] OF WORD</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.robot4.offline</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.robot4.inputs</Name>
+							<Type GUID="{0CC845D8-9BA1-18CF-F192-2496916AED96}">ARRAY [1..20] OF WORD</Type>
 						</Var>
 						<Var>
 							<Name>Hardware.benderA22Left.ready</Name>
@@ -1051,6 +1054,22 @@ External Setpoint Generation:
 						<Var>
 							<Name>Hardware.benderA22Left.done</Name>
 							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.skidA22Left.inPosition</Name>
+							<Type GUID="{3D778266-9CB6-A2BC-B908-FC747FC8D738}">ARRAY [1..2] OF BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.skidA22Right.inPosition</Name>
+							<Type GUID="{3D778266-9CB6-A2BC-B908-FC747FC8D738}">ARRAY [1..2] OF BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.magazineA22Left.inPosition</Name>
+							<Type GUID="{3D778266-9CB6-A2BC-B908-FC747FC8D738}">ARRAY [1..2] OF BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.magazineA22Right.inPosition</Name>
+							<Type GUID="{3D778266-9CB6-A2BC-B908-FC747FC8D738}">ARRAY [1..2] OF BOOL</Type>
 						</Var>
 						<Var>
 							<Name>Hardware.wrapperA22.error</Name>
@@ -1069,19 +1088,15 @@ External Setpoint Generation:
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.suctionA22TopRight[1].readback</Name>
+							<Name>Hardware.suctionA22TopLeft[1].readback</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.suctionA22TopRight[2].readback</Name>
+							<Name>Hardware.suctionA22TopLeft[2].readback</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.suctionA22TopRight[3].readback</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.insertionA22RightContact</Name>
+							<Name>Hardware.suctionA22TopLeft[3].readback</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
@@ -1175,6 +1190,18 @@ External Setpoint Generation:
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
+							<Name>Hardware.suctionA22TopRight[1].readback</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.suctionA22TopRight[2].readback</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.suctionA22TopRight[3].readback</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
 							<Name>Hardware.suctionA22BottomLeft[1].readback</Name>
 							<Type>BOOL</Type>
 						</Var>
@@ -1198,55 +1225,11 @@ External Setpoint Generation:
 							<Name>Hardware.suctionA22BottomRight[3].readback</Name>
 							<Type>BOOL</Type>
 						</Var>
-						<Var>
-							<Name>Hardware.suctionA22Bottom.readback</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.robot4.offline</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.robot4.inputs</Name>
-							<Type GUID="{FF46E77C-A1C9-160B-C563-9524E562D7F4}">ARRAY [1..20] OF INT</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.skidA22Left.inPosition</Name>
-							<Type GUID="{3D778266-9CB6-A2BC-B908-FC747FC8D738}">ARRAY [1..2] OF BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.skidA22Right.inPosition</Name>
-							<Type GUID="{3D778266-9CB6-A2BC-B908-FC747FC8D738}">ARRAY [1..2] OF BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.magazineA22Left.inPosition</Name>
-							<Type GUID="{3D778266-9CB6-A2BC-B908-FC747FC8D738}">ARRAY [1..2] OF BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.magazineA22Right.inPosition</Name>
-							<Type GUID="{3D778266-9CB6-A2BC-B908-FC747FC8D738}">ARRAY [1..2] OF BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.moduleA22.insertionLeft.contact</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.moduleA22.insertionRight.contact</Name>
-							<Type>BOOL</Type>
-						</Var>
 					</Vars>
 					<Vars VarGrpType="2" AreaNo="1">
 						<Name>PlcTask Outputs</Name>
 						<Var>
-							<Name>Hardware.suctionA22TopLeft[1].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.suctionA22TopLeft[2].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.suctionA22TopLeft[3].enable</Name>
+							<Name>Hardware.suctionA22Bottom.enable</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
@@ -1259,7 +1242,19 @@ External Setpoint Generation:
 						</Var>
 						<Var>
 							<Name>Hardware.robot3.outputs</Name>
-							<Type GUID="{3959AF2B-712F-4776-B31A-F615A7A6D72D}">ARRAY [1..50] OF INT</Type>
+							<Type GUID="{FCDAFB1E-2CF0-0830-625A-4C0917D98604}">ARRAY [1..50] OF WORD</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.robot4.forceStop</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.robot4.resetSignal</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.robot4.outputs</Name>
+							<Type GUID="{FCDAFB1E-2CF0-0830-625A-4C0917D98604}">ARRAY [1..50] OF WORD</Type>
 						</Var>
 						<Var>
 							<Name>Hardware.benderA22Left.enable</Name>
@@ -1291,15 +1286,15 @@ External Setpoint Generation:
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.suctionA22TopRight[1].enable</Name>
+							<Name>Hardware.suctionA22TopLeft[1].enable</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.suctionA22TopRight[2].enable</Name>
+							<Name>Hardware.suctionA22TopLeft[2].enable</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.suctionA22TopRight[3].enable</Name>
+							<Name>Hardware.suctionA22TopLeft[3].enable</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
@@ -1345,6 +1340,18 @@ External Setpoint Generation:
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
+							<Name>Hardware.suctionA22TopRight[1].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.suctionA22TopRight[2].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.suctionA22TopRight[3].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
 							<Name>Hardware.suctionA22BottomLeft[1].enable</Name>
 							<Type>BOOL</Type>
 						</Var>
@@ -1367,22 +1374,6 @@ External Setpoint Generation:
 						<Var>
 							<Name>Hardware.suctionA22BottomRight[3].enable</Name>
 							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.suctionA22Bottom.enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.robot4.forceStop</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.robot4.resetSignal</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.robot4.outputs</Name>
-							<Type GUID="{3959AF2B-712F-4776-B31A-F615A7A6D72D}">ARRAY [1..50] OF INT</Type>
 						</Var>
 					</Vars>
 					<Contexts>

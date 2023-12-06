@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Refactors>
+  <Renames>
+    <RenamedType>
+      <Type guid="8ba11299-e77c-4191-b0af-3a9de02fefe9">LOAD_1</Type>
+      <From>load_1</From>
+      <To>loadV2</To>
+    </RenamedType>
+  </Renames>
+</Refactors>

@@ -96,7 +96,8 @@ END_VAR
       </Get>
     </Property>
     <Property Name="CurrentPosition" Id="{552cdbb0-b891-4b67-ad01-a8cfc1c516eb}" FolderPath="Properties\">
-      <Declaration><![CDATA[PROPERTY CurrentPosition : LREAL]]></Declaration>
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY CurrentPosition : LREAL]]></Declaration>
       <Get Name="Get" Id="{f42f05dd-f56e-4930-a286-1888d4d594cd}">
         <Declaration><![CDATA[VAR
 END_VAR
@@ -300,7 +301,8 @@ END_VAR
       </Implementation>
     </Method>
     <Property Name="TargetPosition" Id="{222c0d80-2607-4af6-8461-be098758948d}" FolderPath="Properties\">
-      <Declaration><![CDATA[PROPERTY TargetPosition : LREAL]]></Declaration>
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY TargetPosition : LREAL]]></Declaration>
       <Get Name="Get" Id="{b917e1f8-7faf-4ca9-8c30-5bfbcfdfaf97}">
         <Declaration><![CDATA[VAR
 END_VAR

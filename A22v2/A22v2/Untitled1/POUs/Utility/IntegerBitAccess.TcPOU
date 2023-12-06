@@ -3,7 +3,7 @@
   <POU Name="IntegerBitAccess" Id="{b06922ad-687f-4f20-8c5d-74dac39fd7e3}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION IntegerBitAccess : BOOL
 VAR_INPUT
-	num : ULINT;
+	num : ANY_INT;
 	n : ULINT;
 END_VAR]]></Declaration>
     <Implementation>

@@ -3,7 +3,7 @@
   <DUT Name="PositionMaterials" Id="{72b2bf5b-2b93-42a9-bc8a-24d8ae335b1f}">
     <Declaration><![CDATA[TYPE PositionMaterials :
 STRUCT
-	position : REAL; //:= GVL.nullPos; //default value is set to predefined constant if bundle needs less than 32 position material pairs
+	position : REAL; //:= GVL.nullPos; //default value is set to predefined constant if bundle needs less than 16+1 position material pairs
 	
 	top : STRING;
 	right : STRING;

@@ -29,19 +29,19 @@ VAR_INPUT
 	materialID : STRING;
 END_VAR
 VAR_OUTPUT
-	atSlot : INT := -1;
+	atSlot : INT := 0;
 END_VAR
 VAR
-	i : INT;
+	i : DINT;
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[IF materialID = '' THEN
 	RETURN;
 END_IF
 
-FOR i:=1 TO GVL.maxQueue BY 1 DO
+FOR i:=LOWER_BOUND(slots, 1) TO UPPER_BOUND(slots, 1) BY 1 DO
 	IF slots[i] = materialID THEN
-		atSlot := i;
+		atSlot := TO_INT(i);
 		findSlot := TRUE;
 		RETURN;
 	END_IF
@@ -101,7 +101,7 @@ VAR
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[//slots := setSlots;
-
+{warning disable C0195}
 MEMCPY(
 	slots, 
 	newSlots, 

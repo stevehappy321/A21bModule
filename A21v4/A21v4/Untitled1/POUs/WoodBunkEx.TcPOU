@@ -71,7 +71,6 @@ VAR //local types
 	
 	templateSlotsLeft, templateSlotsRight : ARRAY[1..10] OF STRING;
 	templateOccupancyLeft, templateOccupancyRight : ARRAY[1..10] OF BOOL;
-	
 	stagingTemplateLeft, stagingTemplateRight AT %M* : GenericStagingTable;	
 	stagingArrayLeft, stagingArrayRight : ARRAY[0..(GVL.maxPairs+1)*2] OF STRING;
 	
@@ -85,9 +84,7 @@ END_VAR]]></Declaration>
       <ST><![CDATA[{warning disable C0371} //supress [external reference] warnings
 callLocalModules();
 
-//materialsArr[0] := demoPair;
-
-IF stop THEN //may need to turn off suction
+IF stop THEN
 	insertionLeft.stop();
 	insertionRight.stop();
 	pistonBottom.stop();
@@ -779,6 +776,7 @@ VAR_STAT
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[{warning disable C0371}
+{warning disable C0195}
 iSlot := MAX(1, iSlot); //ensures iSlot is at least 1
 
 IF //staging table is full or matches staging template
@@ -884,7 +882,8 @@ END_CASE]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="WoodBunkEx">
-      <LineId Id="5471" Count="13" />
+      <LineId Id="5471" Count="1" />
+      <LineId Id="5475" Count="9" />
       <LineId Id="5487" Count="6" />
       <LineId Id="5495" Count="62" />
       <LineId Id="5729" Count="1" />
@@ -1000,6 +999,7 @@ END_CASE]]></ST>
     </LineIds>
     <LineIds Name="WoodBunkEx.stagingSequence">
       <LineId Id="382" Count="0" />
+      <LineId Id="614" Count="0" />
       <LineId Id="552" Count="0" />
       <LineId Id="551" Count="0" />
       <LineId Id="384" Count="2" />

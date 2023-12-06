@@ -13,20 +13,23 @@ VAR_OUTPUT //from outputs array
 	cardboardSkidOccupancy : INT;
 	foldPosition0 : INT;
 	foldPosition1 : INT;
+	
+	//cornerGuardMagazineOccupancy : INT;
 END_VAR
 VAR_OUTPUT //from inputs array
-	tool : SectionEnum := SectionEnum.WOOD_BUNK;
+	tool : SectionEnum := SectionEnum.CARDBOARD_CORNERGUARD;
 	suspendedMaterial : STRING;
 	
 	completedTask : A22;
 END_VAR
-VAR
+VAR //HMI data
 	reservationEnum : SectionEnum;
 	hmiTask : STRING;
 	hmiTool : STRING;
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[SUPER^();
+      <ST><![CDATA[{warning disable C0195}
+SUPER^();
 
 outputs[1] := taskID;
 outputs[2] := param1;
@@ -51,7 +54,6 @@ END_IF
 hmiTask := TO_STRING(taskID);
 hmiTool := TO_STRING(tool);]]></ST>
     </Implementation>
-    <Folder Name="Command" Id="{cb2e89bb-772a-46f5-9ebd-5a57212e6237}" />
     <Folder Name="Parameters" Id="{a5b46e1c-8533-46ed-a8ad-d62fff793a82}" />
     <Folder Name="Properties" Id="{ad3307e6-9124-4570-a731-47f88f315415}" />
     <Property Name="Busy" Id="{6f9d2bc1-f359-4cb1-b877-e40e4cb82394}" FolderPath="Properties\">
@@ -70,7 +72,7 @@ Busy := taskID <> 0 OR completedTask <> 0;]]></ST>
         </Implementation>
       </Get>
     </Property>
-    <Method Name="clearCommand" Id="{d69d6ac7-011b-441c-a57c-fe92b24dbe4d}" FolderPath="Command\">
+    <Method Name="clearCommand" Id="{d69d6ac7-011b-441c-a57c-fe92b24dbe4d}">
       <Declaration><![CDATA[METHOD clearCommand : BOOL
 VAR_INPUT
 END_VAR
@@ -137,7 +139,8 @@ Ready := taskID = 0 AND completedTask = 0;]]></ST>
 VAR_INPUT
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[taskID := outputs[1];
+        <ST><![CDATA[{warning disable C0196}
+taskID := outputs[1];
 param1 := outputs[2];
 param2 := outputs[3];
 Xmm := outputs[4];
@@ -158,23 +161,6 @@ materialAtHoldingPosition := inputs[5];
 
 strapSafetyIn := inputs[4].15;
 *)]]></ST>
-      </Implementation>
-    </Method>
-    <Method Name="setCommand" Id="{d6749b9a-afed-4702-90cd-02470c2e1e19}" FolderPath="Command\">
-      <Declaration><![CDATA[METHOD setCommand : BOOL
-VAR_INPUT
-	newCommand : REFERENCE TO ARRAY[1..11] OF INT;
-END_VAR
-]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[MEMCPY(
-	ADR(outputs), 
-	ADR(newCommand), 
-	MIN( SIZEOF(outputs), SIZEOF(newCommand) ));
-	
-setCommand := Done;
-
-refreshParameters();]]></ST>
       </Implementation>
     </Method>
     <Method Name="setGroup" Id="{503da7b7-4b1e-4183-bf7d-cd91f2000e32}" FolderPath="Parameters\">
@@ -226,6 +212,7 @@ refreshParameters();]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="RobotA22">
+      <LineId Id="219" Count="0" />
       <LineId Id="134" Count="0" />
       <LineId Id="137" Count="0" />
       <LineId Id="139" Count="5" />
@@ -265,6 +252,7 @@ refreshParameters();]]></ST>
       <LineId Id="2" Count="0" />
     </LineIds>
     <LineIds Name="RobotA22.refreshParameters">
+      <LineId Id="31" Count="0" />
       <LineId Id="6" Count="9" />
       <LineId Id="17" Count="1" />
       <LineId Id="27" Count="0" />
@@ -274,12 +262,6 @@ refreshParameters();]]></ST>
       <LineId Id="24" Count="0" />
       <LineId Id="23" Count="0" />
       <LineId Id="28" Count="0" />
-    </LineIds>
-    <LineIds Name="RobotA22.setCommand">
-      <LineId Id="29" Count="4" />
-      <LineId Id="20" Count="0" />
-      <LineId Id="36" Count="0" />
-      <LineId Id="35" Count="0" />
     </LineIds>
     <LineIds Name="RobotA22.setGroup">
       <LineId Id="5" Count="0" />

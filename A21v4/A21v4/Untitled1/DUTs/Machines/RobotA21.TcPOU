@@ -3,6 +3,7 @@
   <POU Name="RobotA21" Id="{b0860a5e-6e08-407c-9dba-697264065907}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK RobotA21 EXTENDS KukaRobot
 VAR_OUTPUT //from outputs array
+	{warning disable C0195}
 	taskID : A21;
 	param1 : INT;
 	param2 : INT;
@@ -45,7 +46,7 @@ additional section-specific methods to get/set IO groups
 parameters - aliases to IO elements
 command - full IO array
 *)
-
+{warning disable C0195}
 SUPER^();
 
 strapSafetyOut := NOT strapperA21.enable AND NOT strapperA21.execute;
@@ -176,7 +177,8 @@ Ready := taskID = 0 AND completedTask = 0;]]></ST>
 VAR_INPUT
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[taskID := outputs[1];
+        <ST><![CDATA[{warning disable C0196}
+taskID := outputs[1];
 param1 := outputs[2];
 param2 := outputs[3];
 Xmm := outputs[4];
@@ -305,6 +307,7 @@ refreshParameters();]]></ST>
       <LineId Id="2" Count="0" />
     </LineIds>
     <LineIds Name="RobotA21.refreshParameters">
+      <LineId Id="27" Count="0" />
       <LineId Id="6" Count="15" />
       <LineId Id="5" Count="0" />
       <LineId Id="22" Count="0" />
