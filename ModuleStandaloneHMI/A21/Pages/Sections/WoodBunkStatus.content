@@ -91,7 +91,7 @@
 </script>
 </div>
 </div>
-<div id="StagingTableRight" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiDatagrid" data-tchmi-height="100" data-tchmi-height-unit="px" data-tchmi-left="770" data-tchmi-left-unit="px" data-tchmi-top="10" data-tchmi-top-unit="px" data-tchmi-width="100" data-tchmi-width-unit="px" data-tchmi-width-mode="Content" data-tchmi-height-mode="Content" data-tchmi-data-symbol="%s%PLC1.ContainerArrays.tableHmiA21Right%/s%">
+<div id="StagingTableRight" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiDatagrid" data-tchmi-height="100" data-tchmi-height-unit="px" data-tchmi-left="770" data-tchmi-left-unit="px" data-tchmi-top="5" data-tchmi-top-unit="px" data-tchmi-width="100" data-tchmi-width-unit="px" data-tchmi-width-mode="Content" data-tchmi-height-mode="Content" data-tchmi-data-symbol="%s%PLC1.ContainerArrays.tableHmiA21Right%/s%">
 <script data-tchmi-target-attribute="data-tchmi-src-column" type="application/json">
 [
   {

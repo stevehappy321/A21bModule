@@ -4,7 +4,7 @@
 </div>
 <div id="TcHmiTextblock_1" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="10" data-tchmi-left-unit="px" data-tchmi-text="Stored Position" data-tchmi-top="442" data-tchmi-top-unit="px" data-tchmi-width="110" data-tchmi-width-unit="px" data-tchmi-word-wrap="true">
 </div>
-<div id="TcHmiNumericInput" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" data-tchmi-auto-focus-out="true" data-tchmi-decimal-digits="0" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="130" data-tchmi-left-unit="px" data-tchmi-reset-to-last-valid-value="true" data-tchmi-top="442" data-tchmi-top-unit="px" data-tchmi-width="50" data-tchmi-width-unit="px" data-tchmi-value="%s%PLC1.Hardware.verticalDriveA21Left::CurrentPosition%/s%">
+<div id="TcHmiNumericInput" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" data-tchmi-auto-focus-out="true" data-tchmi-decimal-digits="0" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="130" data-tchmi-left-unit="px" data-tchmi-reset-to-last-valid-value="true" data-tchmi-top="442" data-tchmi-top-unit="px" data-tchmi-width="50" data-tchmi-width-unit="px" data-tchmi-value="%s%PLC1.Hardware.verticalDriveA21Left::position%/s%">
 <script data-tchmi-target-attribute="data-tchmi-content-padding" type="application/json">
 {
   "top": 3,
@@ -41,7 +41,7 @@
 </div>
 <div id="LED_5" data-tchmi-type="TcHmi.Controls.System.TcHmiUserControlHost" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="130" data-tchmi-left-unit="px" data-tchmi-state="%s%PLC1.Hardware.verticalDriveA21Left::B%/s%" data-tchmi-target-user-control="UserControls/LED.usercontrol" data-tchmi-top="154" data-tchmi-top-unit="px" data-tchmi-width="50" data-tchmi-width-unit="px">
 </div>
-<div id="LED_6" data-tchmi-type="TcHmi.Controls.System.TcHmiUserControlHost" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="130" data-tchmi-left-unit="px" data-tchmi-target-user-control="UserControls/LED.usercontrol" data-tchmi-top="406" data-tchmi-top-unit="px" data-tchmi-width="50" data-tchmi-width-unit="px" data-tchmi-state="%s%PLC1.Hardware.verticalDriveA21Left::HomeSet%/s%">
+<div id="LED_6" data-tchmi-type="TcHmi.Controls.System.TcHmiUserControlHost" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="130" data-tchmi-left-unit="px" data-tchmi-target-user-control="UserControls/LED.usercontrol" data-tchmi-top="406" data-tchmi-top-unit="px" data-tchmi-width="50" data-tchmi-width-unit="px" data-tchmi-state="%s%PLC1.Hardware.verticalDriveA21Left::homingComplete%/s%">
 </div>
 <div id="TcHmiTextblock_16" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="10" data-tchmi-left-unit="px" data-tchmi-text="Brake Release" data-tchmi-top="190" data-tchmi-top-unit="px" data-tchmi-width="110" data-tchmi-width-unit="px" data-tchmi-word-wrap="true">
 </div>
@@ -51,7 +51,7 @@
 </div>
 <div id="TcHmiTextblock_18" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="190" data-tchmi-left-unit="px" data-tchmi-text="mm" data-tchmi-top="478" data-tchmi-top-unit="px" data-tchmi-width="50" data-tchmi-width-unit="px" data-tchmi-word-wrap="true">
 </div>
-<div id="TcHmiNumericInput_1" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" data-tchmi-auto-focus-out="true" data-tchmi-decimal-digits="0" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="130" data-tchmi-left-unit="px" data-tchmi-reset-to-last-valid-value="true" data-tchmi-top="478" data-tchmi-top-unit="px" data-tchmi-width="50" data-tchmi-width-unit="px" data-tchmi-value="%s%PLC1.Hardware.verticalDriveA21Left::TargetPosition%/s%">
+<div id="TcHmiNumericInput_1" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" data-tchmi-auto-focus-out="true" data-tchmi-decimal-digits="0" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="130" data-tchmi-left-unit="px" data-tchmi-reset-to-last-valid-value="true" data-tchmi-top="478" data-tchmi-top-unit="px" data-tchmi-width="50" data-tchmi-width-unit="px" data-tchmi-value="%s%PLC1.Hardware.verticalDriveA21Left::targetPos%/s%">
 <script data-tchmi-target-attribute="data-tchmi-content-padding" type="application/json">
 {
   "top": 3,
@@ -106,13 +106,82 @@
 </div>
 <div id="TcHmi_Controls_Beckhoff_TcHmiImage_4" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiImage" data-tchmi-height="200" data-tchmi-height-unit="px" data-tchmi-left="270" data-tchmi-left-unit="px" data-tchmi-src="Imports/Images/wood-bunk-insertion.png" data-tchmi-top="410" data-tchmi-top-unit="px" data-tchmi-width="180" data-tchmi-width-unit="px">
 </div>
+<div id="A21InsertionLeftExtend" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="280" data-tchmi-left-unit="px" data-tchmi-text="Extend" data-tchmi-top="298" data-tchmi-top-unit="px" data-tchmi-width="100" data-tchmi-width-unit="px" data-tchmi-word-wrap="true">
+
+<script data-tchmi-target-attribute="data-tchmi-trigger" type="application/json">
+[
+  {
+    "event": "A21InsertionLeftExtend.onMouseClick",
+    "actions": [
+      {
+        "objectType": "WriteToSymbol",
+        "active": true,
+        "symbolExpression": "%s%PLC1.Hardware.horizontalDriveA21Left::mode%/s%",
+        "value": {
+          "objectType": "StaticValue",
+          "valueType": "tchmi:server#/definitions/PLC1.Implicit_Enum__AirPiston__mode",
+          "value": 1
+        },
+        "asyncWait": true
+      }
+    ]
+  }
+]
+</script>
+</div>
+<div id="A21InsertionLeftRetract" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="280" data-tchmi-left-unit="px" data-tchmi-text="Retract" data-tchmi-top="334" data-tchmi-top-unit="px" data-tchmi-width="100" data-tchmi-width-unit="px" data-tchmi-word-wrap="true">
+
+<script data-tchmi-target-attribute="data-tchmi-trigger" type="application/json">
+[
+  {
+    "event": "A21InsertionLeftRetract.onMouseClick",
+    "actions": [
+      {
+        "objectType": "WriteToSymbol",
+        "active": true,
+        "symbolExpression": "%s%PLC1.Hardware.horizontalDriveA21Left::mode%/s%",
+        "value": {
+          "objectType": "StaticValue",
+          "valueType": "tchmi:server#/definitions/PLC1.Implicit_Enum__AirPiston__mode",
+          "value": 2
+        },
+        "asyncWait": true
+      }
+    ]
+  }
+]
+</script>
+</div>
+<div id="A21InsertionLeftHold" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="280" data-tchmi-left-unit="px" data-tchmi-text="Hold" data-tchmi-top="370" data-tchmi-top-unit="px" data-tchmi-width="100" data-tchmi-width-unit="px" data-tchmi-word-wrap="true">
+
+<script data-tchmi-target-attribute="data-tchmi-trigger" type="application/json">
+[
+  {
+    "event": "A21InsertionLeftHold.onMouseClick",
+    "actions": [
+      {
+        "objectType": "WriteToSymbol",
+        "active": true,
+        "symbolExpression": "%s%PLC1.Hardware.horizontalDriveA21Left::mode%/s%",
+        "value": {
+          "objectType": "StaticValue",
+          "valueType": "tchmi:server#/definitions/PLC1.Implicit_Enum__AirPiston__mode",
+          "value": 0
+        },
+        "asyncWait": true
+      }
+    ]
+  }
+]
+</script>
+</div>
 </div>
 <div id="RightInsertionPanel" data-tchmi-type="TcHmi.Controls.System.TcHmiContainer" data-tchmi-height="620" data-tchmi-height-unit="px" data-tchmi-left="570" data-tchmi-left-unit="px" data-tchmi-top="10" data-tchmi-top-unit="px" data-tchmi-width="460" data-tchmi-width-unit="px">
 <div id="TcHmiTextblock_83" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="10" data-tchmi-left-unit="px" data-tchmi-text="RIGHT INSERTION" data-tchmi-top="10" data-tchmi-top-unit="px" data-tchmi-width="150" data-tchmi-width-unit="px" data-tchmi-word-wrap="true">
 </div>
 <div id="TcHmiTextblock_84" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="10" data-tchmi-left-unit="px" data-tchmi-text="Stored Position" data-tchmi-top="442" data-tchmi-top-unit="px" data-tchmi-width="110" data-tchmi-width-unit="px" data-tchmi-word-wrap="true">
 </div>
-<div id="TcHmiNumericInput_7" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" data-tchmi-auto-focus-out="true" data-tchmi-decimal-digits="0" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="130" data-tchmi-left-unit="px" data-tchmi-reset-to-last-valid-value="true" data-tchmi-top="442" data-tchmi-top-unit="px" data-tchmi-width="50" data-tchmi-width-unit="px" data-tchmi-value="%s%PLC1.Hardware.verticalDriveA21Right::CurrentPosition%/s%">
+<div id="TcHmiNumericInput_7" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" data-tchmi-auto-focus-out="true" data-tchmi-decimal-digits="0" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="130" data-tchmi-left-unit="px" data-tchmi-reset-to-last-valid-value="true" data-tchmi-top="442" data-tchmi-top-unit="px" data-tchmi-width="50" data-tchmi-width-unit="px" data-tchmi-value="%s%PLC1.Hardware.verticalDriveA21Right::position%/s%">
 <script data-tchmi-target-attribute="data-tchmi-content-padding" type="application/json">
 {
   "top": 3,
@@ -149,7 +218,7 @@
 </div>
 <div id="LED_53" data-tchmi-type="TcHmi.Controls.System.TcHmiUserControlHost" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="130" data-tchmi-left-unit="px" data-tchmi-state="%s%PLC1.Hardware.verticalDriveA21Right::B%/s%" data-tchmi-target-user-control="UserControls/LED.usercontrol" data-tchmi-top="154" data-tchmi-top-unit="px" data-tchmi-width="50" data-tchmi-width-unit="px">
 </div>
-<div id="LED_54" data-tchmi-type="TcHmi.Controls.System.TcHmiUserControlHost" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="130" data-tchmi-left-unit="px" data-tchmi-target-user-control="UserControls/LED.usercontrol" data-tchmi-top="406" data-tchmi-top-unit="px" data-tchmi-width="50" data-tchmi-width-unit="px" data-tchmi-state="%s%PLC1.Hardware.verticalDriveA21Right::HomeSet%/s%">
+<div id="LED_54" data-tchmi-type="TcHmi.Controls.System.TcHmiUserControlHost" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="130" data-tchmi-left-unit="px" data-tchmi-target-user-control="UserControls/LED.usercontrol" data-tchmi-top="406" data-tchmi-top-unit="px" data-tchmi-width="50" data-tchmi-width-unit="px" data-tchmi-state="%s%PLC1.Hardware.verticalDriveA21Right::homingComplete%/s%">
 </div>
 <div id="TcHmiTextblock_93" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="10" data-tchmi-left-unit="px" data-tchmi-text="Brake Release" data-tchmi-top="190" data-tchmi-top-unit="px" data-tchmi-width="110" data-tchmi-width-unit="px" data-tchmi-word-wrap="true">
 </div>
@@ -159,7 +228,7 @@
 </div>
 <div id="TcHmiTextblock_95" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="190" data-tchmi-left-unit="px" data-tchmi-text="mm" data-tchmi-top="478" data-tchmi-top-unit="px" data-tchmi-width="50" data-tchmi-width-unit="px" data-tchmi-word-wrap="true">
 </div>
-<div id="TcHmiNumericInput_8" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" data-tchmi-auto-focus-out="true" data-tchmi-decimal-digits="0" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="130" data-tchmi-left-unit="px" data-tchmi-reset-to-last-valid-value="true" data-tchmi-top="478" data-tchmi-top-unit="px" data-tchmi-width="50" data-tchmi-width-unit="px" data-tchmi-value="%s%PLC1.Hardware.verticalDriveA21Right::TargetPosition%/s%">
+<div id="TcHmiNumericInput_8" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiNumericInput" data-tchmi-auto-focus-out="true" data-tchmi-decimal-digits="0" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="130" data-tchmi-left-unit="px" data-tchmi-reset-to-last-valid-value="true" data-tchmi-top="478" data-tchmi-top-unit="px" data-tchmi-width="50" data-tchmi-width-unit="px" data-tchmi-value="%s%PLC1.Hardware.verticalDriveA21Right::targetPos%/s%">
 <script data-tchmi-target-attribute="data-tchmi-content-padding" type="application/json">
 {
   "top": 3,
@@ -213,6 +282,72 @@
 <div id="LED_65" data-tchmi-type="TcHmi.Controls.System.TcHmiUserControlHost" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="130" data-tchmi-left-unit="px" data-tchmi-target-user-control="UserControls/LED.usercontrol" data-tchmi-top="262" data-tchmi-top-unit="px" data-tchmi-width="50" data-tchmi-width-unit="px" data-tchmi-state="%s%PLC1.Hardware.verticalDriveA21Right::Error%/s%">
 </div>
 <div id="TcHmi_Controls_Beckhoff_TcHmiImage_5" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiImage" data-tchmi-height="200" data-tchmi-height-unit="px" data-tchmi-left="270" data-tchmi-left-unit="px" data-tchmi-src="Imports/Images/wood-bunk-insertion-flipped.png" data-tchmi-top="410" data-tchmi-top-unit="px" data-tchmi-width="180" data-tchmi-width-unit="px">
+</div>
+<div id="A21InsertionRightExtend" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="280" data-tchmi-left-unit="px" data-tchmi-text="Extend" data-tchmi-top="298" data-tchmi-top-unit="px" data-tchmi-width="100" data-tchmi-width-unit="px" data-tchmi-word-wrap="true">
+<script data-tchmi-target-attribute="data-tchmi-trigger" type="application/json">
+[
+  {
+    "event": "A21InsertionRightExtend.onMouseClick",
+    "actions": [
+      {
+        "objectType": "WriteToSymbol",
+        "active": true,
+        "symbolExpression": "%s%PLC1.Hardware.horizontalDriveA21Right::mode%/s%",
+        "value": {
+          "objectType": "StaticValue",
+          "valueType": "tchmi:server#/definitions/PLC1.Implicit_Enum__AirPiston__mode",
+          "value": 1
+        },
+        "asyncWait": true
+      }
+    ]
+  }
+]
+</script>
+</div>
+<div id="A21InsertionRightRetract" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="280" data-tchmi-left-unit="px" data-tchmi-text="Retract" data-tchmi-top="334" data-tchmi-top-unit="px" data-tchmi-width="100" data-tchmi-width-unit="px" data-tchmi-word-wrap="true">
+<script data-tchmi-target-attribute="data-tchmi-trigger" type="application/json">
+[
+  {
+    "event": "A21InsertionRightRetract.onMouseClick",
+    "actions": [
+      {
+        "objectType": "WriteToSymbol",
+        "active": true,
+        "symbolExpression": "%s%PLC1.Hardware.horizontalDriveA21Right::mode%/s%",
+        "value": {
+          "objectType": "StaticValue",
+          "valueType": "tchmi:server#/definitions/PLC1.Implicit_Enum__AirPiston__mode",
+          "value": 2
+        },
+        "asyncWait": true
+      }
+    ]
+  }
+]
+</script>
+</div>
+<div id="A21InsertionRightHold" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiButton" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="280" data-tchmi-left-unit="px" data-tchmi-text="Hold" data-tchmi-top="370" data-tchmi-top-unit="px" data-tchmi-width="100" data-tchmi-width-unit="px" data-tchmi-word-wrap="true">
+<script data-tchmi-target-attribute="data-tchmi-trigger" type="application/json">
+[
+  {
+    "event": "A21InsertionRightHold.onMouseClick",
+    "actions": [
+      {
+        "objectType": "WriteToSymbol",
+        "active": true,
+        "symbolExpression": "%s%PLC1.Hardware.horizontalDriveA21Right::mode%/s%",
+        "value": {
+          "objectType": "StaticValue",
+          "valueType": "tchmi:server#/definitions/PLC1.Implicit_Enum__AirPiston__mode",
+          "value": 0
+        },
+        "asyncWait": true
+      }
+    ]
+  }
+]
+</script>
 </div>
 </div>
 <div id="TcHmiContainer_4" data-tchmi-type="TcHmi.Controls.System.TcHmiContainer" data-tchmi-height="200" data-tchmi-height-unit="px" data-tchmi-left="480" data-tchmi-left-unit="px" data-tchmi-top="10" data-tchmi-top-unit="px" data-tchmi-width="80" data-tchmi-width-unit="px">

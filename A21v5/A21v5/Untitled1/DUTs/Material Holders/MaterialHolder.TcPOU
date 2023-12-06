@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
   <POU Name="MaterialHolder" Id="{b8766d7a-1d6a-4377-9cc8-53e16c54b972}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK MaterialHolder
 VAR_IN_OUT
@@ -127,8 +127,8 @@ VAR
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[FOR i:=LOWER_BOUND(hmiTable, 1) TO UPPER_BOUND(hmiTable, 1) BY 1 DO
-	hmiTable[i].material REF= slots[i];
-	hmiTable[i].occupied REF= occupied[i];
+	hmiTable[i].material := slots[i];
+	hmiTable[i].occupied := occupied[i];
 END_FOR]]></ST>
       </Implementation>
     </Method>

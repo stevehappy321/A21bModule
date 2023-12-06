@@ -645,6 +645,9 @@
                 "Error": {
                     "$ref": "#/definitions/PLC1.PROPERTY-GET-BOOL"
                 },
+                "HomeSet": {
+                    "$ref": "#/definitions/PLC1.PROPERTY-GET-BOOL"
+                },
                 "bEnable": {
                     "allOf": [
                         {
@@ -1568,7 +1571,7 @@
                 "skidLeft": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/PLC1.REFERENCE-TO-GenericSkidMagazine"
+                            "$ref": "#/definitions/PLC1.REFERENCE-TO-SkidMagazine"
                         },
                         {
                             "propertyOrder": 8
@@ -1578,7 +1581,7 @@
                 "skidRight": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/PLC1.REFERENCE-TO-GenericSkidMagazine"
+                            "$ref": "#/definitions/PLC1.REFERENCE-TO-SkidMagazine"
                         },
                         {
                             "propertyOrder": 9
@@ -1957,6 +1960,9 @@
                     "$ref": "#/definitions/PLC1.PROPERTY-GET-BOOL"
                 },
                 "Error": {
+                    "$ref": "#/definitions/PLC1.PROPERTY-GET-BOOL"
+                },
+                "HomeSet": {
                     "$ref": "#/definitions/PLC1.PROPERTY-GET-BOOL"
                 },
                 "bEnable": {
@@ -4986,6 +4992,16 @@
                 }
             ]
         },
+        "PLC1.REFERENCE-TO-STRING-80": {
+            "allOf": [
+                {
+                    "allowImplicitAccess": false
+                },
+                {
+                    "$ref": "tchmi:general#/definitions/STRING%2880%29"
+                }
+            ]
+        },
         "PLC1.REFERENCE-TO-ServoNC": {
             "allOf": [
                 {
@@ -5013,6 +5029,16 @@
                 },
                 {
                     "$ref": "#/definitions/PLC1.SkidMagazine"
+                }
+            ]
+        },
+        "PLC1.REFERENCE-TO-StagingTable": {
+            "allOf": [
+                {
+                    "allowImplicitAccess": false
+                },
+                {
+                    "$ref": "#/definitions/PLC1.StagingTable"
                 }
             ]
         },
@@ -6391,7 +6417,7 @@
                 "hmiTable": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/PLC1.POINTER-TO-HmiSlotOccupancy"
+                            "$ref": "#/definitions/PLC1.POINTER-TO-MaterialSlot"
                         },
                         {
                             "attributes": {
@@ -6411,6 +6437,16 @@
                             "attributes": {
                                 "TcAddressType": "Input"
                             },
+                            "propertyOrder": 6
+                        }
+                    ]
+                },
+                "numSlots": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/INT"
+                        },
+                        {
                             "propertyOrder": 4
                         }
                     ]
@@ -6440,6 +6476,83 @@
                                 "variable_length_array": ""
                             },
                             "propertyOrder": 1
+                        }
+                    ]
+                },
+                "test": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/INT"
+                        },
+                        {
+                            "propertyOrder": 5
+                        }
+                    ]
+                }
+            },
+            "type": "object"
+        },
+        "PLC1.StagingTable": {
+            "properties": {
+                "hmiTable": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.POINTER-TO-MaterialSlot"
+                        },
+                        {
+                            "attributes": {
+                                "Dimensions": "1",
+                                "variable_length_array": ""
+                            },
+                            "propertyOrder": 3
+                        }
+                    ]
+                },
+                "numSlots": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/INT"
+                        },
+                        {
+                            "propertyOrder": 4
+                        }
+                    ]
+                },
+                "occupied": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.POINTER-TO-BOOL"
+                        },
+                        {
+                            "attributes": {
+                                "Dimensions": "1",
+                                "variable_length_array": ""
+                            },
+                            "propertyOrder": 2
+                        }
+                    ]
+                },
+                "slots": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.POINTER-TO-STRING-80"
+                        },
+                        {
+                            "attributes": {
+                                "Dimensions": "1",
+                                "variable_length_array": ""
+                            },
+                            "propertyOrder": 1
+                        }
+                    ]
+                },
+                "test": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/INT"
+                        },
+                        {
+                            "propertyOrder": 5
                         }
                     ]
                 }
@@ -12294,16 +12407,6 @@
                         }
                     ]
                 },
-                "e": {
-                    "allOf": [
-                        {
-                            "$ref": "tchmi:general#/definitions/BOOL"
-                        },
-                        {
-                            "propertyOrder": 65
-                        }
-                    ]
-                },
                 "errorLeft": {
                     "allOf": [
                         {
@@ -12480,7 +12583,7 @@
                 "magazineLeft": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/PLC1.REFERENCE-TO-GenericSkidMagazine"
+                            "$ref": "#/definitions/PLC1.REFERENCE-TO-SkidMagazine"
                         },
                         {
                             "propertyOrder": 11
@@ -12490,7 +12593,7 @@
                 "magazineRight": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/PLC1.REFERENCE-TO-GenericSkidMagazine"
+                            "$ref": "#/definitions/PLC1.REFERENCE-TO-SkidMagazine"
                         },
                         {
                             "propertyOrder": 12
@@ -12632,7 +12735,7 @@
                 "stagingTableLeft": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/PLC1.REFERENCE-TO-GenericStagingTable"
+                            "$ref": "#/definitions/PLC1.REFERENCE-TO-StagingTable"
                         },
                         {
                             "propertyOrder": 9
@@ -12642,7 +12745,7 @@
                 "stagingTableRight": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/PLC1.REFERENCE-TO-GenericStagingTable"
+                            "$ref": "#/definitions/PLC1.REFERENCE-TO-StagingTable"
                         },
                         {
                             "propertyOrder": 10
@@ -12652,7 +12755,7 @@
                 "stagingTemplateLeft": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/PLC1.GenericStagingTable"
+                            "$ref": "#/definitions/PLC1.StagingTable"
                         },
                         {
                             "attributes": {
@@ -12665,7 +12768,7 @@
                 "stagingTemplateRight": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/PLC1.GenericStagingTable"
+                            "$ref": "#/definitions/PLC1.StagingTable"
                         },
                         {
                             "attributes": {
@@ -12819,7 +12922,7 @@
                             "$ref": "#/definitions/PLC1.Tc2_Standard.TON"
                         },
                         {
-                            "propertyOrder": 66
+                            "propertyOrder": 65
                         }
                     ]
                 },
@@ -12829,7 +12932,7 @@
                             "$ref": "#/definitions/PLC1.Tc2_Standard.TON"
                         },
                         {
-                            "propertyOrder": 67
+                            "propertyOrder": 66
                         }
                     ]
                 },
@@ -16028,6 +16131,27 @@
             },
             "USEMAPPING": true
         },
+        "PLC1.Hardware.stagingTableLeft.hmiTable": {
+            "ACCESS": 3,
+            "DOMAIN": "ADS",
+            "DYNAMIC": true,
+            "MAPPING": "PLC1::Hardware::stagingTableLeft::hmiTable",
+            "SCHEMA": {
+                "allOf": [
+                    {
+                        "$ref": "tchmi:server#/definitions/PLC1.POINTER-TO-MaterialSlot"
+                    },
+                    {
+                        "attributes": {
+                            "Dimensions": "1",
+                            "variable_length_array": ""
+                        },
+                        "propertyOrder": 3
+                    }
+                ]
+            },
+            "USEMAPPING": true
+        },
         "PLC1.Hardware.stagingTableRight": {
             "ACCESS": 3,
             "DOMAIN": "ADS",
@@ -17289,6 +17413,7 @@
                 "PLC1.Hardware.skidA22Right": 3,
                 "PLC1.Hardware.stagingTableLeft": 3,
                 "PLC1.Hardware.stagingTableLeft.hmiSlots": 3,
+                "PLC1.Hardware.stagingTableLeft.hmiTable": 3,
                 "PLC1.Hardware.stagingTableRight": 3,
                 "PLC1.Hardware.stagingTableRight.hmiSlots": 3,
                 "PLC1.Hardware.strapperA21": 3,
