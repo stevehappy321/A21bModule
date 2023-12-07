@@ -127,11 +127,11 @@ END_VAR
     <Method Name="release" Id="{9cb9c870-9a0a-4e25-9e69-66c536dd5de8}">
       <Declaration><![CDATA[METHOD release : BOOL
 VAR_INPUT
-	sectionReservation : SectionEnum;
+	reservee : INT;
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[IF reservation = sectionReservation THEN
+        <ST><![CDATA[IF reservation = reservee THEN
 	reservation := SectionEnum.NULL_SECTION;
 	release := TRUE;
 END_IF]]></ST>
@@ -140,18 +140,18 @@ END_IF]]></ST>
     <Method Name="reserve" Id="{105269a9-e981-4b0d-a0fb-dab94fd22a02}">
       <Declaration><![CDATA[METHOD reserve : BOOL
 VAR_INPUT
-	reserveRequest : SectionEnum;
+	reservee : INT;
 END_VAR
 (*
 this method exists because chipboard and wood bunk operations use the same robot
 both sections need to check if the robot is open to commands before use
 *)]]></Declaration>
       <Implementation>
-        <ST><![CDATA[IF Reserved AND reservation = reserveRequest THEN
+        <ST><![CDATA[IF Reserved AND reservation = reservee THEN
 	reserve := TRUE;
 
 ELSIF NOT Reserved THEN
-	reservation := reserveRequest;
+	reservation := reservee;
 	reserve := TRUE;
 
 END_IF]]></ST>
@@ -232,13 +232,11 @@ outputs[group] := value;]]></ST>
       <LineId Id="2" Count="0" />
     </LineIds>
     <LineIds Name="KukaRobot.release">
-      <LineId Id="5" Count="0" />
-      <LineId Id="13" Count="0" />
-      <LineId Id="11" Count="1" />
+      <LineId Id="22" Count="2" />
+      <LineId Id="12" Count="0" />
     </LineIds>
     <LineIds Name="KukaRobot.reserve">
-      <LineId Id="123" Count="4" />
-      <LineId Id="129" Count="1" />
+      <LineId Id="145" Count="6" />
       <LineId Id="97" Count="0" />
     </LineIds>
     <LineIds Name="KukaRobot.Reserved.Get">

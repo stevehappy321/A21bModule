@@ -92,12 +92,12 @@ IF stop THEN
 	stopSequence(); //stop everything
 	RETURN;
 END_IF
-
-IF NOT insertionLeft.screw.HomeSet AND insertionRight.screw.HomeSet THEN
+(*
+IF NOT insertionLeft.screw.HomeSet OR NOT insertionRight.screw.HomeSet THEN
 	homingSequence(); //homing all motion devices and robots
 	RETURN;
 END_IF
-
+*)
 a S= suctionTop[1].occupied AND suctionTop[2].occupied AND suctionTop[3].occupied;
 b S= suctionLeft[1].occupied AND suctionLeft[2].occupied AND suctionLeft[3].occupied AND suctionLeft[4].occupied;
 c S= suctionRight[1].occupied AND suctionRight[2].occupied AND suctionRight[3].occupied AND suctionRight[4].occupied;
@@ -161,6 +161,7 @@ CASE step OF
 			latchLeft := latchRight := FALSE;
 			execute := FALSE;
 			step := STRAP;
+			RETURN;
 		END_IF
 		
 		IF NOT validateSuctionQuality(checkTop:= TRUE, checkLeft:= TRUE, checkRight:= FALSE, checkBottom:= FALSE) THEN
@@ -610,7 +611,6 @@ CASE loadStep OF
 		IF robot.Done THEN
 			suctionTimer.IN := FALSE;
 			loadStep := COMPLETE;
-			RETURN;
 		END_IF
 		
 		robot.setGroup(group := 9, value := robot.materialAtHoldingPosition);
@@ -627,13 +627,37 @@ CASE loadStep OF
 		
 		IF InsertionQuality(suctions := suctions, insertionMaterial := loadedMaterials[surfaceID], recipeMaterial := material) THEN
 			loadingSequence := TRUE;
-		ELSE //recovery - restage a new bunk to <slot> and reload
+		ELSE //recovery - remove, restage, and reload
 			suctionTimer.IN := FALSE;
 			loadStep := 100;
 			
 		END_IF
 		
-	100: //recovery - restage and reload
+	100:
+		robot.clearCommand();
+		IF robot.Ready THEN
+			loadStep := 110;
+		END_IF
+		
+	110: //recovery - remove from insertion
+		IF robot.Done THEN
+			loadStep := 120;
+			RETURN;
+		END_IF
+		
+		CASE surfaceID OF
+			Surface.TOP:					robot.setGroup(group := 1, value := A21.REMOVE_BUNK_TOP);
+			Surface.LEFT, Surface.RIGHT:	robot.setGroup(group := 1, value := A21.REMOVE_BUNK_SIDE);
+			Surface.BOTTOM:					robot.setGroup(group := 1, value := A21.REMOVE_BUNK_BOTTOM);
+		END_CASE
+		
+	120:
+		robot.clearCommand();
+		IF robot.Ready THEN
+			loadStep := 130;
+		END_IF
+		
+	130: //recovery - restage
 		CASE surfaceID OF
 			Surface.TOP, Surface.LEFT:
 				recoveryMagazine REF= magazineLeft;			
@@ -689,9 +713,17 @@ END_VAR]]></Declaration>
       <Declaration><![CDATA[METHOD stage : BOOL
 VAR_OUTPUT
 	error : BOOL;
+END_VAR
+VAR_STAT
+	temp : ARRAY[1..4] OF BOOL;
+	boundsErr : ARRAY[1..4] OF BOOL;
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[{warning disable C0371}
+temp[1] := stagingTableLeft.isOccupied(i := 1, errorBounds => boundsErr[1]);
+temp[2] := stagingTableLeft.isOccupied(i := 2, errorBounds => boundsErr[2]);
+temp[3] := stagingTableLeft.isOccupied(i := 3, errorBounds => boundsErr[4]);
+temp[4] := stagingTableLeft.isOccupied(i := 4, errorBounds => boundsErr[3]);
 
 CASE stageSet OF
 	0: //create staging template
@@ -825,12 +857,91 @@ CASE stageStep OF
 	COMPLETE: //check here if staging is successful or needs to be repeated
 		//if the material is registered on the table, this step will not be evaluated due to the guard clause above
 		robot.clearCommand();
+		
 		IF table.isOccupied(slot) AND table.getSlot(i := slot) = material THEN
 			stageSingle := TRUE;
 		ELSE
+			table.remove(i := slot, materialID => );
 			stageStep := 0;
 		END_IF
 		
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="stageSingleV2" Id="{2d96c33a-964e-4ebf-9f5e-ea6263dc3c9e}" FolderPath="Staging\">
+      <Declaration><![CDATA[METHOD stageSingleV2 : BOOL
+VAR_IN_OUT
+	robot : RobotA21;
+	table : StagingTable;
+	magazine : SkidMagazine;
+	stageStep : INT;
+END_VAR
+VAR_INPUT
+	slot : INT;
+	material : STRING;
+END_VAR
+VAR_OUTPUT
+	error : BOOL;
+END_VAR
+VAR
+	column : INT; //valid positions start from 1
+END_VAR
+VAR CONSTANT
+	suctionDistance : INT := 10;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[{warning disable C0371}
+{warning disable C0195}
+(*
+this method allows the staging of single bunks without the use of a template
+neccessary for restaging bunks that are not loaded properly into insertions
+*)
+
+IF material = '' THEN
+	robot.clearCommand();
+	stageSingleV2 := TRUE;
+	RETURN;
+END_IF
+
+//follow the template as is
+CASE stageStep OF
+	0:
+		robot.clearCommand();
+		IF robot.Ready THEN
+			stageStep := 10;
+		END_IF
+		
+	10: //move from magazine to table
+		IF NOT magazine.findSlot(materialID := material, atPosition => column) THEN
+			error := TRUE;
+			RETURN;
+		END_IF
+		
+		IF robot.eoatDistance < suctionDistance THEN //robot is grabbing material
+			robot.HoldMaterial := magazine.getSlot(i := column);
+		END_IF
+		
+		IF robot.Done THEN
+			stageStep := COMPLETE;
+			RETURN;
+		END_IF
+		
+		robot.setGroup(group := 1, value := A21.STAGE_BUNK);
+		robot.setGroup(group := 2, value := column);
+		robot.setGroup(group := 3, value := slot);
+
+	COMPLETE: //check here if staging is successful or needs to be repeated
+		robot.clearCommand();
+		
+		IF table.isOccupied(i := slot) THEN
+			table.place(i := slot, materialID := robot.HoldMaterial);
+			stageSingleV2 := TRUE;
+		ELSE
+			stageStep := 0;
+			error := TRUE;
+		END_IF
+		
+		robot.HoldMaterial := '';
 END_CASE]]></ST>
       </Implementation>
     </Method>
@@ -868,22 +979,14 @@ END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[{warning disable C0371}
 {warning disable C0195}
-iSlot := MAX(1, iSlot); //ensures iSlot is at least 1
 
-IF //staging table is full or matches staging template
-	table.isFull() OR iSlot > 10 OR 
-	MEMCMP(
-		table.slots, 
-		template.slots, 
-		SIZEOF(table.slots^) * (1 + UPPER_BOUND(table.slots, 1) - LOWER_BOUND(table.slots, 1)) ) = 0
-THEN
+IF iSlot = 0 THEN
+	iSlot := 1;
+	RETURN;
+ELSIF table.isFull() OR iSlot > 10 THEN //staging table is full or all slots have been iterated through
 	robot.clearCommand();
 	robot.release(sectionID);
 	stagingSequence := TRUE;
-	RETURN;
-	
-ELSIF template.getSlot(i := iSlot) = '' THEN
-	iSlot := iSlot + 1;
 	RETURN;
 END_IF
 
@@ -898,14 +1001,14 @@ END_IF
 
 //follow the template as is
 IF
-	stageSingle(
+	stageSingleV2(
 		robot:= robot, 
 		table:= table, 
 		magazine:= magazine, 
 		stageStep:= stageStep, 
 		slot:= iSlot, 
 		material:= template.getSlot(iSlot), 
-		fail=> error)
+		error=> error)
 THEN
 	iSlot := iSlot + 1;
 	stageStep := 0;
@@ -962,11 +1065,7 @@ END_VAR
       </Implementation>
     </Method>
     <LineIds Name="WoodBunkEx">
-      <LineId Id="5840" Count="0" />
-      <LineId Id="6195" Count="0" />
-      <LineId Id="5842" Count="8" />
-      <LineId Id="6074" Count="4" />
-      <LineId Id="5851" Count="139" />
+      <LineId Id="6362" Count="156" />
       <LineId Id="4805" Count="0" />
     </LineIds>
     <LineIds Name="WoodBunkEx.callLocalModules">
@@ -1056,10 +1155,30 @@ END_VAR
       <LineId Id="1564" Count="9" />
       <LineId Id="1575" Count="59" />
       <LineId Id="1692" Count="3" />
-      <LineId Id="1635" Count="11" />
+      <LineId Id="1635" Count="4" />
+      <LineId Id="1641" Count="5" />
       <LineId Id="1648" Count="1" />
       <LineId Id="1651" Count="5" />
-      <LineId Id="1658" Count="33" />
+      <LineId Id="1658" Count="8" />
+      <LineId Id="1762" Count="0" />
+      <LineId Id="1751" Count="1" />
+      <LineId Id="1747" Count="2" />
+      <LineId Id="1768" Count="1" />
+      <LineId Id="1777" Count="0" />
+      <LineId Id="1767" Count="0" />
+      <LineId Id="1770" Count="0" />
+      <LineId Id="1753" Count="1" />
+      <LineId Id="1758" Count="0" />
+      <LineId Id="1761" Count="0" />
+      <LineId Id="1750" Count="0" />
+      <LineId Id="1690" Count="0" />
+      <LineId Id="1771" Count="0" />
+      <LineId Id="1773" Count="2" />
+      <LineId Id="1772" Count="0" />
+      <LineId Id="1717" Count="1" />
+      <LineId Id="1722" Count="22" />
+      <LineId Id="1721" Count="0" />
+      <LineId Id="1719" Count="0" />
       <LineId Id="5" Count="0" />
     </LineIds>
     <LineIds Name="WoodBunkEx.splitCombinedMaterials">
@@ -1073,6 +1192,8 @@ END_VAR
     </LineIds>
     <LineIds Name="WoodBunkEx.stage">
       <LineId Id="903" Count="0" />
+      <LineId Id="971" Count="2" />
+      <LineId Id="970" Count="0" />
       <LineId Id="966" Count="0" />
       <LineId Id="921" Count="7" />
       <LineId Id="930" Count="17" />
@@ -1080,13 +1201,32 @@ END_VAR
       <LineId Id="657" Count="0" />
     </LineIds>
     <LineIds Name="WoodBunkEx.stageSingle">
-      <LineId Id="604" Count="69" />
+      <LineId Id="604" Count="63" />
+      <LineId Id="697" Count="0" />
+      <LineId Id="668" Count="2" />
+      <LineId Id="698" Count="0" />
+      <LineId Id="671" Count="2" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="WoodBunkEx.stageSingleV2">
+      <LineId Id="752" Count="44" />
+      <LineId Id="798" Count="2" />
+      <LineId Id="803" Count="0" />
+      <LineId Id="801" Count="0" />
+      <LineId Id="804" Count="0" />
+      <LineId Id="802" Count="0" />
       <LineId Id="5" Count="0" />
     </LineIds>
     <LineIds Name="WoodBunkEx.stagingSequence">
-      <LineId Id="799" Count="4" />
-      <LineId Id="843" Count="3" />
-      <LineId Id="808" Count="33" />
+      <LineId Id="799" Count="1" />
+      <LineId Id="879" Count="0" />
+      <LineId Id="802" Count="0" />
+      <LineId Id="877" Count="1" />
+      <LineId Id="803" Count="0" />
+      <LineId Id="810" Count="3" />
+      <LineId Id="819" Count="0" />
+      <LineId Id="876" Count="0" />
+      <LineId Id="820" Count="21" />
       <LineId Id="721" Count="0" />
     </LineIds>
     <LineIds Name="WoodBunkEx.stopSequence">

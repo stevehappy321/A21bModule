@@ -110,25 +110,23 @@ END_IF
 isOccupied := occupied[i];]]></ST>
       </Implementation>
     </Method>
-    <Method Name="setSlots" Id="{2ad8ecf9-54a8-4b91-9a89-b2557ee7cf42}">
-      <Declaration><![CDATA[METHOD setSlots : BOOL
-VAR_IN_OUT
-	newSlots : ARRAY[*] OF STRING;
+    <Method Name="setSlot" Id="{b2a4e65d-50f3-4f46-a49d-166b867372cc}">
+      <Declaration><![CDATA[METHOD setSlot : BOOL
+VAR_INPUT
+	i : INT;
+	material : STRING;
 END_VAR
-VAR
-	i : DINT;
-	j : DINT;
+VAR_OUTPUT
+	error : BOOL;
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[{warning disable C0195}
-setSlots := MEMCPY(
-	slots, 
-	newSlots, 
-	SIZEOF(STRING) * MIN(
-		(1 + UPPER_BOUND(newSlots, 1) - LOWER_BOUND(newSlots, 1)),
-		(1 + UPPER_BOUND(slots, 1) - LOWER_BOUND(slots, 1))
-	)) > 0;
-	
+        <ST><![CDATA[IF i < LOWER_BOUND(slots, 1) OR i > UPPER_BOUND(slots, 1) THEN
+	error := TRUE;
+	RETURN;
+END_IF
+
+slots[i] := material;
+
 IF hmiTable <> 0 THEN
 	writeHmiTable();
 END_IF]]></ST>
@@ -193,11 +191,15 @@ END_FOR]]></ST>
       <LineId Id="21" Count="5" />
       <LineId Id="13" Count="0" />
     </LineIds>
-    <LineIds Name="MaterialHolder.setSlots">
-      <LineId Id="50" Count="0" />
-      <LineId Id="37" Count="5" />
-      <LineId Id="27" Count="0" />
-      <LineId Id="58" Count="3" />
+    <LineIds Name="MaterialHolder.setSlot">
+      <LineId Id="5" Count="0" />
+      <LineId Id="10" Count="0" />
+      <LineId Id="12" Count="0" />
+      <LineId Id="11" Count="0" />
+      <LineId Id="18" Count="0" />
+      <LineId Id="17" Count="0" />
+      <LineId Id="14" Count="2" />
+      <LineId Id="13" Count="0" />
     </LineIds>
     <LineIds Name="MaterialHolder.writeArrays">
       <LineId Id="6" Count="2" />
