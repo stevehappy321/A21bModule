@@ -1,0 +1,149 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="AOI_LoadChipboard" Id="{f63fecb8-bbb6-4aba-8181-107c6ca801d0}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK AOI_LoadChipboard
+VAR_IN_OUT CONSTANT
+	sectionID : SectionEnum;
+END_VAR
+VAR_INPUT
+	execute : BOOL;
+END_VAR
+VAR_IN_OUT
+	robot : RobotA21;
+	storage : SkidMagazine;
+	loadedMaterials : ARRAY[*] OF STRING;
+END_VAR
+VAR_INPUT
+	surfaceID : Surface;
+	material : STRING;
+END_VAR
+VAR_OUTPUT
+	busy : BOOL;
+	done : BOOL;
+	error : BOOL;
+	
+	recoveryMode : BOOL;
+	failCounter : INT;
+END_VAR
+VAR
+	run : BOOL;
+	trigger : R_TRIG;
+	
+	step : (IDLE, PREP_ROBOT, RETRACT_CONVEYORS, GET_FROM_SKID, LOAD_TO_BUNDLE, COMPLETE);
+	column : INT;
+END_VAR
+VAR CONSTANT
+	suctionDistance : INT := 10;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[{warning disable C0371}
+IF material = '' THEN
+	done := TRUE;
+	RETURN;
+END_IF
+
+IF robot.error THEN
+	error := TRUE;
+	RETURN;
+ELSIF robot.reservation <> sectionID (*AND_THEN NOT robot.reserve(sectionID)*) THEN
+	RETURN;
+ELSIF robot.tool <> sectionID (*AND_THEN NOT robot.changeEOAT(targetTool := sectionID)*) THEN
+	RETURN;
+END_IF
+
+trigger(CLK:= execute, Q=> run);
+
+CASE step OF
+	IDLE:
+		recoveryMode := FALSE;
+		IF run THEN
+			done := FALSE;
+			error := FALSE;
+			step := PREP_ROBOT;
+		END_IF
+	
+	PREP_ROBOT:
+		robot.clearCommand();
+		IF run AND robot.Ready THEN
+			step := RETRACT_CONVEYORS;
+		END_IF
+	
+	RETRACT_CONVEYORS:
+		IF surfaceID = Surface.BOTTOM (*AND_THEN conveyors not retracted*) THEN
+			//retract conveyors
+			RETURN;
+		END_IF
+		step := GET_FROM_SKID;
+		
+	GET_FROM_SKID: //grab from chipboard skid
+		IF NOT storage.findSlot(materialID := material, index => column) THEN
+			error := TRUE;
+			RETURN;
+		(*
+		ELSIF surfaceID = Surface.BOTTOM (*AND_THEN (*conveyor not lowered*)*) THEN
+			//lower conveyor
+			RETURN;
+		*)
+		END_IF
+		
+		IF robot.eoatDistance < suctionDistance THEN
+			robot.HoldMaterial := storage.getSlot(i := column);
+		END_IF
+		
+		IF robot.Done THEN
+			step := COMPLETE;
+			RETURN;
+		ELSIF robot.materialAtHoldingPosition.4 OR robot.materialAtHoldingPosition.5 THEN //bits 4 and 5 are chipboard in position
+			step := LOAD_TO_BUNDLE;
+			RETURN;
+		END_IF
+		
+		robot.setGroup(group := 1, value := A21.PLACE_CHIPBOARD_TOP);
+		robot.setGroup(group := 2, value := column);
+		
+	LOAD_TO_BUNDLE: //place to bundle
+		IF robot.Done THEN
+			step := COMPLETE;
+			RETURN;
+		END_IF
+		
+		IF robot.HoldMaterial <> '' THEN
+			loadedMaterials[surfaceID] := robot.HoldMaterial;
+			robot.HoldMaterial := '';
+		END_IF
+		
+	COMPLETE:
+		IF loadedMaterials[surfaceID] = material THEN
+			done := TRUE;
+			failCounter := 0;
+		ELSE
+			error := TRUE;
+			failCounter := failCounter + 1;
+		END_IF
+		step := 0;
+END_CASE
+
+busy := run OR step > 0;]]></ST>
+    </Implementation>
+    <LineIds Name="AOI_LoadChipboard">
+      <LineId Id="28" Count="4" />
+      <LineId Id="117" Count="7" />
+      <LineId Id="116" Count="0" />
+      <LineId Id="111" Count="1" />
+      <LineId Id="33" Count="1" />
+      <LineId Id="134" Count="0" />
+      <LineId Id="139" Count="4" />
+      <LineId Id="138" Count="0" />
+      <LineId Id="136" Count="0" />
+      <LineId Id="35" Count="52" />
+      <LineId Id="106" Count="0" />
+      <LineId Id="88" Count="0" />
+      <LineId Id="103" Count="0" />
+      <LineId Id="105" Count="0" />
+      <LineId Id="90" Count="1" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="145" Count="0" />
+      <LineId Id="144" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

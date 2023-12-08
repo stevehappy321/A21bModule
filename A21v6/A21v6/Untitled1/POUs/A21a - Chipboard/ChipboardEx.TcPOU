@@ -1,0 +1,396 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="ChipboardEx" Id="{4fb9c3b0-6386-4034-a58f-58f8ce2d611a}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ChipboardEx
+VAR_IN_OUT //controls
+	execute : BOOL;
+	stop : BOOL;
+	
+	manualStep : BOOL;
+END_VAR
+VAR_IN_OUT //references to required hardware
+	robotLeft, robotRight : RobotA21;
+	toolStorageLeft, toolStorageRight : A21ToolStorage;
+	
+	skidLeft, skidRight : SkidMagazine;
+END_VAR
+VAR_OUTPUT
+	//ready : BOOL;
+	done : BOOL;
+	generalError : BOOL;
+	failLeft, failRight : BOOL;
+END_VAR
+VAR //for testing, to be removed when replaced with pressure sensors
+	latchLeft, latchRight : BOOL;
+	
+	demoHeight : REAL := 600; //mm
+END_VAR
+VAR
+	loadLeft, loadRight : AOI_LoadChipboard;
+
+	step : (IDLE, RETRACT_CONVEYOR, LOAD_CIP, EXTEND_CONVEYOR, COMPLETE := 1050);
+	iPair : INT;
+	
+	loadSet : INT;
+END_VAR
+VAR //local types
+	materialsArr : ARRAY[0..GVL.maxPairs] OF PositionMaterials := [
+		(position := 0, top := 'CIP54', bottom := 'CIP18')
+	];
+		
+	loadedMaterials : ARRAY[Surface.TOP..Surface.BOTTOM] OF STRING;
+END_VAR
+VAR CONSTANT
+	sectionID : SectionEnum := SectionEnum.CHIPBOARD;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[{warning disable C0371}
+callLocalModules();
+
+IF stop THEN //may need to turn off suction	
+	robotLeft.clearCommand();
+	robotRight.clearCommand();
+	RETURN;
+END_IF
+
+IF FALSE (*conveyors not extended*) THEN
+	RETURN;
+END_IF
+
+CASE step OF
+	IDLE:
+		IF execute THEN
+			execute := FALSE;
+			step := RETRACT_CONVEYOR;
+		END_IF
+		
+	RETRACT_CONVEYOR:
+		(*
+		IF demoPair.bottom <> '' (*retract conveyors*) THEN
+			IF TRUE (*BLSC 1-3 retracted*) THEN
+				done := TRUE;
+			END_IF
+		ELSE
+			done := TRUE;
+		END_IF
+		
+		IF
+			(manualStep AND_THEN execute) OR
+			(NOT manualStep AND_THEN done)
+		THEN
+			done := FALSE;
+			step := LOAD_MATERIAL;
+		END_IF
+		*)
+		step := LOAD_CIP;
+	LOAD_CIP:
+		IF NOT done THEN
+			done := load(pairIndex:= iPair, error=> generalError);
+		END_IF
+		
+		IF
+			(manualStep AND_THEN execute) OR
+			(NOT manualStep AND_THEN done)
+		THEN
+			done := FALSE;
+			execute := FALSE;
+			
+			step := EXTEND_CONVEYOR;
+		END_IF
+		
+	EXTEND_CONVEYOR:
+		(*
+		IF FALSE (*conveyors not extended*) THEN
+			//extend conveyors
+		END_IF
+		
+		IF
+			(manualStep AND_THEN execute) OR
+			(FALSE) //conveyors extended
+		THEN
+			done := FALSE;
+			step := COMPLETE;
+		END_IF
+		*)
+		step := COMPLETE;
+	COMPLETE:
+		//reset everything
+		step := IDLE;
+		
+END_CASE]]></ST>
+    </Implementation>
+    <Action Name="blocks" Id="{65e32b38-4b01-4085-85bd-8759d42f2769}">
+      <Implementation>
+        <ST><![CDATA[loadRight(
+	sectionID:= sectionID, 
+	execute:= ,
+	robot:= robotRight, 
+	storage:= skidRight,
+	loadedMaterials:= loadedMaterials,
+	surfaceID:= , 
+	material:= , 
+	loadedMaterials=> , 
+	done=> , 
+	error=> );
+	
+loadRight(
+	sectionID:= sectionID, 
+	execute:= , 
+	robot:= robotRight, 
+	storage:= skidRight,
+	loadedMaterials:= loadedMaterials, 
+	surfaceID:= , 
+	material:= , 
+	busy=> , 
+	done=> , 
+	error=> , 
+	recoveryMode=> , 
+	failCounter=> );]]></ST>
+      </Implementation>
+    </Action>
+    <Method Name="callLocalModules" Id="{bea4cf3f-a5a1-4b36-af59-25abcfb940a0}">
+      <Declaration><![CDATA[METHOD PRIVATE callLocalModules : BOOL]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="load" Id="{fb843105-64e1-44e7-8bcd-619ab2de166a}">
+      <Declaration><![CDATA[METHOD PRIVATE load : BOOL
+VAR_INPUT
+	pairIndex : INT;
+END_VAR
+VAR_OUTPUT
+	error : BOOL;
+END_VAR
+VAR
+	pair : REFERENCE TO PositionMaterials REF= materialsArr[pairIndex];
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[{warning disable C0371}
+IF robotLeft.error AND robotLeft.error THEN
+	error := TRUE;
+	RETURN;
+
+ELSIF
+	( robotLeft.reservation <> sectionID AND_THEN robotLeft.reserve(sectionID) ) OR
+	( robotRight.reservation <> sectionID AND_THEN robotRight.reserve(sectionID) ) THEN
+	RETURN;
+	
+ELSIF //wrong tool and not finished changing tool
+	(robotLeft.tool <> sectionID AND_THEN NOT robotLeft.changeEOAT(targetTool := sectionID)) OR
+	(robotRight.tool <> sectionID AND_THEN NOT robotRight.changeEOAT(targetTool := sectionID))
+THEN
+	RETURN;
+END_IF
+//robots ok
+
+CASE loadSet OF
+	0: //left robot -> top, right robot -> bottom
+		IF loadLeft.done AND loadRight.done THEN
+			loadLeft.execute := loadRight.execute := FALSE;
+			loadSet := 10;
+			RETURN;
+		END_IF
+		
+		loadLeft.surfaceID := Surface.TOP;
+		loadLeft.material := pair.left;
+		
+		loadRight.surfaceID := Surface.BOTTOM;
+		loadRight.material := pair.right;
+		
+		loadLeft.execute := NOT loadLeft.recoveryMode;
+		loadRight.execute := NOT loadRight.recoveryMode;
+		
+	10: //recovery		
+		IF robotRight.error THEN //left ok, right error
+			
+			IF loadLeft.done THEN
+				loadLeft.execute := FALSE;
+				loadSet := COMPLETE;
+				RETURN;
+			END_IF
+			
+			loadLeft.surfaceID := Surface.BOTTOM;
+			loadLeft.material := pair.bottom;
+			loadLeft.execute := NOT loadLeft.recoveryMode;
+			
+		ELSIF robotLeft.error THEN //left error, right ok
+			
+			IF loadRight.done THEN
+				loadRight.execute := FALSE;
+				loadSet := COMPLETE;
+				RETURN;
+			END_IF
+			
+			loadRight.surfaceID := Surface.TOP;
+			loadRight.material := pair.top;
+			loadRight.execute := NOT loadRight.recoveryMode;
+			
+		END_IF
+		
+	COMPLETE:
+		loadSet := 0;
+		
+		robotLeft.release(sectionID);
+		robotRight.release(sectionID);
+		
+		load := TRUE;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="loadingSequence" Id="{96d77f50-a148-46c4-8ea5-43c584f562c9}">
+      <Declaration><![CDATA[METHOD PRIVATE loadingSequence : BOOL
+VAR_IN_OUT
+	robot : RobotA21;
+	storage : SkidMagazine;
+	loadStep : INT;
+END_VAR
+VAR_INPUT
+	surfaceID : Surface;
+	material : STRING;
+END_VAR
+VAR_OUTPUT
+	fail : BOOL;
+END_VAR
+VAR
+	slot : INT;
+END_VAR
+VAR CONSTANT
+	suctionDistance : INT := 10;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[{warning disable C0371}
+IF material = '' THEN
+	loadingSequence := TRUE;
+	RETURN;
+END_IF
+
+CASE loadStep OF
+	0:
+		robot.clearCommand();
+		IF robot.Ready THEN
+			loadStep := 1;
+		END_IF
+	
+	1:
+		IF surfaceID = Surface.BOTTOM (*AND_THEN conveyors not retracted*) THEN
+			//retract conveyors
+			RETURN;
+		END_IF
+		loadStep := 10;
+		
+	10: //grab from chipboard skid
+		IF NOT storage.findSlot(materialID := material, index => slot) THEN
+			fail := TRUE;
+			RETURN;
+		(*
+		ELSIF surfaceID = Surface.BOTTOM (*AND_THEN (*conveyor not lowered*)*) THEN
+			//lower conveyor
+			RETURN;
+		*)
+		END_IF
+		
+		IF robot.eoatDistance < suctionDistance THEN
+			robot.HoldMaterial := storage.getSlot(i := slot);
+		END_IF
+		
+		IF robot.Done THEN
+			loadStep := COMPLETE;
+			RETURN;
+		ELSIF robot.materialAtHoldingPosition.4 OR robot.materialAtHoldingPosition.5 THEN //bits 4 and 5 are chipboard in position
+			loadStep := 20;
+			RETURN;
+		END_IF
+		
+		robot.setGroup(group := 1, value := A21.PLACE_CHIPBOARD_TOP);
+		robot.setGroup(group := 2, value := slot);
+		
+	20: //place to bundle
+		IF robotLeft.Done THEN
+			loadStep := COMPLETE;
+			RETURN;
+		END_IF
+		
+		IF robot.HoldMaterial <> '' THEN
+			loadedMaterials[surfaceID] := robot.HoldMaterial;
+			robot.HoldMaterial := '';
+		END_IF
+		
+	COMPLETE:
+		IF loadedMaterials[surfaceID] = material THEN
+			loadingSequence := TRUE;
+		ELSE
+			loadStep := 0;
+		END_IF
+		
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="ChipboardEx">
+      <LineId Id="4957" Count="0" />
+      <LineId Id="4887" Count="0" />
+      <LineId Id="4890" Count="18" />
+      <LineId Id="5006" Count="0" />
+      <LineId Id="4909" Count="15" />
+      <LineId Id="5009" Count="0" />
+      <LineId Id="4925" Count="15" />
+      <LineId Id="5007" Count="0" />
+      <LineId Id="4941" Count="11" />
+      <LineId Id="5008" Count="0" />
+      <LineId Id="4953" Count="3" />
+      <LineId Id="4806" Count="0" />
+    </LineIds>
+    <LineIds Name="ChipboardEx.blocks">
+      <LineId Id="17" Count="3" />
+      <LineId Id="81" Count="0" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="26" Count="3" />
+      <LineId Id="1" Count="0" />
+      <LineId Id="82" Count="0" />
+      <LineId Id="110" Count="3" />
+      <LineId Id="122" Count="0" />
+      <LineId Id="115" Count="6" />
+      <LineId Id="83" Count="0" />
+    </LineIds>
+    <LineIds Name="ChipboardEx.callLocalModules">
+      <LineId Id="17" Count="0" />
+    </LineIds>
+    <LineIds Name="ChipboardEx.load">
+      <LineId Id="415" Count="3" />
+      <LineId Id="554" Count="0" />
+      <LineId Id="421" Count="0" />
+      <LineId Id="530" Count="0" />
+      <LineId Id="529" Count="0" />
+      <LineId Id="422" Count="10" />
+      <LineId Id="509" Count="1" />
+      <LineId Id="514" Count="2" />
+      <LineId Id="508" Count="0" />
+      <LineId Id="517" Count="0" />
+      <LineId Id="521" Count="2" />
+      <LineId Id="525" Count="3" />
+      <LineId Id="519" Count="0" />
+      <LineId Id="534" Count="0" />
+      <LineId Id="447" Count="1" />
+      <LineId Id="544" Count="0" />
+      <LineId Id="540" Count="3" />
+      <LineId Id="539" Count="0" />
+      <LineId Id="535" Count="0" />
+      <LineId Id="537" Count="1" />
+      <LineId Id="536" Count="0" />
+      <LineId Id="460" Count="1" />
+      <LineId Id="553" Count="0" />
+      <LineId Id="549" Count="3" />
+      <LineId Id="472" Count="0" />
+      <LineId Id="545" Count="0" />
+      <LineId Id="547" Count="1" />
+      <LineId Id="546" Count="0" />
+      <LineId Id="473" Count="4" />
+      <LineId Id="479" Count="4" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="ChipboardEx.loadingSequence">
+      <LineId Id="279" Count="63" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
