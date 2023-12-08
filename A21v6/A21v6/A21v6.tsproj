@@ -48,11 +48,21 @@
 		</System>
 		<Plc>
 			<Project GUID="{D232006A-254D-4F35-9BFE-5131CC19FE71}" Name="Untitled1" PrjFilePath="Untitled1\Untitled1.plcproj" TmcFilePath="Untitled1\Untitled1.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{F85AF208-C6C2-FE2D-5320-90D018E1F0AE}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{F1FEA0BA-6B3A-5C1A-F590-86648F103D0C}">
 					<Name>Untitled1 Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
 						<Name>PlcTask Inputs</Name>
+						<Var>
+							<Name>MAIN.moduleWB.insertionLeft.contact</Name>
+							<Comment><![CDATA[may be removed from this FB and put into a 3rd GVL for floating sensors]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.moduleWB.insertionRight.contact</Name>
+							<Comment><![CDATA[may be removed from this FB and put into a 3rd GVL for floating sensors]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
 						<Var>
 							<Name>Hardware.toolStorageA21Left.pos1ChipboardEOAT</Name>
 							<Type>BOOL</Type>
@@ -280,16 +290,6 @@
 							<Name>Hardware.suctionA21Right[4].occupied</Name>
 							<Type>BOOL</Type>
 						</Var>
-						<Var>
-							<Name>MAIN.moduleWB.insertionLeft.contact</Name>
-							<Comment><![CDATA[may be removed from this FB and put into a 3rd GVL for floating sensors]]></Comment>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.moduleWB.insertionRight.contact</Name>
-							<Comment><![CDATA[may be removed from this FB and put into a 3rd GVL for floating sensors]]></Comment>
-							<Type>BOOL</Type>
-						</Var>
 					</Vars>
 					<Vars VarGrpType="2" AreaNo="1">
 						<Name>PlcTask Outputs</Name>
@@ -354,6 +354,10 @@
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
+							<Name>Hardware.verticalDriveA21Left.brakeRelease</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
 							<Name>Hardware.verticalDriveA21Left.pulse</Name>
 							<Comment><![CDATA[num pulses]]></Comment>
 							<Type>INT</Type>
@@ -361,10 +365,6 @@
 						<Var>
 							<Name>Hardware.verticalDriveA21Left.outputRegister</Name>
 							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA21Left.brakeRelease</Name>
-							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>Hardware.verticalDriveA21Right.pulse</Name>
