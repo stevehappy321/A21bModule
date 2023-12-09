@@ -1,5 +1,6 @@
 TwinCAT 3 XAE is strongly recommended for accessing source code
 
-PLC programs are naturally looped, no infinite WHILE loop required
+Full repository can be downloaded from Github, folders can be downloaded with https://minhaskamal.github.io/DownGit/#/home
 
-Repository can be downloaded form Github or https://minhaskamal.github.io/DownGit/#/home
+When downloading modules, check for versions (v<N>)
+  the highest-value version is the running/to-be-run code, other versions remain as backup
