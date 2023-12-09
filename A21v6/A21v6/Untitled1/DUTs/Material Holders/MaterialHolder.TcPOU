@@ -12,8 +12,23 @@ VAR
 	numSlots : INT;
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[IF hmiTable <> 0 THEN //if has HMI table, write slots and occupancy data into it
-	writeHmiTable();
+      <ST><![CDATA[(*
+by default:
+	hmiTable contains the slot names, occupied[] contains the occupancy data
+	slots[] cyclically copies data from hmiTable
+	hmiTable cyclically copies data from occupied[]
+
+if hmiTable is NULL (not passed in), then slots and occupied will store the true data
+	
+the program will access data using slots/occupied via methods
+when the data is changed, data is copied from slots/occupied to hmiTable
+
+this ensures that the methods update the HMI, and the HMI updates the data
+*)
+
+
+IF hmiTable <> 0 AND_THEN (slots <> 0  AND occupied <> 0) THEN
+	refreshHmiTable();
 END_IF
 
 numSlots := TO_INT(UPPER_BOUND(slots, 1) - LOWER_BOUND(slots, 1) + 1);]]></ST>
@@ -25,7 +40,11 @@ VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[MEMSET(ADR(slots), 0, SIZEOF(slots));]]></ST>
+        <ST><![CDATA[MEMSET(ADR(slots), 0, SIZEOF(slots));
+
+IF hmiTable <> 0 THEN
+	writeHmiTable();
+END_IF]]></ST>
       </Implementation>
     </Method>
     <Method Name="findSlot" Id="{584be88a-e8b0-4046-8e86-717c358b8f08}">
@@ -96,6 +115,19 @@ END_IF
 isOccupied := occupied[i];]]></ST>
       </Implementation>
     </Method>
+    <Method Name="refreshHmiTable" Id="{47a51baa-06ef-4a8f-9fbe-3e2fa1604dff}" FolderPath="Write Arrays\">
+      <Declaration><![CDATA[METHOD PROTECTED refreshHmiTable : BOOL
+VAR
+	i : DINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FOR i:=LOWER_BOUND(hmiTable, 1) TO UPPER_BOUND(hmiTable, 1) BY 1 DO
+	slots[i] := hmiTable[i].material; //slots[] copies from hmiTable
+	hmiTable[i].occupied := occupied[i]; //hmiTable copies from occupied[]
+END_FOR]]></ST>
+      </Implementation>
+    </Method>
     <Method Name="setSlots" Id="{2ad8ecf9-54a8-4b91-9a89-b2557ee7cf42}">
       <Declaration><![CDATA[METHOD setSlots : BOOL
 VAR_IN_OUT
@@ -113,43 +145,49 @@ MEMCPY(
 	SIZEOF(STRING) * MIN(
 		(1 + UPPER_BOUND(newSlots, 1) - LOWER_BOUND(newSlots, 1)),
 		(1 + UPPER_BOUND(slots, 1) - LOWER_BOUND(slots, 1))
-	));]]></ST>
+	));
+	
+IF hmiTable <> 0 THEN
+	writeHmiTable();
+END_IF]]></ST>
       </Implementation>
     </Method>
-    <Method Name="writeHmiTable" Id="{bcbf9adc-784b-415e-8239-b070ef71ceb0}" FolderPath="Write Arrays\">
-      <Declaration><![CDATA[METHOD PRIVATE writeHmiTable : BOOL
+    <Method Name="writeArrays" Id="{f1391623-2367-48f0-8486-56e290217047}" FolderPath="Write Arrays\">
+      <Declaration><![CDATA[METHOD PROTECTED writeArrays : BOOL
 VAR
 	i : DINT;
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[FOR i:=LOWER_BOUND(hmiTable, 1) TO UPPER_BOUND(hmiTable, 1) BY 1 DO
-	hmiTable[i].material REF= slots[i];
-	hmiTable[i].occupied REF= occupied[i];
+	slots[i] := hmiTable[i].material;
+	//occupied[i] := hmiTable[i].occupied;
 END_FOR]]></ST>
       </Implementation>
     </Method>
-    <Method Name="writeSlotsOccupancy" Id="{f1391623-2367-48f0-8486-56e290217047}" FolderPath="Write Arrays\">
-      <Declaration><![CDATA[METHOD PRIVATE writeSlotsOccupancy : BOOL
+    <Method Name="writeHmiTable" Id="{bcbf9adc-784b-415e-8239-b070ef71ceb0}" FolderPath="Write Arrays\">
+      <Declaration><![CDATA[METHOD PROTECTED writeHmiTable : BOOL
 VAR
 	i : DINT;
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[FOR i:=LOWER_BOUND(hmiTable, 1) TO UPPER_BOUND(hmiTable, 1) BY 1 DO
-	//hmiTable[i].material := slots[i];
-	//hmiTable[i].occupied := occupied[i];
-	
-	slots[i] := hmiTable[i].material;
-	occupied[i] := hmiTable[i].occupied;
+	hmiTable[i].material := slots[i];
+	hmiTable[i].occupied := occupied[i];
 END_FOR]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="MaterialHolder">
-      <LineId Id="63" Count="0" />
-      <LineId Id="72" Count="0" />
+      <LineId Id="82" Count="1" />
+      <LineId Id="104" Count="0" />
+      <LineId Id="85" Count="0" />
+      <LineId Id="105" Count="0" />
+      <LineId Id="86" Count="11" />
       <LineId Id="68" Count="2" />
     </LineIds>
     <LineIds Name="MaterialHolder.clear">
       <LineId Id="5" Count="0" />
+      <LineId Id="10" Count="2" />
+      <LineId Id="9" Count="0" />
     </LineIds>
     <LineIds Name="MaterialHolder.findSlot">
       <LineId Id="180" Count="10" />
@@ -166,22 +204,28 @@ END_FOR]]></ST>
       <LineId Id="21" Count="5" />
       <LineId Id="13" Count="0" />
     </LineIds>
+    <LineIds Name="MaterialHolder.refreshHmiTable">
+      <LineId Id="10" Count="2" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
     <LineIds Name="MaterialHolder.setSlots">
       <LineId Id="50" Count="0" />
       <LineId Id="37" Count="5" />
       <LineId Id="27" Count="0" />
+      <LineId Id="58" Count="0" />
+      <LineId Id="64" Count="1" />
+      <LineId Id="63" Count="0" />
+    </LineIds>
+    <LineIds Name="MaterialHolder.writeArrays">
+      <LineId Id="5" Count="0" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="16" Count="0" />
+      <LineId Id="9" Count="0" />
     </LineIds>
     <LineIds Name="MaterialHolder.writeHmiTable">
       <LineId Id="5" Count="0" />
       <LineId Id="8" Count="0" />
       <LineId Id="10" Count="0" />
-      <LineId Id="9" Count="0" />
-    </LineIds>
-    <LineIds Name="MaterialHolder.writeSlotsOccupancy">
-      <LineId Id="5" Count="0" />
-      <LineId Id="8" Count="0" />
-      <LineId Id="10" Count="0" />
-      <LineId Id="14" Count="2" />
       <LineId Id="9" Count="0" />
     </LineIds>
   </POU>

@@ -22,7 +22,7 @@ VAR_OUTPUT
 	done : BOOL;
 	error : BOOL;
 	
-	recoveryMode : BOOL;
+	recovery : BOOL;
 	failCounter : INT;
 END_VAR
 VAR
@@ -40,35 +40,20 @@ END_VAR
       <ST><![CDATA[{warning disable C0371}
 {warning disable C0195}
 
-IF slot < 1 THEN //out of bounds for staging table
-	error := TRUE;
-	RETURN;
-ELSIF table.isFull() OR slot > 10 OR material = '' THEN
-	robot.clearCommand();
-	done := TRUE;
-	RETURN;
-END_IF
-
-IF robot.error THEN
-	error := TRUE;
-	RETURN;
-ELSIF robot.reservation <> sectionID THEN
-	RETURN;
-ELSIF robot.tool <> sectionID THEN
-	RETURN;
-END_IF
-
-error := FALSE;
-
 //--------------------------------------------------
 
-trigger(CLK:= execute, Q=> run);
+trigger(CLK:= execute, Q=> );
+busy := trigger.Q OR step > 0;
+
+IF step > IDLE AND_THEN NOT preExecution() THEN //conditions to track before execution
+	RETURN;
+END_IF
 
 //follow the template as is
 CASE step OF
 	IDLE:
-		recoveryMode := FALSE;
-		IF run THEN
+		recovery := FALSE;
+		IF trigger.Q THEN
 			done := FALSE;
 			error := FALSE;
 			step := PREP_ROBOT;
@@ -76,7 +61,6 @@ CASE step OF
 		
 	PREP_ROBOT:
 		robot.clearCommand();
-		
 		IF robot.Ready THEN
 			step := GET_FROM_MAGAZINE;
 		END_IF
@@ -115,10 +99,36 @@ CASE step OF
 		
 		step := 0;
 		
-END_CASE
-
-busy := run OR step > 0;]]></ST>
+END_CASE]]></ST>
     </Implementation>
+    <Method Name="preExecution" Id="{62a32b18-7886-4309-aa63-dec22eaab308}">
+      <Declaration><![CDATA[METHOD PRIVATE preExecution : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[{warning disable C0371}
+
+IF slot < 1 THEN //out of bounds for staging table
+	error := TRUE;
+	RETURN;
+ELSIF table.isFull() OR slot > 10 OR material = '' OR table.getSlot(i := slot, error => ) = material THEN
+	done := TRUE;
+	RETURN;
+END_IF
+
+IF //robot must be ready before execution
+	robot.error OR 
+	robot.reservation <> sectionID OR 
+	robot.tool <> sectionID
+THEN
+	error := TRUE;
+	RETURN;
+END_IF
+
+preExecution := TRUE;]]></ST>
+      </Implementation>
+    </Method>
     <Method Name="reset" Id="{e16aedcc-d6f2-4922-848c-fad286bf1796}">
       <Declaration><![CDATA[METHOD reset : BOOL
 VAR_INPUT
@@ -134,47 +144,24 @@ failCounter := 0;]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="AOI_StageWoodBunk">
-      <LineId Id="565" Count="1" />
-      <LineId Id="650" Count="3" />
-      <LineId Id="655" Count="0" />
-      <LineId Id="660" Count="2" />
-      <LineId Id="649" Count="0" />
-      <LineId Id="567" Count="0" />
-      <LineId Id="663" Count="6" />
-      <LineId Id="570" Count="0" />
-      <LineId Id="729" Count="0" />
-      <LineId Id="728" Count="0" />
-      <LineId Id="687" Count="0" />
-      <LineId Id="686" Count="0" />
-      <LineId Id="684" Count="0" />
-      <LineId Id="683" Count="0" />
-      <LineId Id="571" Count="2" />
-      <LineId Id="767" Count="5" />
-      <LineId Id="766" Count="0" />
-      <LineId Id="773" Count="0" />
-      <LineId Id="574" Count="0" />
-      <LineId Id="630" Count="0" />
-      <LineId Id="685" Count="0" />
-      <LineId Id="631" Count="1" />
-      <LineId Id="628" Count="1" />
-      <LineId Id="580" Count="3" />
-      <LineId Id="727" Count="0" />
-      <LineId Id="585" Count="7" />
-      <LineId Id="596" Count="4" />
-      <LineId Id="616" Count="1" />
-      <LineId Id="619" Count="0" />
-      <LineId Id="813" Count="0" />
-      <LineId Id="620" Count="0" />
-      <LineId Id="679" Count="1" />
-      <LineId Id="730" Count="1" />
-      <LineId Id="621" Count="2" />
-      <LineId Id="625" Count="0" />
-      <LineId Id="647" Count="0" />
-      <LineId Id="639" Count="0" />
-      <LineId Id="626" Count="0" />
-      <LineId Id="298" Count="0" />
-      <LineId Id="778" Count="0" />
-      <LineId Id="777" Count="0" />
+      <LineId Id="882" Count="1" />
+      <LineId Id="904" Count="3" />
+      <LineId Id="996" Count="0" />
+      <LineId Id="998" Count="2" />
+      <LineId Id="997" Count="0" />
+      <LineId Id="908" Count="3" />
+      <LineId Id="1001" Count="4" />
+      <LineId Id="917" Count="3" />
+      <LineId Id="922" Count="38" />
+    </LineIds>
+    <LineIds Name="AOI_StageWoodBunk.preExecution">
+      <LineId Id="18" Count="0" />
+      <LineId Id="22" Count="6" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="10" Count="7" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="19" Count="0" />
     </LineIds>
     <LineIds Name="AOI_StageWoodBunk.reset">
       <LineId Id="5" Count="0" />

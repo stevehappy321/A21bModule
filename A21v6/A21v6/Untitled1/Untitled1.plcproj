@@ -130,6 +130,9 @@
     <Compile Include="POUs\A21a - Chipboard\AOIs\AOI_LoadChipboard.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\A21b - Wood Bunk\AOIs\AOI_LoadWoodBunk.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="POUs\FB_System.TcPOU">
       <SubType>Code</SubType>
     </Compile>
@@ -152,9 +155,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\A21a - Chipboard\ChipboardEx.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\A21b - Wood Bunk\AOIs\AOI_LoadWoodBunk.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\A21b - Wood Bunk\AOIs\AOI_StageWoodBunk.TcPOU">

@@ -36,13 +36,7 @@ VAR //for testing, to be removed when deployoed
 	latchLeft, latchRight : BOOL; //prevents SMC sliders from overshooting
 	suctionEnableTop, suctionEnableLeft, suctionEnableRight, suctionEnableBottom : BOOL;
 END_VAR
-VAR //Allen-Bradley-style AOIs encapsulate functionality and reduce the number of module variables
-	templateLeft, templateRight : AOI_StagingTemplate;
-	stageLeft, stageRight : AOI_StageWoodBunk; 
-	loadLeft, loadRight : AOI_LoadWoodBunk;
-	
-	topSuctionDelay : TON;
-	
+VAR //Allen-Bradley-style AOIs encapsulate functionality and reduce the number of module variables	
 	step : (IDLE, STAGING, LOAD_WB, PUSH, STRAP, RELEASE, COMPLETE := 1050);
 	iPair : INT;
 	
@@ -50,7 +44,7 @@ VAR //Allen-Bradley-style AOIs encapsulate functionality and reduce the number o
 	stageStep : INT;
 	
 	stageStepLeft, stageStepRight : INT;
-	iSlotLeft, iSlotRight : INT;
+	//iSlotLeft, iSlotRight : INT;
 END_VAR
 VAR //local types
 	demoHeight : REAL := 600; //mm
@@ -66,7 +60,14 @@ VAR CONSTANT
 	sectionID : SectionEnum := SectionEnum.WOOD_BUNK;
 END_VAR
 VAR
+	templateLeft, templateRight : AOI_StagingTemplate;
+	stageLeft, stageRight : AOI_StageWoodBunk; 
+	loadLeft, loadRight : AOI_LoadWoodBunk;
+	
+	topSuctionDelay : TON;
+	
 	a,b,c,d : BOOL;
+	x : BOOL;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[callLocalModules(); //initialize local modules
@@ -114,6 +115,12 @@ CASE step OF
 			(manualStep AND_THEN execute) OR
 			(NOT manualStep AND_THEN done)
 		THEN
+			robotLeft.clearCommand();
+			robotRight.clearCommand();
+			
+			stageLeft.reset();
+			stageRight.reset();
+			
 			execute := FALSE;
 			done := FALSE;
 			step := LOAD_WB;
@@ -135,6 +142,9 @@ CASE step OF
 			(manualStep AND_THEN execute) OR
 			(NOT manualStep AND_THEN done)
 		THEN
+			robotLeft.clearCommand();
+			robotRight.clearCommand();
+			
 			done := FALSE;
 			suctionEnableTop := suctionEnableLeft := suctionEnableRight := suctionEnableBottom := FALSE;
 			execute := FALSE;
@@ -262,8 +272,8 @@ stageLeft(
 	robot:= robotLeft, 
 	table:= stagingTableLeft, 
 	magazine:= magazineLeft, 
-	slot:= iSlotLeft, 
-	material:= templateLeft.getSlot(iSlotLeft), 
+	slot:= (*iSlotLeft*), 
+	material:= templateLeft.getSlot(stageLeft.slot), 
 	done=> , 
 	error=> );
 
@@ -273,8 +283,8 @@ stageRight(
 	robot:= robotRight, 
 	table:= stagingTableRight, 
 	magazine:= magazineRight, 
-	slot:= iSlotRight, 
-	material:= templateRight.getSlot(iSlotRight),
+	slot:= (*iSlotRight*), 
+	material:= templateRight.getSlot(stageRight.slot),
 	done=> , 
 	error=> );
 
@@ -283,7 +293,7 @@ loadLeft(
 	execute:= ,
 	robot:= robotLeft, 
 	table:= stagingTableLeft, 
-	suctions:= suctionTop,
+	suctions:= ,
 	loadedMaterials:= loadedMaterials,
 	//recoveryAoiStage:= stageLeft, 
 	//recoveryMagazine:= magazineLeft, 
@@ -298,7 +308,7 @@ loadRight(
 	execute:= ,
 	robot:= robotRight, 
 	table:= stagingTableRight, 
-	suctions:= suctionTop,
+	suctions:= ,
 	loadedMaterials:= loadedMaterials,
 	//recoveryAoiStage:= stageRight, 
 	//recoveryMagazine:= magazineRight, 
@@ -358,12 +368,14 @@ VAR
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[{warning disable C0371}
-
 IF robotLeft.error OR robotRight.error THEN
 	error := TRUE;
 	RETURN;
 	
-ELSIF NOT robotLeft.reserve(sectionID) OR NOT robotRight.reserve(sectionID) THEN //loading requires both robots be reserved together
+ELSIF 
+	(robotLeft.reservation <> sectionID AND_THEN NOT robotLeft.reserve(sectionID)) OR 
+	(robotRight.reservation <> sectionID AND_THEN NOT robotRight.reserve(sectionID))
+THEN //loading requires both robots be reserved together
 	RETURN;
 	
 ELSIF //robots have wrong tool
@@ -377,10 +389,8 @@ END_IF
 CASE loadStep OF
 	0: //top and bottom
 		IF loadLeft.done AND loadRight.done THEN
-			//loadLeft.reset();
-			//loadRight.reset();
-			
 			loadLeft.execute := loadRight.execute := FALSE;
+			loadLeft.material := loadRight.material := '';
 			loadStep := 10;
 			RETURN;
 		END_IF
@@ -393,12 +403,16 @@ CASE loadStep OF
 		loadRight.surfaceID := Surface.BOTTOM;
 		loadRight.material := pair.bottom;
 		
+		loadLeft.execute := NOT loadLeft.done;
+		loadRight.execute := NOT loadLeft.done;
+		
 	10: //sides
-		IF loadLeft.done AND loadRight.done THEN
-			//loadLeft.reset();
-			//loadRight.reset();
-			
+		IF
+			(loadLeft.material = pair.left AND loadLeft.done) AND
+			(loadRight.material = pair.right AND loadRight.done)
+		THEN
 			loadLeft.execute := loadRight.execute := FALSE;
+			loadLeft.material := loadRight.material := '';
 			loadStep := COMPLETE;
 			RETURN;
 		END_IF
@@ -411,47 +425,53 @@ CASE loadStep OF
 		loadRight.surfaceID := Surface.RIGHT;
 		loadRight.material := pair.right;
 		
+		loadLeft.execute := TRUE;
+		loadRight.execute := TRUE;
+		
 	COMPLETE:				
 		robotLeft.release(sectionID);
 		robotRight.release(sectionID);
 		
+		loadLeft.material := loadRight.material := '';
 		loadLeft.execute := loadRight.execute := FALSE;
 		
 		loadStep := 0;
 		load := TRUE;
 END_CASE
 
-IF loadLeft.recoveryMode THEN //if loading in recovery mode - refill table, resume loading when finished
+//--------------------------------------------------
+IF loadLeft.recovery THEN //if loading in recovery mode - refill table, resume loading when finished
 	loadLeft.execute := stageEx(
 		robot:= robotLeft, 
 		aoiTemplate:= templateLeft, 
 		aoiStaging:= stageLeft, 
 		stageStep:= stageStepLeft, 
-		iSlot:= iSlotLeft, 
+		//iSlot:= iSlotLeft, 
 		includeTop:= TRUE, 
 		includeLeft:= TRUE, 
 		includeRight:= FALSE, 
 		includeBottom:= FALSE, 
 		error=> );
 ELSE
-	loadLeft.execute := NOT loadLeft.busy;
+	//loadLeft.execute := NOT loadLeft.busy AND NOT loadLeft.done;
 END_IF
-
-IF loadRight.recoveryMode THEN
+//--------------------------------------------------
+IF loadRight.recovery THEN
 	loadRight.execute := stageEx(
 		robot:= robotRight, 
 		aoiTemplate:= templateRight, 
 		aoiStaging:= stageRight, 
 		stageStep:= stageStepRight, 
-		iSlot:= iSlotRight, 
+		//iSlot:= iSlotRight, 
 		includeTop:= FALSE, 
 		includeLeft:= FALSE, 
 		includeRight:= TRUE, 
 		includeBottom:= TRUE, 
 		error=> );
 ELSE
-	loadRight.execute := NOT loadRight.busy;
+	//loadRight.execute := NOT loadRight.busy AND NOT loadRight.done;
 END_IF
+//--------------------------------------------------
 	
 error := loadLeft.error OR loadRight.error;]]></ST>
       </Implementation>
@@ -463,13 +483,18 @@ VAR_OUTPUT
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[{warning disable C0371}
+
+(*
+this method only exists to call stageEx() for both robots
+*)
+
 stage :=
 	stageEx(
 		robot:= robotLeft, 
 		aoiTemplate:= templateLeft, 
 		aoiStaging:= stageLeft, 
 		stageStep:= stageStepLeft, 
-		iSlot:= iSlotLeft, 
+		//iSlot:= iSlotLeft, 
 		includeTop:= TRUE, 
 		includeLeft:= TRUE, 
 		includeRight:= FALSE, 
@@ -481,7 +506,7 @@ stage :=
 		aoiTemplate:= templateRight, 
 		aoiStaging:= stageRight, 
 		stageStep:= stageStepRight, 
-		iSlot:= iSlotRight, 
+		//iSlot:= iSlotRight, 
 		includeTop:= FALSE, 
 		includeLeft:= FALSE, 
 		includeRight:= TRUE, 
@@ -496,7 +521,7 @@ VAR_IN_OUT
 	aoiTemplate : AOI_StagingTemplate;
 	aoiStaging : AOI_StageWoodBunk;
 	stageStep : INT;
-	iSlot : INT;
+	//iSlot : INT;
 END_VAR
 VAR_INPUT
 	includeTop, includeLeft, includeRight, includeBottom : BOOL; 
@@ -524,7 +549,7 @@ CASE stageStep OF
 			RETURN;
 		END_IF
 		
-		aoiTemplate.execute := TRUE;
+		aoiTemplate.execute := NOT aoiTemplate.busy;
 		
 		aoiTemplate.includeTop := includeTop;
 		aoiTemplate.includeLeft := includeLeft;
@@ -532,20 +557,19 @@ CASE stageStep OF
 		aoiTemplate.includeBottom := includeBottom;
 		
 	10: //stage tables
-		IF iSlot > 10 THEN
+		IF aoiStaging.slot > 10 THEN
 			aoiStaging.execute := FALSE;			
 			stageStep := COMPLETE;
 			RETURN;
 		END_IF
 		
-		iSlot := MAX(1, iSlot); //if 0, sets to 1
-		iSlot := MIN(iSlot, 999); //prevents overflow
+		aoiStaging.slot := MAX(1, aoiStaging.slot); //if 0, sets to 1
+		aoiStaging.slot := MIN(aoiStaging.slot, 999); //prevents overflow 
 		
-		aoiStaging.execute := NOT aoiStaging.busy;
+		aoiStaging.execute := NOT aoiStaging.busy; //execute if aoiStaging is ready
 		
 		IF aoiStaging.done THEN
-			iSlot := iSlot + 1;
-			aoiStaging.execute := FALSE;
+			aoiStaging.slot := aoiStaging.slot + 1;
 		END_IF
 	
 	COMPLETE:
@@ -556,14 +580,13 @@ CASE stageStep OF
 		
 		robot.release(sectionID);
 		
-		iSlot := 0;
+		aoiStaging.slot := 0;
 		
 		stageEx := TRUE;
 		//stageStep := 0;
 END_CASE
 
-error := aoiStaging.error;
-]]></ST>
+error := aoiStaging.error;]]></ST>
       </Implementation>
     </Method>
     <Action Name="stopSequence" Id="{aa2cff5b-4063-4180-a68f-c8e049a6e342}" FolderPath="Actions\">
@@ -629,7 +652,15 @@ validateSuctionQuality :=
       <LineId Id="7230" Count="0" />
       <LineId Id="6836" Count="34" />
       <LineId Id="7313" Count="0" />
-      <LineId Id="6872" Count="41" />
+      <LineId Id="6872" Count="5" />
+      <LineId Id="7403" Count="2" />
+      <LineId Id="7380" Count="0" />
+      <LineId Id="7399" Count="0" />
+      <LineId Id="7382" Count="0" />
+      <LineId Id="6878" Count="20" />
+      <LineId Id="7400" Count="1" />
+      <LineId Id="7479" Count="0" />
+      <LineId Id="6899" Count="14" />
       <LineId Id="7229" Count="0" />
       <LineId Id="6914" Count="79" />
       <LineId Id="7149" Count="0" />
@@ -637,15 +668,12 @@ validateSuctionQuality :=
       <LineId Id="4805" Count="0" />
     </LineIds>
     <LineIds Name="WoodBunkEx.blocks">
-      <LineId Id="56" Count="6" />
-      <LineId Id="54" Count="0" />
-      <LineId Id="63" Count="0" />
-      <LineId Id="65" Count="6" />
+      <LineId Id="74" Count="15" />
       <LineId Id="55" Count="0" />
       <LineId Id="64" Count="0" />
-      <LineId Id="34" Count="19" />
+      <LineId Id="90" Count="19" />
       <LineId Id="32" Count="1" />
-      <LineId Id="2" Count="27" />
+      <LineId Id="138" Count="27" />
       <LineId Id="1" Count="0" />
     </LineIds>
     <LineIds Name="WoodBunkEx.callLocalModules">
@@ -659,17 +687,19 @@ validateSuctionQuality :=
     </LineIds>
     <LineIds Name="WoodBunkEx.load">
       <LineId Id="1193" Count="0" />
-      <LineId Id="1573" Count="13" />
+      <LineId Id="1574" Count="4" />
+      <LineId Id="1746" Count="2" />
+      <LineId Id="1579" Count="7" />
       <LineId Id="1572" Count="0" />
       <LineId Id="1405" Count="0" />
       <LineId Id="1107" Count="0" />
       <LineId Id="1627" Count="0" />
-      <LineId Id="1415" Count="3" />
-      <LineId Id="1463" Count="0" />
-      <LineId Id="1419" Count="0" />
-      <LineId Id="1421" Count="0" />
+      <LineId Id="1669" Count="0" />
+      <LineId Id="1673" Count="0" />
+      <LineId Id="1683" Count="0" />
+      <LineId Id="1674" Count="1" />
       <LineId Id="1414" Count="0" />
-      <LineId Id="1432" Count="0" />
+      <LineId Id="1679" Count="0" />
       <LineId Id="1375" Count="0" />
       <LineId Id="1587" Count="0" />
       <LineId Id="1378" Count="0" />
@@ -677,30 +707,47 @@ validateSuctionQuality :=
       <LineId Id="1376" Count="0" />
       <LineId Id="1588" Count="0" />
       <LineId Id="1380" Count="0" />
+      <LineId Id="1700" Count="2" />
       <LineId Id="1137" Count="1" />
-      <LineId Id="1536" Count="6" />
+      <LineId Id="1680" Count="2" />
+      <LineId Id="1536" Count="0" />
+      <LineId Id="1540" Count="0" />
+      <LineId Id="1684" Count="0" />
+      <LineId Id="1541" Count="1" />
       <LineId Id="1535" Count="0" />
-      <LineId Id="1413" Count="0" />
+      <LineId Id="1754" Count="0" />
       <LineId Id="1382" Count="0" />
       <LineId Id="1589" Count="0" />
       <LineId Id="1383" Count="2" />
       <LineId Id="1590" Count="0" />
       <LineId Id="1381" Count="0" />
+      <LineId Id="1697" Count="2" />
       <LineId Id="1330" Count="0" />
       <LineId Id="1185" Count="0" />
       <LineId Id="1189" Count="1" />
-      <LineId Id="1500" Count="1" />
+      <LineId Id="1500" Count="0" />
+      <LineId Id="1685" Count="0" />
+      <LineId Id="1501" Count="0" />
       <LineId Id="1191" Count="0" />
       <LineId Id="1503" Count="0" />
       <LineId Id="1192" Count="0" />
       <LineId Id="1361" Count="0" />
-      <LineId Id="1629" Count="30" />
+      <LineId Id="1696" Count="0" />
+      <LineId Id="1629" Count="15" />
+      <LineId Id="1686" Count="0" />
+      <LineId Id="1688" Count="0" />
+      <LineId Id="1647" Count="12" />
       <LineId Id="1628" Count="0" />
       <LineId Id="1493" Count="0" />
+      <LineId Id="1733" Count="0" />
       <LineId Id="1390" Count="0" />
     </LineIds>
     <LineIds Name="WoodBunkEx.stage">
       <LineId Id="1128" Count="0" />
+      <LineId Id="1133" Count="1" />
+      <LineId Id="1136" Count="0" />
+      <LineId Id="1135" Count="0" />
+      <LineId Id="1132" Count="0" />
       <LineId Id="1126" Count="1" />
       <LineId Id="1105" Count="20" />
       <LineId Id="1030" Count="0" />
@@ -716,11 +763,11 @@ validateSuctionQuality :=
       <LineId Id="1207" Count="0" />
       <LineId Id="1145" Count="1" />
       <LineId Id="1150" Count="2" />
-      <LineId Id="1239" Count="2" />
+      <LineId Id="1239" Count="0" />
+      <LineId Id="1256" Count="1" />
       <LineId Id="1237" Count="1" />
       <LineId Id="1223" Count="1" />
       <LineId Id="1227" Count="0" />
-      <LineId Id="1233" Count="0" />
       <LineId Id="1235" Count="0" />
       <LineId Id="1164" Count="1" />
       <LineId Id="1191" Count="0" />
@@ -732,7 +779,6 @@ validateSuctionQuality :=
       <LineId Id="1173" Count="2" />
       <LineId Id="1192" Count="0" />
       <LineId Id="1176" Count="2" />
-      <LineId Id="1030" Count="0" />
     </LineIds>
     <LineIds Name="WoodBunkEx.stopSequence">
       <LineId Id="2" Count="4" />

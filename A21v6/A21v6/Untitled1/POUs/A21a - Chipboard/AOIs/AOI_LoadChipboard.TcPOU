@@ -64,7 +64,7 @@ CASE step OF
 	
 	PREP_ROBOT:
 		robot.clearCommand();
-		IF run AND robot.Ready THEN
+		IF robot.Ready THEN
 			step := RETRACT_CONVEYORS;
 		END_IF
 	

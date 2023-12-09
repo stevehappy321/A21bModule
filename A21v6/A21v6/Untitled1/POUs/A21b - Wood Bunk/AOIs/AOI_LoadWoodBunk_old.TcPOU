@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
-  <POU Name="AOI_LoadWoodBunk" Id="{8729b1eb-ce03-40b7-afa3-0137a80b10ea}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK AOI_LoadWoodBunk
+  <POU Name="AOI_LoadWoodBunk_old" Id="{2882c1a2-8211-4d95-ac70-2bfa95f01e96}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK AOI_LoadWoodBunk_old
 VAR_IN_OUT CONSTANT
 	sectionID : SectionEnum;
 END_VAR
@@ -37,14 +37,34 @@ VAR
 END_VAR
 VAR CONSTANT
 	suctionDelay : TIME := T#2S;
+END_VAR
+VAR
+	temp : BOOL;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[{warning disable C0371}
 
 trigger(CLK:= execute, Q=> );
-busy := trigger.Q OR step > 0;
+run := (run OR trigger.Q) AND NOT done AND NOT error;
+busy := run;
 
-IF step > IDLE AND_THEN NOT preExecution() THEN //conditions to track before execution
+IF NOT run THEN
+	RETURN;
+END_IF
+
+//--------------------------------------------------
+
+IF material = '' THEN
+	done := TRUE;
+	RETURN;
+END_IF
+
+IF //robot must be ready before execution
+	robot.error OR 
+	robot.reservation <> sectionID OR 
+	robot.tool <> sectionID
+THEN
+	error := TRUE;
 	RETURN;
 END_IF
 
@@ -52,10 +72,11 @@ END_IF
 if required bunk was not found on table - restage entire table
 if bunk was not loaded correctly - remove bunk, then restage entire table
 *)
+
 CASE step OF
 	IDLE:
 		recovery := FALSE;
-		IF trigger.Q THEN
+		IF run THEN
 			done := FALSE;
 			error := FALSE;
 			step := PREP_ROBOT;
@@ -63,6 +84,7 @@ CASE step OF
 		
 	PREP_ROBOT:
 		robot.clearCommand();
+		
 		IF robot.Ready THEN
 			step := GET_FROM_TABLE;
 			slot := 0;
@@ -70,6 +92,7 @@ CASE step OF
 		
 	GET_FROM_TABLE:		
 		IF slot < 1 AND_THEN NOT table.findSlot(materialID := material, index => slot) THEN
+			error := TRUE;
 			step := RECOVERY_STAGE;
 			RETURN;
 		END_IF
@@ -144,8 +167,7 @@ CASE step OF
 		
 	RECOVERY_REMOVE:
 		IF robot.Done THEN
-			//step := RECOVERY_WAIT;
-			step := RECOVERY_STAGE;
+			step := RECOVERY_WAIT;
 			RETURN;
 		END_IF
 		
@@ -163,61 +185,61 @@ CASE step OF
 	
 	RECOVERY_STAGE:	
 		recovery := TRUE;
-		error := TRUE;
 		
+		IF run THEN
+			step := PREP_ROBOT; //retry
+			recovery := FALSE;
+			RETURN;
+		END_IF
+			
 END_CASE]]></ST>
     </Implementation>
-    <Method Name="preExecution" Id="{43448065-061a-4cf6-b3d1-14a86dcbddac}">
-      <Declaration><![CDATA[METHOD PRIVATE preExecution : BOOL
+    <Method Name="reset" Id="{fe7a447b-2309-44a5-bf8e-4a5fae7c5093}">
+      <Declaration><![CDATA[METHOD reset : BOOL
 VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[{warning disable C0371}
-IF material = '' THEN
-	done := TRUE;
-	RETURN;
-END_IF
+        <ST><![CDATA[done := FALSE;
+error := FALSE;
+slot := 0;
+step := 0;
 
-IF //robot must be ready before execution
-	robot.error OR 
-	robot.reservation <> sectionID OR 
-	robot.tool <> sectionID
-THEN
-	error := TRUE;
-	RETURN;
-END_IF
-
-preExecution := TRUE;]]></ST>
+failCounter := 0;]]></ST>
       </Implementation>
     </Method>
-    <LineIds Name="AOI_LoadWoodBunk">
-      <LineId Id="1997" Count="0" />
-      <LineId Id="2233" Count="0" />
-      <LineId Id="2147" Count="0" />
-      <LineId Id="1999" Count="0" />
-      <LineId Id="2186" Count="2" />
-      <LineId Id="2171" Count="0" />
-      <LineId Id="2234" Count="0" />
-      <LineId Id="2191" Count="2" />
-      <LineId Id="2167" Count="0" />
-      <LineId Id="2027" Count="0" />
-      <LineId Id="2157" Count="1" />
-      <LineId Id="2161" Count="5" />
-      <LineId Id="2159" Count="0" />
-      <LineId Id="2037" Count="7" />
-      <LineId Id="2046" Count="56" />
-      <LineId Id="2156" Count="0" />
-      <LineId Id="2104" Count="35" />
-      <LineId Id="2146" Count="0" />
+    <LineIds Name="AOI_LoadWoodBunk_old">
+      <LineId Id="1506" Count="0" />
+      <LineId Id="1746" Count="0" />
+      <LineId Id="1745" Count="0" />
+      <LineId Id="1752" Count="0" />
+      <LineId Id="1751" Count="0" />
+      <LineId Id="1737" Count="0" />
+      <LineId Id="1755" Count="2" />
+      <LineId Id="1761" Count="0" />
+      <LineId Id="1760" Count="0" />
+      <LineId Id="1738" Count="0" />
+      <LineId Id="1729" Count="2" />
+      <LineId Id="1758" Count="0" />
+      <LineId Id="1716" Count="1" />
+      <LineId Id="1762" Count="3" />
+      <LineId Id="1718" Count="1" />
+      <LineId Id="1715" Count="0" />
+      <LineId Id="1528" Count="4" />
+      <LineId Id="1534" Count="10" />
+      <LineId Id="1704" Count="0" />
+      <LineId Id="1545" Count="66" />
+      <LineId Id="1690" Count="0" />
+      <LineId Id="1612" Count="39" />
       <LineId Id="1749" Count="0" />
     </LineIds>
-    <LineIds Name="AOI_LoadWoodBunk.preExecution">
-      <LineId Id="18" Count="0" />
-      <LineId Id="6" Count="11" />
+    <LineIds Name="AOI_LoadWoodBunk_old.reset">
       <LineId Id="5" Count="0" />
-      <LineId Id="20" Count="0" />
-      <LineId Id="19" Count="0" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="11" Count="0" />
+      <LineId Id="6" Count="0" />
+      <LineId Id="13" Count="0" />
+      <LineId Id="12" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>

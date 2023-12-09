@@ -22,6 +22,10 @@ END_VAR]]></Declaration>
 
 IF NOT errorBounds THEN
 	occupied[i] := occupancy;
+END_IF
+
+IF hmiTable <> 0 THEN
+	writeHmiTable();
 END_IF]]></ST>
       </Implementation>
     </Method>
@@ -33,6 +37,8 @@ END_IF]]></ST>
       <LineId Id="17" Count="0" />
       <LineId Id="16" Count="0" />
       <LineId Id="18" Count="1" />
+      <LineId Id="28" Count="2" />
+      <LineId Id="27" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>
