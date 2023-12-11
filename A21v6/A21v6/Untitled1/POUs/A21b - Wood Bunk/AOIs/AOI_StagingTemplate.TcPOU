@@ -27,8 +27,7 @@ VAR
 	template : StagingTable;
 	templateSlots : ARRAY[1..10] OF STRING;
 	templateOccupancy : ARRAY[1..10] OF BOOL;
-END_VAR
-]]></Declaration>
+END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[{warning disable C0371}
 
@@ -171,6 +170,25 @@ END_VAR
         <ST><![CDATA[getSlot := template.getSlot(i := i, error => error);]]></ST>
       </Implementation>
     </Method>
+    <Method Name="reset" Id="{30967273-5971-4694-a3f9-4830fbeea9d0}">
+      <Declaration><![CDATA[METHOD reset : BOOL
+VAR_INPUT
+END_VAR
+VAR
+	temp : AOI_StagingTemplate;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//(*
+busy := FALSE;
+done := FALSE;
+step := 0;
+
+clearArray();
+clearTemplate();
+//*)
+//THIS^ := temp;]]></ST>
+      </Implementation>
+    </Method>
     <Method Name="splitCombinedMaterials" Id="{419e2fad-7d72-4697-81cf-ab6b3eae18e9}" FolderPath="Private\">
       <Declaration><![CDATA[METHOD PRIVATE splitCombinedMaterials : BOOL
 VAR_IN_OUT
@@ -247,6 +265,16 @@ END_VAR]]></Declaration>
     </LineIds>
     <LineIds Name="AOI_StagingTemplate.getSlot">
       <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="AOI_StagingTemplate.reset">
+      <LineId Id="23" Count="0" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="5" Count="1" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="21" Count="0" />
     </LineIds>
     <LineIds Name="AOI_StagingTemplate.splitCombinedMaterials">
       <LineId Id="15" Count="2" />

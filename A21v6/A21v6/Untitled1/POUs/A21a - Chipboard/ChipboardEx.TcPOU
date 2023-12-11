@@ -26,8 +26,6 @@ VAR //for testing, to be removed when replaced with pressure sensors
 	demoHeight : REAL := 600; //mm
 END_VAR
 VAR
-	loadLeft, loadRight : AOI_LoadChipboard;
-
 	step : (IDLE, RETRACT_CONVEYOR, LOAD_CIP, EXTEND_CONVEYOR, COMPLETE := 1050);
 	iPair : INT;
 	
@@ -42,6 +40,9 @@ VAR //local types
 END_VAR
 VAR CONSTANT
 	sectionID : SectionEnum := SectionEnum.CHIPBOARD;
+END_VAR
+VAR
+	loadLeft, loadRight : AOI_LoadChipboard;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[{warning disable C0371}
@@ -144,7 +145,7 @@ loadRight(
 	busy=> , 
 	done=> , 
 	error=> , 
-	recoveryMode=> , 
+	recovery=> , 
 	failCounter=> );]]></ST>
       </Implementation>
     </Action>
@@ -198,8 +199,8 @@ CASE loadSet OF
 		loadRight.surfaceID := Surface.BOTTOM;
 		loadRight.material := pair.right;
 		
-		loadLeft.execute := NOT loadLeft.recoveryMode;
-		loadRight.execute := NOT loadRight.recoveryMode;
+		loadLeft.execute := NOT loadLeft.recovery;
+		loadRight.execute := NOT loadRight.recovery;
 		
 	10: //recovery		
 		IF robotRight.error THEN //left ok, right error
@@ -212,7 +213,7 @@ CASE loadSet OF
 			
 			loadLeft.surfaceID := Surface.BOTTOM;
 			loadLeft.material := pair.bottom;
-			loadLeft.execute := NOT loadLeft.recoveryMode;
+			loadLeft.execute := NOT loadLeft.recovery;
 			
 		ELSIF robotLeft.error THEN //left error, right ok
 			
@@ -224,7 +225,7 @@ CASE loadSet OF
 			
 			loadRight.surfaceID := Surface.TOP;
 			loadRight.material := pair.top;
-			loadRight.execute := NOT loadRight.recoveryMode;
+			loadRight.execute := NOT loadRight.recovery;
 			
 		END_IF
 		

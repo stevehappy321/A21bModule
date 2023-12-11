@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
-  <POU Name="AOI_LoadChipboard" Id="{403456b6-8a32-4454-9e15-815080b5fb2e}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK AOI_LoadChipboard
+  <POU Name="AOI_LoadChipboard_old" Id="{f63fecb8-bbb6-4aba-8181-107c6ca801d0}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK AOI_LoadChipboard_old
 VAR_IN_OUT CONSTANT
 	sectionID : SectionEnum;
 END_VAR
@@ -22,7 +22,7 @@ VAR_OUTPUT
 	done : BOOL;
 	error : BOOL;
 	
-	recovery : BOOL;
+	recoveryMode : BOOL;
 	failCounter : INT;
 END_VAR
 VAR
@@ -37,11 +37,17 @@ VAR CONSTANT
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[{warning disable C0371}
+IF material = '' THEN
+	done := TRUE;
+	RETURN;
+END_IF
 
-trigger(CLK:= execute, Q=> );
-busy := trigger.Q OR step > 0;
-
-IF step > IDLE AND_THEN NOT preExecution() THEN //conditions to track before execution
+IF robot.error THEN
+	error := TRUE;
+	RETURN;
+ELSIF robot.reservation <> sectionID (*AND_THEN NOT robot.reserve(sectionID)*) THEN
+	RETURN;
+ELSIF robot.tool <> sectionID (*AND_THEN NOT robot.changeEOAT(targetTool := sectionID)*) THEN
 	RETURN;
 END_IF
 
@@ -49,8 +55,8 @@ trigger(CLK:= execute, Q=> run);
 
 CASE step OF
 	IDLE:
+		recoveryMode := FALSE;
 		IF run THEN
-			recovery := FALSE;
 			done := FALSE;
 			error := FALSE;
 			step := PREP_ROBOT;
@@ -119,40 +125,24 @@ END_CASE
 
 busy := run OR step > 0;]]></ST>
     </Implementation>
-    <Method Name="preExecution" Id="{26f45a99-07ed-487b-99a4-7b1c1cddff11}">
-      <Declaration><![CDATA[METHOD PRIVATE preExecution : BOOL
-VAR_INPUT
-END_VAR
-]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[{warning disable C0371}
-IF material = '' THEN
-	done := TRUE;
-	RETURN;
-END_IF
-
-IF //robot must be ready before execution
-	robot.error OR 
-	robot.reservation <> sectionID OR 
-	robot.tool <> sectionID
-THEN
-	error := TRUE;
-	RETURN;
-END_IF
-
-preExecution := TRUE;]]></ST>
-      </Implementation>
-    </Method>
-    <LineIds Name="AOI_LoadChipboard">
-      <LineId Id="260" Count="80" />
+    <LineIds Name="AOI_LoadChipboard_old">
+      <LineId Id="186" Count="12" />
+      <LineId Id="116" Count="0" />
+      <LineId Id="111" Count="1" />
+      <LineId Id="33" Count="1" />
+      <LineId Id="134" Count="0" />
+      <LineId Id="139" Count="4" />
+      <LineId Id="138" Count="0" />
+      <LineId Id="136" Count="0" />
+      <LineId Id="35" Count="52" />
+      <LineId Id="106" Count="0" />
+      <LineId Id="88" Count="0" />
+      <LineId Id="103" Count="0" />
+      <LineId Id="105" Count="0" />
+      <LineId Id="90" Count="1" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="145" Count="0" />
       <LineId Id="144" Count="0" />
-    </LineIds>
-    <LineIds Name="AOI_LoadChipboard.preExecution">
-      <LineId Id="18" Count="0" />
-      <LineId Id="6" Count="11" />
-      <LineId Id="5" Count="0" />
-      <LineId Id="20" Count="0" />
-      <LineId Id="19" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>

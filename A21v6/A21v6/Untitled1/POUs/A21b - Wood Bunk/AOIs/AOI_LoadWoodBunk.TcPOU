@@ -54,8 +54,8 @@ if bunk was not loaded correctly - remove bunk, then restage entire table
 *)
 CASE step OF
 	IDLE:
-		recovery := FALSE;
 		IF trigger.Q THEN
+			recovery := FALSE;
 			done := FALSE;
 			error := FALSE;
 			step := PREP_ROBOT;
@@ -155,7 +155,7 @@ CASE step OF
 			Surface.BOTTOM:					robot.setGroup(group := 1, value := A21.REMOVE_BUNK_BOTTOM);
 		END_CASE
 	
-	RECOVERY_WAIT:
+	RECOVERY_WAIT: //this step is unused for now
 		robot.clearCommand();
 		IF robot.Ready THEN
 			step := RECOVERY_STAGE;
@@ -191,6 +191,26 @@ END_IF
 preExecution := TRUE;]]></ST>
       </Implementation>
     </Method>
+    <Method Name="reset" Id="{96c98ec7-6d60-41a1-9033-e9fabde425fb}">
+      <Declaration><![CDATA[METHOD reset : BOOL
+VAR_INPUT
+END_VAR
+VAR
+	temp : AOI_LoadWoodBunk;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//(*
+done := FALSE;
+error := FALSE;
+recovery := FALSE;
+slot := 0;
+step := 0;
+
+failCounter := 0;
+//*)
+//THIS^ := temp;]]></ST>
+      </Implementation>
+    </Method>
     <LineIds Name="AOI_LoadWoodBunk">
       <LineId Id="1997" Count="0" />
       <LineId Id="2233" Count="0" />
@@ -202,8 +222,10 @@ preExecution := TRUE;]]></ST>
       <LineId Id="2191" Count="2" />
       <LineId Id="2167" Count="0" />
       <LineId Id="2027" Count="0" />
-      <LineId Id="2157" Count="1" />
-      <LineId Id="2161" Count="5" />
+      <LineId Id="2157" Count="0" />
+      <LineId Id="2161" Count="0" />
+      <LineId Id="2271" Count="0" />
+      <LineId Id="2162" Count="4" />
       <LineId Id="2159" Count="0" />
       <LineId Id="2037" Count="7" />
       <LineId Id="2046" Count="56" />
@@ -218,6 +240,17 @@ preExecution := TRUE;]]></ST>
       <LineId Id="5" Count="0" />
       <LineId Id="20" Count="0" />
       <LineId Id="19" Count="0" />
+    </LineIds>
+    <LineIds Name="AOI_LoadWoodBunk.reset">
+      <LineId Id="23" Count="0" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="17" Count="0" />
+      <LineId Id="11" Count="0" />
+      <LineId Id="6" Count="0" />
+      <LineId Id="13" Count="0" />
+      <LineId Id="12" Count="0" />
+      <LineId Id="24" Count="1" />
     </LineIds>
   </POU>
 </TcPlcObject>

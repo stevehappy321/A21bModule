@@ -39,9 +39,11 @@ END_VAR
     <Implementation>
       <ST><![CDATA[{warning disable C0371}
 {warning disable C0195}
-
-//--------------------------------------------------
-
+(*
+IF error THEN
+	step := IDLE;
+END_IF
+*)
 trigger(CLK:= execute, Q=> );
 busy := trigger.Q OR step > 0;
 
@@ -52,8 +54,8 @@ END_IF
 //follow the template as is
 CASE step OF
 	IDLE:
-		recovery := FALSE;
 		IF trigger.Q THEN
+			recovery := FALSE;
 			done := FALSE;
 			error := FALSE;
 			step := PREP_ROBOT;
@@ -133,24 +135,35 @@ preExecution := TRUE;]]></ST>
       <Declaration><![CDATA[METHOD reset : BOOL
 VAR_INPUT
 END_VAR
-]]></Declaration>
+VAR
+	temp : AOI_StageWoodBunk;
+END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[done := FALSE;
+        <ST><![CDATA[//(*
+done := FALSE;
 error := FALSE;
+recovery := FALSE;
 slot := 0;
 step := 0;
 
-failCounter := 0;]]></ST>
+failCounter := 0;
+//*)
+//THIS^ := temp;]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="AOI_StageWoodBunk">
       <LineId Id="882" Count="1" />
-      <LineId Id="904" Count="3" />
+      <LineId Id="1076" Count="0" />
+      <LineId Id="1075" Count="0" />
+      <LineId Id="1077" Count="1" />
+      <LineId Id="906" Count="1" />
       <LineId Id="996" Count="0" />
       <LineId Id="998" Count="2" />
       <LineId Id="997" Count="0" />
       <LineId Id="908" Count="3" />
-      <LineId Id="1001" Count="4" />
+      <LineId Id="1002" Count="0" />
+      <LineId Id="1040" Count="0" />
+      <LineId Id="1003" Count="2" />
       <LineId Id="917" Count="3" />
       <LineId Id="922" Count="38" />
     </LineIds>
@@ -164,12 +177,16 @@ failCounter := 0;]]></ST>
       <LineId Id="19" Count="0" />
     </LineIds>
     <LineIds Name="AOI_StageWoodBunk.reset">
+      <LineId Id="23" Count="0" />
       <LineId Id="5" Count="0" />
       <LineId Id="7" Count="0" />
+      <LineId Id="17" Count="0" />
       <LineId Id="11" Count="0" />
       <LineId Id="6" Count="0" />
       <LineId Id="13" Count="0" />
       <LineId Id="12" Count="0" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="21" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>

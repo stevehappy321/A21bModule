@@ -26,7 +26,7 @@ horizontalDriveA21Left();
 horizontalDriveA21Right();
 pistonA21Bottom();
 
-//(*
+(*
 tempLeft := TO_INT(BoolPtrArrayToInteger(arr := stagingTableLeft.occupied, lowerBound := 1, upperBound := 10));
 tempLeft.15 := NOT strapperA21.bEnable AND NOT strapperA21.execute;
 robot1.setGroup(group := 8, value := tempLeft);
@@ -35,7 +35,7 @@ tempRight := TO_INT(BoolPtrArrayToInteger(arr := stagingTableRight.occupied, low
 tempRight.15 := NOT strapperA21.bEnable AND NOT strapperA21.execute;
 robot2.setGroup(group := 8, value := tempRight);
 
-//*)]]></ST>
+*)]]></ST>
     </Implementation>
     <LineIds Name="CallHardware">
       <LineId Id="216" Count="28" />
