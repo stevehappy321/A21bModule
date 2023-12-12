@@ -29,7 +29,7 @@ Insertion instance should be declared and called in module scope, with the drive
     <Implementation>
       <ST><![CDATA[softContact := slider.contact AND screw.contact; //temporary
 
-homingComplete := slider.HomeSet AND screw.HomeSet;
+homingComplete := (*slider.HomeSet AND*) screw.HomeSet;
 
 busy := slider.Busy OR screw.Busy;
 error := slider.Error OR screw.Error;
@@ -121,7 +121,7 @@ END_VAR]]></Declaration>
       <LineId Id="36" Count="0" />
     </LineIds>
     <LineIds Name="Insertion.homingSequence">
-      <LineId Id="5" Count="0" />
+      <LineId Id="24" Count="0" />
       <LineId Id="9" Count="1" />
       <LineId Id="20" Count="0" />
       <LineId Id="11" Count="0" />

@@ -1,0 +1,2863 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="CardboardCornerGuardEx" Id="{43a9c6e1-e77d-41f5-aea3-07b47a57c140}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK CardboardCornerGuardEx
+VAR_IN_OUT //controls
+	execute : BOOL;
+	stop : BOOL;
+	
+	manualStep : BOOL;
+	manualSuction : BOOL;
+END_VAR
+VAR_IN_OUT
+	benderLeft : FoldingMachine;
+	
+	robotLeft, robotRight : RobotA22;
+	
+	skidLeft, skidRight : SkidMagazine;
+	magazineLeft, magazineRight : SkidMagazine;
+	
+	wrapper : WrapMachine;
+	
+	horizontalDriveLeft, horizontalDriveRight : ServoNC;
+	verticalDriveLeft, verticalDriveRight : ClearLinkMC;
+	pistonBottom : SimplePiston;
+	
+	suctionTopLeft : ARRAY[*(*1..3*)] OF SuctionPad;
+	suctionTopRight : ARRAY[*(*1..3*)] OF SuctionPad;
+	suctionBottomLeft : ARRAY[*(*1..3*)] OF SuctionPad; 
+	suctionBottomRight : ARRAY[*(*1..3*)] OF SuctionPad;
+END_VAR
+VAR_OUTPUT
+	generalError : BOOL;
+	failLeft, failRight : BOOL;
+END_VAR
+VAR //for testing only
+	latchLeft, latchRight : BOOL; //prevents sliders from overshooting the inner limit sensor
+	
+	suctionEnableTopLeft : BOOL;
+	suctionEnableTopRight : BOOL;
+	suctionEnableBottomLeft : BOOL;
+	suctionEnableBottomRight : BOOL;
+	
+	ready : BOOL;
+	done : BOOL;
+END_VAR
+VAR	
+	step : (IDLE, LOAD_CORNERS, LOAD_FLATS, PUSH, TARGET_WRAP_POSITION, WRAP_AND_RELEASE, COMPLETE := 1050);
+	iPair : INT;
+	
+	masterLoadStep : INT;
+	loadSet : INT;
+	loadStepLeft, loadStepRight : INT;
+	cornerSetLeft, cornerSetRight : INT;
+	
+	iWrap : INT;
+	wrapPoints : INT;
+	wrapRotations : INT;
+	masterLength : INT;
+	
+	releaseDelayTimer : TON;
+END_VAR
+VAR //local types
+	topLeftFoldsArr, topRightFoldsArr, bottomLeftFoldsArr, bottomRightFoldsArr : ARRAY[0..GVL.maxPairs] OF INT;
+	materialsArr : ARRAY[0..GVL.maxPairs] OF PositionMaterials := [
+		(
+			position := 0,
+			top := 'CAR20M',
+			left := 'CAR20S',
+			right := 'CAR20S',
+			bottom := 'CAR20L',
+			topLeft := 'CAR28M',
+			topRight := 'CAR28S',
+			bottomLeft := 'CAR28S',
+			bottomRight := 'CAR28L',
+			wrapPoints := 1,
+			wrapRotations := 4
+		),
+		(
+			position := 0,
+			topLeft := 'COR48',
+			topRight := 'COR48',
+			bottomLeft := 'COR48',
+			bottomRight := 'COR48'
+		)];
+	
+	demoHeight : REAL := 600; //600mm, 60cm
+	
+	insertionLeft, insertionRight : Insertion;
+	innerLoadedMaterials, outerLoadedMaterials : ARRAY[Surface.TOP..Surface.BOTTOM_RIGHT] OF STRING;
+	//inner: cardboard by default
+	//outer: corner guard by default
+END_VAR
+VAR CONSTANT
+	sectionID : SectionEnum := SectionEnum.CARDBOARD_CORNERGUARD;
+	releaseDelay : TIME := T#2000MS;
+END_VAR
+VAR
+	//AOIs encapsulate functionality and reduce the number of module variables
+	aoiLoadCornerGuardLeft, aoiLoadCornerGuardRight : AOI_LoadCornerGuard;
+	aoiLoadFlatCardboardLeft, aoiLoadFlatCardboardRight : AOI_LoadFlatCardboard;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[callLocalModules();
+
+IF stop THEN //may need to turn off suction
+	insertionLeft.stop();
+	insertionRight.stop();
+	pistonBottom.stop();
+	
+	robotLeft.clearCommand();
+	robotRight.clearCommand();
+	RETURN;
+END_IF
+
+IF NOT (insertionLeft.homingComplete AND insertionRight.homingComplete) THEN
+	insertionLeft.homingSequence();
+	insertionRight.homingSequence();
+	pistonBottom.retract();
+END_IF
+
+CASE step OF
+	IDLE:
+		IF execute THEN
+			execute := FALSE;
+			step := LOAD_CORNERS;
+		END_IF
+	
+	LOAD_CORNERS:
+		IF load(pairIndex := iPair) THEN
+			IF manualStep AND_THEN NOT execute THEN
+				RETURN;
+			END_IF
+		
+			step := LOAD_FLATS;
+		END_IF
+
+	LOAD_FLATS:
+		IF loadFlats(pair := materialsArr[iPair]) THEN
+			IF manualStep AND_THEN NOT execute THEN
+				RETURN;
+			END_IF
+			
+			step := PUSH;
+		END_IF
+		
+	PUSH:
+		IF
+			NOT insertionLeft.align(1000-demoHeight) OR
+			NOT insertionRight.align(1000-demoHeight)
+		THEN
+			RETURN;
+		END_IF
+		
+		insertionLeft.press();
+		insertionRight.press();
+		pistonBottom.extend();
+		
+		IF pistonBottom.extended AND insertionLeft.contact AND insertionRight.contact THEN
+			step := TARGET_WRAP_POSITION;
+		END_IF
+		
+	TARGET_WRAP_POSITION:		
+		IF iWrap >= wrapPoints THEN
+			step := COMPLETE;
+			RETURN;
+		END_IF
+		
+		//loadNextPair := materialsArr[iPair].position = materialsArr[iPair + 1].position;	
+		
+		IF materialsArr[iPair].position = materialsArr[iPair + 1].position THEN
+			masterLength := MAX( GetPairMasterLength(materialsArr[iPair]), GetPairMasterLength(materialsArr[iPair + 1]) );
+			wrapPoints := MAX( materialsArr[iPair].wrapPoints, materialsArr[iPair + 1].wrapPoints );
+			wrapRotations := MAX( materialsArr[iPair].wrapRotations, materialsArr[iPair + 1].wrapRotations );
+		ELSE
+			masterLength := GetPairMasterLength(materialsArr[iPair]);
+			wrapPoints := materialsArr[iPair].wrapPoints;
+			wrapRotations := materialsArr[iPair].wrapRotations;
+		END_IF
+		
+		(*
+		directionCheckAndSet(
+			wrapConveyorPos,
+			(currentPair.position - masterLength/2) + (masterLength/(currentPair.wrapPoints + 1) * (iWrap + 1)));
+		*)
+		step := WRAP_AND_RELEASE;
+		
+	WRAP_AND_RELEASE:
+		releaseDelayTimer(IN:= , PT:= releaseDelay, Q=> , ET=> );
+		
+		IF wrapper.ready THEN
+			wrapper.wrap(wrapRotations);
+			releaseDelayTimer.IN := TRUE;
+		END_IF
+		
+		IF releaseDelayTimer.Q THEN
+			SetSuctions(suctions := suctionTopLeft, state := FALSE);
+			SetSuctions(suctions := suctionTopRight, state := FALSE);
+			SetSuctions(suctions := suctionBottomLeft, state := FALSE);
+			SetSuctions(suctions := suctionBottomRight, state := FALSE);
+			
+			insertionLeft.align(0);
+			insertionRight.align(0);
+			insertionLeft.release();
+			insertionRight.release();
+			
+			pistonBottom.retract();
+		END_IF
+		
+		IF wrapper.done AND insertionLeft.home AND insertionRight.home AND pistonBottom.retracted THEN
+			releaseDelayTimer.IN := FALSE;
+			step := WRAP_AND_RELEASE;
+		END_IF
+	
+	COMPLETE:
+		iPair := (iPair + 1) MOD GVL.maxPairs;
+		iWrap := wrapPoints := wrapRotations := 0;
+		step := IDLE;
+		
+END_CASE]]></ST>
+    </Implementation>
+    <Folder Name="Actions" Id="{c8c39f76-dbed-4e64-98b8-9f897e55ef48}" />
+    <Folder Name="Cardboard (Corner)" Id="{75e45005-57b6-45af-977a-1cc75cf19289}" />
+    <Folder Name="Cardboard (Flat)" Id="{69bbbb84-f428-46bc-8482-36bd2217074a}" />
+    <Folder Name="Corner Guards" Id="{6138b1d4-74c6-4a8f-864e-6193654c592a}" />
+    <Folder Name="x_Obsolete" Id="{ae97f731-8159-458d-a4c2-1a1c4ac5d0d1}" />
+    <Action Name="blocks" Id="{42a09ab4-5795-4272-b1bf-07353ead9a10}" FolderPath="Actions\">
+      <Implementation>
+        <NWL>
+          <XmlArchive>
+            <Data>
+              <o xml:space="preserve" t="NWLImplementationObject">
+                <v n="NetworkListComment">""</v>
+                <v n="DefaultViewMode">"Ld"</v>
+                <l2 n="NetworkList" cet="Network">
+                  <o>
+                    <v n="ILActive">false</v>
+                    <v n="FBDValid">false</v>
+                    <v n="ILValid">false</v>
+                    <l2 n="ILLines" />
+                    <v n="Comment">""</v>
+                    <v n="Title">""</v>
+                    <v n="Label">""</v>
+                    <v n="OutCommented">false</v>
+                    <l2 n="NetworkItems" cet="BoxTreeBox">
+                      <o>
+                        <v n="BoxType">"AOI_LoadCornerGuard"</v>
+                        <o n="Instance" t="Operand">
+                          <v n="Operand">"aoiLoadCornerGuardLeft"</v>
+                          <v n="Type">"AOI_LoadCornerGuard"</v>
+                          <v n="Comment">""</v>
+                          <v n="SymbolComment">""</v>
+                          <v n="Address">""</v>
+                          <o n="Flags" t="Flags">
+                            <v n="Flags">0</v>
+                            <v n="Fixed">false</v>
+                            <v n="Extensible">false</v>
+                          </o>
+                          <v n="LValue">false</v>
+                          <v n="Boolean">false</v>
+                          <v n="IsInstance">true</v>
+                          <v n="Id">138L</v>
+                        </o>
+                        <o n="OutputItems" t="OutputItemList">
+                          <l2 n="OutputItems" cet="Operand">
+                            <n />
+                            <o>
+                              <v n="Operand">""</v>
+                              <v n="Type">"BOOL"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">true</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">140L</v>
+                            </o>
+                            <o>
+                              <v n="Operand">""</v>
+                              <v n="Type">"BOOL"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">true</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">141L</v>
+                            </o>
+                            <o>
+                              <v n="Operand">""</v>
+                              <v n="Type">"BOOL"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">true</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">142L</v>
+                            </o>
+                            <o>
+                              <v n="Operand">""</v>
+                              <v n="Type">"BOOL"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">true</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">143L</v>
+                            </o>
+                            <o>
+                              <v n="Operand">""</v>
+                              <v n="Type">"BOOL"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">true</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">144L</v>
+                            </o>
+                            <o>
+                              <v n="Operand">""</v>
+                              <v n="Type">"INT"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">true</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">145L</v>
+                            </o>
+                          </l2>
+                        </o>
+                        <o n="Flags" t="Flags">
+                          <v n="Flags">0</v>
+                          <v n="Fixed">true</v>
+                          <v n="Extensible">false</v>
+                        </o>
+                        <n n="InputFlags" />
+                        <l2 n="InputItems" cet="BoxTreeOperand">
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">"TRUE"</v>
+                              <v n="Type">"BOOL"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">true</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">147L</v>
+                            </o>
+                            <v n="Id">146L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">""</v>
+                              <v n="Type">"BOOL"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">149L</v>
+                            </o>
+                            <v n="Id">148L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">"sectionID"</v>
+                              <v n="Type">"SectionEnum"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">151L</v>
+                            </o>
+                            <v n="Id">150L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">"robotLeft"</v>
+                              <v n="Type">"RobotA22"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">153L</v>
+                            </o>
+                            <v n="Id">152L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">"magazineLeft"</v>
+                              <v n="Type">"SkidMagazine"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">155L</v>
+                            </o>
+                            <v n="Id">154L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">"innerLoadedMaterials"</v>
+                              <v n="Type">"ARRAY [Surface.TOP..Surface.BOTTOM_RIGHT] OF STRING"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">157L</v>
+                            </o>
+                            <v n="Id">156L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">""</v>
+                              <v n="Type">"Surface"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">159L</v>
+                            </o>
+                            <v n="Id">158L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">""</v>
+                              <v n="Type">"STRING"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">161L</v>
+                            </o>
+                            <v n="Id">160L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">""</v>
+                              <v n="Type">"POINTER TO SuctionPad"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">163L</v>
+                            </o>
+                            <v n="Id">162L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">""</v>
+                              <v n="Type">"DINT"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">165L</v>
+                            </o>
+                            <v n="Id">164L</v>
+                          </o>
+                        </l2>
+                        <o n="InputParam" t="ParamList">
+                          <l2 n="Names" cet="String">
+                            <v>EN</v>
+                            <v>execute</v>
+                            <v>sectionID</v>
+                            <v>robot</v>
+                            <v>magazine</v>
+                            <v>loadedMaterials</v>
+                            <v>surfaceID</v>
+                            <v>material</v>
+                            <v>suctions</v>
+                            <v>numPads</v>
+                          </l2>
+                          <l2 n="Types" cet="String">
+                            <v>BOOL</v>
+                            <v>BOOL</v>
+                            <v>SectionEnum[REF]</v>
+                            <v>RobotA22[REF]</v>
+                            <v>SkidMagazine[REF]</v>
+                            <v>POINTER TO STRING</v>
+                            <v>Surface</v>
+                            <v>STRING</v>
+                            <v>POINTER TO SuctionPad</v>
+                            <v>DINT</v>
+                          </l2>
+                        </o>
+                        <o n="OutputParam" t="ParamList">
+                          <l2 n="Names" cet="String">
+                            <v>ENO</v>
+                            <v>donePulse</v>
+                            <v>done</v>
+                            <v>busy</v>
+                            <v>error</v>
+                            <v>recovery</v>
+                            <v>failCounter</v>
+                          </l2>
+                          <l2 n="Types" cet="String">
+                            <v>BOOL</v>
+                            <v>BOOL</v>
+                            <v>BOOL</v>
+                            <v>BOOL</v>
+                            <v>BOOL</v>
+                            <v>BOOL</v>
+                            <v>INT</v>
+                          </l2>
+                        </o>
+                        <v n="CallType" t="Operator">FunctionBlock</v>
+                        <v n="EN">true</v>
+                        <v n="ENO">true</v>
+                        <n n="STSnippet" />
+                        <v n="ContainsExtensibleInputs">false</v>
+                        <v n="ProvidesSTSnippet">false</v>
+                        <v n="Id">139L</v>
+                      </o>
+                      <o>
+                        <v n="BoxType">"AOI_LoadCornerGuard"</v>
+                        <o n="Instance" t="Operand">
+                          <v n="Operand">"aoiLoadCornerGuardRight"</v>
+                          <v n="Type">"AOI_LoadCornerGuard"</v>
+                          <v n="Comment">""</v>
+                          <v n="SymbolComment">""</v>
+                          <v n="Address">""</v>
+                          <o n="Flags" t="Flags">
+                            <v n="Flags">0</v>
+                            <v n="Fixed">false</v>
+                            <v n="Extensible">false</v>
+                          </o>
+                          <v n="LValue">false</v>
+                          <v n="Boolean">false</v>
+                          <v n="IsInstance">true</v>
+                          <v n="Id">166L</v>
+                        </o>
+                        <o n="OutputItems" t="OutputItemList">
+                          <l2 n="OutputItems" cet="Operand">
+                            <n />
+                            <o>
+                              <v n="Operand">""</v>
+                              <v n="Type">"BOOL"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">true</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">168L</v>
+                            </o>
+                            <o>
+                              <v n="Operand">""</v>
+                              <v n="Type">"BOOL"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">true</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">169L</v>
+                            </o>
+                            <o>
+                              <v n="Operand">""</v>
+                              <v n="Type">"BOOL"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">true</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">170L</v>
+                            </o>
+                            <o>
+                              <v n="Operand">""</v>
+                              <v n="Type">"BOOL"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">true</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">171L</v>
+                            </o>
+                            <o>
+                              <v n="Operand">""</v>
+                              <v n="Type">"BOOL"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">true</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">172L</v>
+                            </o>
+                            <o>
+                              <v n="Operand">""</v>
+                              <v n="Type">"INT"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">true</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">173L</v>
+                            </o>
+                          </l2>
+                        </o>
+                        <o n="Flags" t="Flags">
+                          <v n="Flags">0</v>
+                          <v n="Fixed">true</v>
+                          <v n="Extensible">false</v>
+                        </o>
+                        <n n="InputFlags" />
+                        <l2 n="InputItems" cet="BoxTreeOperand">
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">"TRUE"</v>
+                              <v n="Type">"BOOL"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">true</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">175L</v>
+                            </o>
+                            <v n="Id">174L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">""</v>
+                              <v n="Type">"BOOL"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">177L</v>
+                            </o>
+                            <v n="Id">176L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">"sectionID"</v>
+                              <v n="Type">"SectionEnum"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">179L</v>
+                            </o>
+                            <v n="Id">178L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">"robotRight"</v>
+                              <v n="Type">"RobotA22"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">181L</v>
+                            </o>
+                            <v n="Id">180L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">"magazineRight"</v>
+                              <v n="Type">"SkidMagazine"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">183L</v>
+                            </o>
+                            <v n="Id">182L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">"innerLoadedMaterials"</v>
+                              <v n="Type">"ARRAY [Surface.TOP..Surface.BOTTOM_RIGHT] OF STRING"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">185L</v>
+                            </o>
+                            <v n="Id">184L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">""</v>
+                              <v n="Type">"Surface"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">187L</v>
+                            </o>
+                            <v n="Id">186L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">""</v>
+                              <v n="Type">"STRING"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">189L</v>
+                            </o>
+                            <v n="Id">188L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">""</v>
+                              <v n="Type">"POINTER TO SuctionPad"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">191L</v>
+                            </o>
+                            <v n="Id">190L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">""</v>
+                              <v n="Type">"DINT"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">193L</v>
+                            </o>
+                            <v n="Id">192L</v>
+                          </o>
+                        </l2>
+                        <o n="InputParam" t="ParamList">
+                          <l2 n="Names" cet="String">
+                            <v>EN</v>
+                            <v>execute</v>
+                            <v>sectionID</v>
+                            <v>robot</v>
+                            <v>magazine</v>
+                            <v>loadedMaterials</v>
+                            <v>surfaceID</v>
+                            <v>material</v>
+                            <v>suctions</v>
+                            <v>numPads</v>
+                          </l2>
+                          <l2 n="Types" cet="String">
+                            <v>BOOL</v>
+                            <v>BOOL</v>
+                            <v>SectionEnum[REF]</v>
+                            <v>RobotA22[REF]</v>
+                            <v>SkidMagazine[REF]</v>
+                            <v>POINTER TO STRING</v>
+                            <v>Surface</v>
+                            <v>STRING</v>
+                            <v>POINTER TO SuctionPad</v>
+                            <v>DINT</v>
+                          </l2>
+                        </o>
+                        <o n="OutputParam" t="ParamList">
+                          <l2 n="Names" cet="String">
+                            <v>ENO</v>
+                            <v>donePulse</v>
+                            <v>done</v>
+                            <v>busy</v>
+                            <v>error</v>
+                            <v>recovery</v>
+                            <v>failCounter</v>
+                          </l2>
+                          <l2 n="Types" cet="String">
+                            <v>BOOL</v>
+                            <v>BOOL</v>
+                            <v>BOOL</v>
+                            <v>BOOL</v>
+                            <v>BOOL</v>
+                            <v>BOOL</v>
+                            <v>INT</v>
+                          </l2>
+                        </o>
+                        <v n="CallType" t="Operator">FunctionBlock</v>
+                        <v n="EN">true</v>
+                        <v n="ENO">true</v>
+                        <n n="STSnippet" />
+                        <v n="ContainsExtensibleInputs">false</v>
+                        <v n="ProvidesSTSnippet">false</v>
+                        <v n="Id">167L</v>
+                      </o>
+                    </l2>
+                    <l2 n="Connectors" />
+                    <v n="Id">137L</v>
+                  </o>
+                  <o>
+                    <v n="ILActive">false</v>
+                    <v n="FBDValid">false</v>
+                    <v n="ILValid">false</v>
+                    <l2 n="ILLines" />
+                    <v n="Comment">""</v>
+                    <v n="Title">""</v>
+                    <v n="Label">""</v>
+                    <v n="OutCommented">false</v>
+                    <l2 n="NetworkItems" cet="BoxTreeBox">
+                      <o>
+                        <v n="BoxType">"AOI_LoadFlatCardboard"</v>
+                        <o n="Instance" t="Operand">
+                          <v n="Operand">"aoiLoadFlatCardboardLeft"</v>
+                          <v n="Type">"AOI_LoadFlatCardboard"</v>
+                          <v n="Comment">""</v>
+                          <v n="SymbolComment">""</v>
+                          <v n="Address">""</v>
+                          <o n="Flags" t="Flags">
+                            <v n="Flags">0</v>
+                            <v n="Fixed">false</v>
+                            <v n="Extensible">false</v>
+                          </o>
+                          <v n="LValue">false</v>
+                          <v n="Boolean">false</v>
+                          <v n="IsInstance">true</v>
+                          <v n="Id">200L</v>
+                        </o>
+                        <o n="OutputItems" t="OutputItemList">
+                          <l2 n="OutputItems" cet="Operand">
+                            <n />
+                            <o>
+                              <v n="Operand">""</v>
+                              <v n="Type">"BOOL"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">true</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">29L</v>
+                            </o>
+                            <o>
+                              <v n="Operand">""</v>
+                              <v n="Type">"BOOL"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">true</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">36L</v>
+                            </o>
+                            <o>
+                              <v n="Operand">""</v>
+                              <v n="Type">"BOOL"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">true</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">37L</v>
+                            </o>
+                            <o>
+                              <v n="Operand">""</v>
+                              <v n="Type">"BOOL"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">true</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">38L</v>
+                            </o>
+                            <o>
+                              <v n="Operand">""</v>
+                              <v n="Type">"BOOL"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">true</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">39L</v>
+                            </o>
+                            <o>
+                              <v n="Operand">""</v>
+                              <v n="Type">"INT"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">true</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">40L</v>
+                            </o>
+                          </l2>
+                        </o>
+                        <o n="Flags" t="Flags">
+                          <v n="Flags">0</v>
+                          <v n="Fixed">true</v>
+                          <v n="Extensible">false</v>
+                        </o>
+                        <n n="InputFlags" />
+                        <l2 n="InputItems" cet="BoxTreeOperand">
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">"TRUE"</v>
+                              <v n="Type">"BOOL"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">true</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">10L</v>
+                            </o>
+                            <v n="Id">9L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">""</v>
+                              <v n="Type">"BOOL"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">31L</v>
+                            </o>
+                            <v n="Id">30L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">"sectionID"</v>
+                              <v n="Type">"SectionEnum"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">33L</v>
+                            </o>
+                            <v n="Id">32L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">"robotLeft"</v>
+                              <v n="Type">"RobotA22"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">42L</v>
+                            </o>
+                            <v n="Id">41L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">"skidLeft"</v>
+                              <v n="Type">"SkidMagazine"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">44L</v>
+                            </o>
+                            <v n="Id">43L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">"outerLoadedMaterials"</v>
+                              <v n="Type">"ARRAY [Surface.TOP..Surface.BOTTOM_RIGHT] OF STRING"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">46L</v>
+                            </o>
+                            <v n="Id">45L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">""</v>
+                              <v n="Type">"Surface"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">48L</v>
+                            </o>
+                            <v n="Id">47L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">""</v>
+                              <v n="Type">"STRING"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">50L</v>
+                            </o>
+                            <v n="Id">49L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">""</v>
+                              <v n="Type">"POINTER TO SuctionPad"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">52L</v>
+                            </o>
+                            <v n="Id">51L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">""</v>
+                              <v n="Type">"DINT"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">54L</v>
+                            </o>
+                            <v n="Id">53L</v>
+                          </o>
+                        </l2>
+                        <o n="InputParam" t="ParamList">
+                          <l2 n="Names" cet="String">
+                            <v>EN</v>
+                            <v>execute</v>
+                            <v>sectionID</v>
+                            <v>robot</v>
+                            <v>skid</v>
+                            <v>loadedMaterials</v>
+                            <v>surfaceID</v>
+                            <v>material</v>
+                            <v>suctions</v>
+                            <v>numPads</v>
+                          </l2>
+                          <l2 n="Types" cet="String">
+                            <v>BOOL</v>
+                            <v>BOOL</v>
+                            <v>SectionEnum[REF]</v>
+                            <v>RobotA22[REF]</v>
+                            <v>SkidMagazine[REF]</v>
+                            <v>POINTER TO STRING</v>
+                            <v>Surface</v>
+                            <v>STRING</v>
+                            <v>POINTER TO SuctionPad</v>
+                            <v>DINT</v>
+                          </l2>
+                        </o>
+                        <o n="OutputParam" t="ParamList">
+                          <l2 n="Names" cet="String">
+                            <v>ENO</v>
+                            <v>donePulse</v>
+                            <v>done</v>
+                            <v>busy</v>
+                            <v>error</v>
+                            <v>recovery</v>
+                            <v>failCounter</v>
+                          </l2>
+                          <l2 n="Types" cet="String">
+                            <v>BOOL</v>
+                            <v>BOOL</v>
+                            <v>BOOL</v>
+                            <v>BOOL</v>
+                            <v>BOOL</v>
+                            <v>BOOL</v>
+                            <v>INT</v>
+                          </l2>
+                        </o>
+                        <v n="CallType" t="Operator">FunctionBlock</v>
+                        <v n="EN">true</v>
+                        <v n="ENO">true</v>
+                        <n n="STSnippet" />
+                        <v n="ContainsExtensibleInputs">false</v>
+                        <v n="ProvidesSTSnippet">false</v>
+                        <v n="Id">201L</v>
+                      </o>
+                      <o>
+                        <v n="BoxType">"AOI_LoadFlatCardboard"</v>
+                        <o n="Instance" t="Operand">
+                          <v n="Operand">"aoiLoadFlatCardboardRight"</v>
+                          <v n="Type">"AOI_LoadFlatCardboard"</v>
+                          <v n="Comment">""</v>
+                          <v n="SymbolComment">""</v>
+                          <v n="Address">""</v>
+                          <o n="Flags" t="Flags">
+                            <v n="Flags">0</v>
+                            <v n="Fixed">false</v>
+                            <v n="Extensible">false</v>
+                          </o>
+                          <v n="LValue">false</v>
+                          <v n="Boolean">false</v>
+                          <v n="IsInstance">true</v>
+                          <v n="Id">198L</v>
+                        </o>
+                        <o n="OutputItems" t="OutputItemList">
+                          <l2 n="OutputItems" cet="Operand">
+                            <n />
+                            <o>
+                              <v n="Operand">""</v>
+                              <v n="Type">"BOOL"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">true</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">111L</v>
+                            </o>
+                            <o>
+                              <v n="Operand">""</v>
+                              <v n="Type">"BOOL"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">true</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">112L</v>
+                            </o>
+                            <o>
+                              <v n="Operand">""</v>
+                              <v n="Type">"BOOL"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">true</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">113L</v>
+                            </o>
+                            <o>
+                              <v n="Operand">""</v>
+                              <v n="Type">"BOOL"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">true</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">114L</v>
+                            </o>
+                            <o>
+                              <v n="Operand">""</v>
+                              <v n="Type">"BOOL"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">true</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">115L</v>
+                            </o>
+                            <o>
+                              <v n="Operand">""</v>
+                              <v n="Type">"INT"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">true</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">116L</v>
+                            </o>
+                          </l2>
+                        </o>
+                        <o n="Flags" t="Flags">
+                          <v n="Flags">0</v>
+                          <v n="Fixed">true</v>
+                          <v n="Extensible">false</v>
+                        </o>
+                        <n n="InputFlags" />
+                        <l2 n="InputItems" cet="BoxTreeOperand">
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">"TRUE"</v>
+                              <v n="Type">"BOOL"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">true</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">118L</v>
+                            </o>
+                            <v n="Id">117L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">""</v>
+                              <v n="Type">"BOOL"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">120L</v>
+                            </o>
+                            <v n="Id">119L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">"sectionID"</v>
+                              <v n="Type">"SectionEnum"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">122L</v>
+                            </o>
+                            <v n="Id">121L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">"robotRight"</v>
+                              <v n="Type">"RobotA22"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">124L</v>
+                            </o>
+                            <v n="Id">123L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">"skidRight"</v>
+                              <v n="Type">"SkidMagazine"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">126L</v>
+                            </o>
+                            <v n="Id">125L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">"outerLoadedMaterials"</v>
+                              <v n="Type">"ARRAY [Surface.TOP..Surface.BOTTOM_RIGHT] OF STRING"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">128L</v>
+                            </o>
+                            <v n="Id">127L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">""</v>
+                              <v n="Type">"Surface"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">130L</v>
+                            </o>
+                            <v n="Id">129L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">""</v>
+                              <v n="Type">"STRING"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">132L</v>
+                            </o>
+                            <v n="Id">131L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">""</v>
+                              <v n="Type">"POINTER TO SuctionPad"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">134L</v>
+                            </o>
+                            <v n="Id">133L</v>
+                          </o>
+                          <o>
+                            <o n="Operand" t="Operand">
+                              <v n="Operand">""</v>
+                              <v n="Type">"DINT"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">false</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">136L</v>
+                            </o>
+                            <v n="Id">135L</v>
+                          </o>
+                        </l2>
+                        <o n="InputParam" t="ParamList">
+                          <l2 n="Names" cet="String">
+                            <v>EN</v>
+                            <v>execute</v>
+                            <v>sectionID</v>
+                            <v>robot</v>
+                            <v>skid</v>
+                            <v>loadedMaterials</v>
+                            <v>surfaceID</v>
+                            <v>material</v>
+                            <v>suctions</v>
+                            <v>numPads</v>
+                          </l2>
+                          <l2 n="Types" cet="String">
+                            <v>BOOL</v>
+                            <v>BOOL</v>
+                            <v>SectionEnum[REF]</v>
+                            <v>RobotA22[REF]</v>
+                            <v>SkidMagazine[REF]</v>
+                            <v>POINTER TO STRING</v>
+                            <v>Surface</v>
+                            <v>STRING</v>
+                            <v>POINTER TO SuctionPad</v>
+                            <v>DINT</v>
+                          </l2>
+                        </o>
+                        <o n="OutputParam" t="ParamList">
+                          <l2 n="Names" cet="String">
+                            <v>ENO</v>
+                            <v>donePulse</v>
+                            <v>done</v>
+                            <v>busy</v>
+                            <v>error</v>
+                            <v>recovery</v>
+                            <v>failCounter</v>
+                          </l2>
+                          <l2 n="Types" cet="String">
+                            <v>BOOL</v>
+                            <v>BOOL</v>
+                            <v>BOOL</v>
+                            <v>BOOL</v>
+                            <v>BOOL</v>
+                            <v>BOOL</v>
+                            <v>INT</v>
+                          </l2>
+                        </o>
+                        <v n="CallType" t="Operator">FunctionBlock</v>
+                        <v n="EN">true</v>
+                        <v n="ENO">true</v>
+                        <n n="STSnippet" />
+                        <v n="ContainsExtensibleInputs">false</v>
+                        <v n="ProvidesSTSnippet">false</v>
+                        <v n="Id">199L</v>
+                      </o>
+                    </l2>
+                    <l2 n="Connectors" />
+                    <v n="Id">1L</v>
+                  </o>
+                </l2>
+                <v n="BranchCounter">0</v>
+                <v n="ValidIds">true</v>
+              </o>
+            </Data>
+            <TypeList>
+              <Type n="Boolean">System.Boolean</Type>
+              <Type n="BoxTreeBox">{acfc6f68-8e3a-4af5-bf81-3dd512095a46}</Type>
+              <Type n="BoxTreeOperand">{9de7f100-1b87-424c-a62e-45b0cfc85ed2}</Type>
+              <Type n="Flags">{668066f2-6069-46b3-8962-8db8d13d7db2}</Type>
+              <Type n="Int32">System.Int32</Type>
+              <Type n="Int64">System.Int64</Type>
+              <Type n="Network">{d9a99d73-b633-47db-b876-a752acb25871}</Type>
+              <Type n="NWLImplementationObject">{25e509de-33d4-4447-93f8-c9e4ea381c8b}</Type>
+              <Type n="Operand">{c9b2f165-48a2-4a45-8326-3952d8a3d708}</Type>
+              <Type n="Operator">{bffb3c53-f105-4e85-aba2-e30df579d75f}</Type>
+              <Type n="OutputItemList">{f40d3e09-c02c-4522-a88c-dac23558cfc4}</Type>
+              <Type n="ParamList">{71496971-9e0c-4677-a832-b9583b571130}</Type>
+              <Type n="String">System.String</Type>
+            </TypeList>
+          </XmlArchive>
+        </NWL>
+      </Implementation>
+    </Action>
+    <Action Name="callLocalModules" Id="{39933dae-94a6-4c04-af7d-ba6ce828a93a}" FolderPath="Actions\">
+      <Implementation>
+        <ST><![CDATA[{warning disable C0371}
+insertionLeft(
+	enable:= TRUE, 
+	slider:= verticalDriveLeft, 
+	screw:= horizontalDriveLeft, 
+	contact=> , 
+	softContact=> , 
+	busy=> , 
+	error=> , 
+	home=> , 
+	homingComplete=> , 
+	sliderPos=> );
+	
+insertionRight(
+	enable:= TRUE, 
+	slider:= verticalDriveRight, 
+	screw:= horizontalDriveRight, 
+	contact=> , 
+	softContact=> , 
+	busy=> , 
+	error=> , 
+	home=> , 
+	homingComplete=> , 
+	sliderPos=> );]]></ST>
+      </Implementation>
+    </Action>
+    <Method Name="leftCornerSequence" Id="{08bffef9-e349-4b7d-9ae3-92f5a7d8876a}" FolderPath="Cardboard (Corner)\">
+      <Declaration><![CDATA[METHOD PROTECTED leftCornerSequence : BOOL
+VAR_IN_OUT
+	robot : RobotA22;
+	skid : SkidMagazine;
+	suctions : POINTER TO SuctionPad; //ARRAY[*] OF SuctionPad;
+	loadStep : INT;
+END_VAR
+VAR_INPUT
+	surfaceID : Surface;
+	material : STRING;
+	foldPos0 : INT;
+	foldPos1 : INT;
+END_VAR
+VAR_OUTPUT
+	error : BOOL;
+END_VAR
+VAR
+	column : INT;
+END_VAR
+VAR CONSTANT
+	suctionDistance : INT := 10;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[{warning disable C0371}
+IF material = '' THEN
+	leftCornerSequence := TRUE;
+	RETURN;
+END_IF
+
+benderLeft.setFoldingPositions(foldPos0, foldPos1);
+
+CASE loadStep OF
+	0:
+		robot.clearCommand();
+		IF robot.Ready AND overhead = '' THEN
+			loadStep := 10;
+		END_IF
+		
+	10: //skid to bender
+		IF NOT skid.findSlot(materialID:= material, index=> column) THEN
+			error := TRUE;
+			RETURN;
+		END_IF
+		
+		(*
+		IF robot.eoatDistance < suctionDistance THEN
+			robot.HoldMaterial := skid.getSlot(i := column);
+		END_IF
+		*)
+		
+		IF robot.Done THEN
+			loadStep := 20;
+			RETURN;
+		END_IF
+		
+		robot.setGroup(group := 1, value := A22.TRANSFER_TO_BENDER);
+		robot.setGroup(group := 2, value := foldPos0);
+		robot.setGroup(group := 3, value := foldPos1);
+		
+	20: //bend
+		//IF benderLeft.done THEN
+			loadStep := 30;
+		//END_IF
+		
+	30: //bender to overhead or left insertion
+		IF wrapper.trayOccupied AND wrapper.Overhead = '' AND robot.HoldMaterial <> '' THEN
+			wrapper.Overhead := robot.HoldMaterial;
+			robot.HoldMaterial := '';
+		END_IF
+	
+		IF robot.Done THEN
+			loadStep := COMPLETE;
+			RETURN;
+		END_IF
+		
+		CASE surfaceID OF
+			Surface.TOP_RIGHT:		robot.setGroup(group := 1, value := A22.TRANSFER_TO_OVERHEAD);
+			Surface.BOTTOM_RIGHT:	robot.setGroup(group := 1, value := A22.TRANSFER_TO_OVERHEAD);
+			Surface.TOP_LEFT:		robot.setGroup(group := 1, value := A22.LOAD_BENDER_TO_UPPER_CORNER);
+			Surface.BOTTOM_LEFT:	robot.setGroup(group := 1, value := A22.LOAD_BENDER_TO_LOWER_CORNER);
+		END_CASE
+		robot.setGroup(group := 2, value := 0);
+		robot.setGroup(group := 3, value := 0);
+	
+	COMPLETE:
+		CASE surfaceID OF
+			Surface.TOP_LEFT:		suctionTopLeft[1].enable := suctionTopLeft[3].enable := TRUE;
+			Surface.BOTTOM_LEFT:	suctionBottomLeft[1].enable := suctionBottomLeft[3].enable := TRUE;
+		END_CASE
+		
+		leftCornerSequence := TRUE;
+		
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="load" Id="{a681c93d-e590-4020-9185-d7ae010cf638}">
+      <Declaration><![CDATA[METHOD PROTECTED load : BOOL
+VAR_INPUT
+	pairIndex : INT;
+END_VAR
+VAR
+	pair : REFERENCE TO PositionMaterials REF= materialsArr[pairIndex];
+	nextPair : REFERENCE TO PositionMaterials;
+END_VAR
+(*
+unlike other sections, the load() function for cardboard + corner guard only loads the corners
+to load flat cardboards, use the function loadFlats()
+*)]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[{warning disable C0371}
+
+IF robotLeft.error OR robotRight.error THEN
+	RETURN;
+ELSIF NOT (robotLeft.reserve(sectionID) AND robotRight.reserve(sectionID)) THEN //both robots must be reserved first
+	RETURN;
+END_IF
+
+IF pairIndex + 1 < GVL.maxPairs THEN
+	nextPair REF= materialsArr[pairIndex + 1];
+END_IF
+
+CASE masterLoadStep OF
+	0: //next pair (which is to be placed over this pair) has the same position as this pair
+		IF pairIndex + 1 >= GVL.maxPairs THEN //no next pair
+			masterLoadStep := 10;
+		ELSIF pair.position < nextPair.position THEN
+			masterLoadStep := 10;
+		ELSIF MatchesMaterialType(pair:= nextPair, materialType:= 'CAR') AND_THEN loadCornerCardboards(pairIndex:= pairIndex + 1) THEN
+			masterLoadStep := 10;
+		ELSIF MatchesMaterialType(pair:= nextPair, materialType:= 'COR') AND_THEN loadCornerGuards(pairIndex:= pairIndex + 1) THEN
+			masterLoadStep := 10;
+		END_IF
+		
+	10:
+		IF
+			MatchesMaterialType(pair:= pair, materialType:= 'CAR') AND_THEN loadCornerCardboardsEx(pairIndex:= iPair) OR_ELSE
+			MatchesMaterialType(pair:= pair, materialType:= 'COR') AND_THEN loadCornerGuards(pairIndex:= iPair)
+		THEN //is cardboard
+			masterLoadStep := COMPLETE;
+		END_IF
+	
+	COMPLETE:
+		robotLeft.release(sectionID);
+		robotRight.release(sectionID);
+		
+		masterLoadStep := 0;
+		load := TRUE;
+	
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="loadCornerCardboards" Id="{fc6e26f1-7233-42c4-a94a-66d2e256266a}" FolderPath="x_Obsolete\">
+      <Declaration><![CDATA[METHOD PROTECTED loadCornerCardboards : BOOL
+VAR_INPUT
+	pairIndex : INT;
+END_VAR
+VAR
+	leftSuctionArr, rightSuctionArr : POINTER TO SuctionPad;
+	leftNextSet, rightNextSet : INT;
+	leftMaterial, rightMaterial : STRING;
+	leftFold, rightFold : INT;
+	
+	pair : REFERENCE TO PositionMaterials REF= materialsArr[pairIndex];
+	topLeftFold : INT := topLeftFoldsArr[pairIndex];
+	topRightFold : INT := topRightFoldsArr[pairIndex];
+	bottomLeftFold : INT := bottomLeftFoldsArr[pairIndex];
+	bottomRightFold : INT := bottomRightFoldsArr[pairIndex];
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[{warning disable C0371}
+CASE cornerSetLeft OF
+	0:
+		leftNextSet := Surface.TOP_RIGHT;
+		cornerSetLeft := 0;
+		
+	Surface.TOP_RIGHT: 
+		leftNextSet := Surface.TOP_LEFT;
+		leftSuctionArr := suctionTopRight;
+		leftMaterial := pair.topRight;
+		leftFold := topRightFold;
+		
+	Surface.TOP_LEFT: 
+		leftNextSet := Surface.BOTTOM_RIGHT;
+		leftSuctionArr := suctionTopLeft;
+		leftMaterial := pair.topLeft;
+		leftFold := topLeftFold;
+		
+	Surface.BOTTOM_RIGHT:
+		leftNextSet := Surface.BOTTOM_LEFT;
+		leftSuctionArr := suctionBottomRight;
+		leftMaterial := pair.bottomRight;
+		leftFold := bottomRightFold;
+		
+	Surface.BOTTOM_LEFT: 
+		leftNextSet := COMPLETE;
+		leftSuctionArr := suctionBottomLeft;
+		leftMaterial := pair.bottomLeft;
+		leftFold := bottomLeftFold;
+END_CASE
+IF
+	(cornerSetLeft = 0 OR cornerSetLeft = COMPLETE) OR_ELSE
+	leftCornerSequence(
+		robot:= robotLeft, 
+		skid:= skidLeft, 
+		suctions := leftSuctionArr,
+		loadStep:= loadStepLeft, 
+		surfaceID:= cornerSetLeft,
+		material:= pair.topRight, 
+		foldPos0:= topRightFold, 
+		foldPos1:= 0, 
+		error=> )
+THEN
+	cornerSetLeft := leftNextSet;
+	loadStepLeft := 0;
+END_IF
+
+
+CASE cornerSetRight OF
+	0:
+		cornerSetRight := Surface.TOP_RIGHT;
+		rightSuctionArr := suctionTopRight;
+		
+	Surface.TOP_RIGHT:		
+		rightNextSet := Surface.BOTTOM_RIGHT;
+		rightSuctionArr := suctionTopRight;
+		rightMaterial := pair.topRight;
+		rightFold := topRightFold;
+		
+	Surface.BOTTOM_RIGHT: 
+		rightNextSet := COMPLETE;
+		rightSuctionArr := suctionBottomRight;
+		rightMaterial := pair.bottomRight;
+		rightFold := bottomRightFold;		
+END_CASE
+IF
+	(cornerSetRight = 0 OR cornerSetRight = COMPLETE) OR_ELSE
+	rightCornerSequence(
+		robot:= robotRight, 
+		skid:= skidRight, 
+		suctions := rightSuctionArr,
+		loadStep:= loadStepRight, 
+		material:= pair.topRight, 
+		surfaceID:= cornerSetRight,
+		foldPos0:= pair.topRightFold, 
+		foldPos1:= 0, 
+		error=> )
+THEN
+	cornerSetRight := rightNextSet;
+	loadStepRight := 0;
+END_IF
+
+
+
+IF cornerSetLeft = COMPLETE AND cornerSetRight = COMPLETE THEN
+	loadCornerCardboards := TRUE;
+	
+	loadStepLeft := loadStepRight := 0;
+	cornerSetLeft := cornerSetRight := 0;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="loadCornerCardboardsEx" Id="{156f628d-7b56-4840-9717-9971eeb42365}" FolderPath="Cardboard (Corner)\">
+      <Declaration><![CDATA[METHOD PROTECTED loadCornerCardboardsEx : BOOL
+VAR_INPUT
+	pairIndex : INT;
+END_VAR
+VAR
+	suctionsArrLeft, suctionsArrRight : POINTER TO SuctionPad;
+	nextSetLeft, nextSetRight : INT;
+
+	pair : REFERENCE TO PositionMaterials REF= materialsArr[pairIndex];
+	topLeftFold : INT := topLeftFoldsArr[pairIndex];
+	topRightFold : INT := topRightFoldsArr[pairIndex];
+	bottomLeftFold : INT := bottomLeftFoldsArr[pairIndex];
+	bottomRightFold : INT := bottomRightFoldsArr[pairIndex];
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[{warning disable C0371}
+CASE cornerSetLeft OF
+	0:
+		cornerSetLeft := Surface.TOP_RIGHT;
+		loadStepLeft := 0;
+		
+	Surface.TOP_RIGHT: 
+		IF
+			leftCornerSequence(
+				robot:= robotLeft, 
+				skid:= skidLeft, 
+				suctions := suctionTopRight,
+				loadStep:= loadStepLeft, 
+				surfaceID:= Surface.TOP_RIGHT,
+				material:= pair.topRight, 
+				foldPos0:= topRightFold, 
+				foldPos1:= 0, 
+				error=> )
+		THEN
+			cornerSetLeft := Surface.TOP_LEFT;
+			loadStepLeft := 0;
+		END_IF
+		
+	Surface.TOP_LEFT: 
+		IF
+			leftCornerSequence(
+				robot:= robotLeft, 
+				skid:= skidLeft, 
+				suctions := suctionTopLeft,
+				loadStep:= loadStepLeft, 
+				surfaceID:= Surface.TOP_LEFT,
+				material:= pair.topLeft, 
+				foldPos0:= topLeftFold, 
+				foldPos1:= 0, 
+				error=> )
+		THEN
+			cornerSetLeft := Surface.BOTTOM_RIGHT;
+			loadStepLeft := 0;
+		END_IF
+		
+	Surface.BOTTOM_RIGHT: 
+		IF
+			leftCornerSequence(
+				robot:= robotLeft, 
+				skid:= skidLeft, 
+				suctions := suctionBottomRight,
+				loadStep:= loadStepLeft, 
+				surfaceID:= Surface.BOTTOM_RIGHT,
+				material:= pair.bottomRight, 
+				foldPos0:= bottomRightFold, 
+				foldPos1:= 0, 
+				error=> )
+		THEN
+			cornerSetLeft := Surface.BOTTOM_LEFT;
+			loadStepLeft := 0;
+		END_IF
+		
+	Surface.BOTTOM_LEFT: 
+		IF
+			leftCornerSequence(
+				robot:= robotLeft, 
+				skid:= skidLeft, 
+				suctions := suctionBottomLeft,
+				loadStep:= loadStepLeft, 
+				surfaceID:= Surface.BOTTOM_LEFT,
+				material:= pair.bottomLeft, 
+				foldPos0:= bottomLeftFold, 
+				foldPos1:= 0, 
+				error=> )
+		THEN
+			cornerSetLeft := COMPLETE;
+			loadStepLeft := 0;
+		END_IF
+END_CASE
+
+//------------------------------------------------------------
+CASE cornerSetRight OF
+	0:
+		cornerSetRight := Surface.TOP_RIGHT;
+		loadStepRight := 0;
+		
+	Surface.TOP_RIGHT: 
+		IF
+			rightCornerSequence(
+				robot:= robotRight, 
+				skid:= skidRight, 
+				suctions := suctionTopRight,
+				loadStep:= loadStepRight, 
+				surfaceID:= Surface.TOP_RIGHT,
+				material:= pair.topRight, 
+				foldPos0:= topRightFold, 
+				foldPos1:= 0, 
+				error=> )
+		THEN
+			cornerSetRight := Surface.BOTTOM_RIGHT;
+			loadStepRight := 0;
+		END_IF
+		
+	Surface.BOTTOM_RIGHT: 
+		IF
+			rightCornerSequence(
+				robot:= robotRight, 
+				skid:= skidRight, 
+				suctions := suctionBottomRight,
+				loadStep:= loadStepRight, 
+				surfaceID:= Surface.BOTTOM_RIGHT,
+				material:= pair.bottomRight, 
+				foldPos0:= bottomRightFold, 
+				foldPos1:= 0, 
+				error=> )
+		THEN
+			cornerSetRight := Surface.BOTTOM_RIGHT;
+			loadStepRight := 0;
+		END_IF
+		
+		cornerSetRight := COMPLETE;			
+		loadStepRight := COMPLETE;
+		
+END_CASE
+
+//------------------------------------------------------------
+IF cornerSetLeft = COMPLETE AND cornerSetRight = COMPLETE THEN
+	loadCornerCardboardsEx := TRUE;
+	
+	loadStepLeft := loadStepRight := 0;
+	cornerSetLeft := cornerSetRight := 0;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="loadCornerGuards" Id="{73216583-3bb4-409e-896a-e96f29db7009}" FolderPath="Corner Guards\">
+      <Declaration><![CDATA[METHOD PROTECTED loadCornerGuards : BOOL
+VAR_INPUT
+	pairIndex : INT;
+END_VAR
+VAR_OUTPUT
+	fail : BOOL;
+END_VAR
+VAR
+	pair : REFERENCE TO PositionMaterials REF= materialsArr[pairIndex];
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[{warning disable C0371}
+CASE loadSet OF
+	0: //upper corners
+		IF 
+			loadGuardSequence(
+				robot:= robotLeft, 
+				magazine:= magazineLeft, 
+				suctions:= suctionTopLeft,
+				loadStep:= loadStepLeft, 
+				surfaceID:= Surface.TOP_LEFT, 
+				material:= pair.topLeft, 
+				error=> failLeft)
+			AND
+			loadGuardSequence(
+				robot:= robotRight, 
+				magazine:= magazineLeft,
+				suctions:= suctionTopRight,
+				loadStep:= loadStepRight, 
+				surfaceID:= Surface.TOP_RIGHT, 
+				material:= pair.topRight, 
+				error=> failRight)
+		THEN
+			loadStepLeft := loadStepRight := 0;
+			loadSet := 10;
+		END_IF
+		
+	10: //lower corners
+		IF 
+			loadGuardSequence(
+				robot:= robotLeft, 
+				magazine:= skidLeft, 
+				suctions:= suctionTopLeft,
+				loadStep:= loadStepLeft, 
+				surfaceID:= Surface.BOTTOM_LEFT, 
+				material:= pair.bottomLeft, 
+				error=> failLeft)
+			AND
+			loadGuardSequence(
+				robot:= robotRight, 
+				magazine:= skidRight,
+				suctions:= suctionTopRight,
+				loadStep:= loadStepRight, 
+				surfaceID:= Surface.BOTTOM_RIGHT, 
+				material:= pair.bottomRight, 
+				error=> failRight)
+		THEN
+			loadStepLeft := loadStepRight := 0;
+			loadSet := COMPLETE;
+		END_IF
+	
+	COMPLETE:
+		loadStepLeft := loadStepRight := 0;
+		loadSet := 0;
+		
+		loadCornerGuards := TRUE;
+END_CASE
+
+fail := failLeft OR failRight;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="loadFlats" Id="{b9a93d4c-938b-4af6-a5a3-5141d50c48d4}" FolderPath="Cardboard (Flat)\">
+      <Declaration><![CDATA[METHOD PROTECTED loadFlats : BOOL
+VAR_INPUT
+	pair : REFERENCE TO PositionMaterials;
+END_VAR
+VAR_OUTPUT
+	error : BOOL;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[{warning disable C0371}
+CASE loadSet OF
+	0: //top and bottom
+		IF 
+			loadFlatSequence(
+				robot:= robotLeft, 
+				skid:= skidLeft, 
+				loadStep:= loadStepLeft, 
+				surfaceID:= Surface.TOP, 
+				material:= pair.top, 
+				fail=> )
+			AND
+			loadFlatSequence(
+				robot:= robotRight, 
+				skid:= skidRight, 
+				loadStep:= loadStepRight, 
+				surfaceID:= Surface.BOTTOM, 
+				material:= pair.bottom, 
+				fail=> )
+		THEN
+			loadStepLeft := loadStepRight := 0;
+			loadSet := 10;
+		END_IF
+		
+	10: //sides
+		IF 
+			loadFlatSequence(
+				robot:= robotLeft, 
+				skid:= skidLeft, 
+				loadStep:= loadStepLeft, 
+				surfaceID:= Surface.LEFT, 
+				material:= pair.left, 
+				fail=> )
+			AND
+			loadFlatSequence(
+				robot:= robotRight, 
+				skid:= skidRight, 
+				loadStep:= loadStepRight, 
+				surfaceID:= Surface.RIGHT, 
+				material:= pair.right, 
+				fail=> )
+		THEN
+			loadStepLeft := loadStepRight := 0;
+			loadSet := COMPLETE;
+		END_IF
+	
+	COMPLETE:
+		loadStepLeft := loadStepRight := 0;
+		loadSet := 0;
+		
+		loadFlats := TRUE;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="loadFlatSequence" Id="{e9b25173-0158-437d-9616-4153dd5d3500}" FolderPath="Cardboard (Flat)\">
+      <Declaration><![CDATA[METHOD loadFlatSequence : BOOL
+VAR_IN_OUT
+	robot : RobotA22;
+	skid : SkidMagazine;
+	loadStep : INT;
+END_VAR
+VAR_INPUT
+	surfaceID : Surface;
+	material : STRING;
+END_VAR
+VAR_OUTPUT
+	fail : BOOL;
+END_VAR
+VAR
+	task : INT;
+	slot : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF material = '' THEN
+	loadFlatSequence := TRUE;
+	RETURN;
+END_IF
+
+CASE loadStep OF
+	0:
+		robot.clearCommand();
+		IF robot.Ready THEN
+			step := 10;
+		END_IF
+		
+	10: //storage to gripper
+		IF NOT skid.findSlot(materialID := material, index => slot) THEN
+			fail := TRUE;
+			RETURN;
+		END_IF
+		
+		IF robot.Done THEN
+			loadStep := COMPLETE;
+			RETURN;
+		END_IF
+		
+		CASE surfaceID OF
+			Surface.TOP: 					task := A22.LOAD_CARDBOARD_TOP;
+			Surface.LEFT, Surface.RIGHT: 	task := A22.LOAD_CARDBOARD_SIDE;
+			Surface.BOTTOM: 				task := A22.LOAD_CARDBOARD_BOTTOM;
+		END_CASE
+		
+		robot.setGroup(group := 1, value := task);
+		robot.setGroup(group := 2, value := slot);
+		
+	20: //gripper to insertion
+		
+	COMPLETE:
+		loadFlatSequence := TRUE;
+	
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="loadGuardSequence" Id="{6d84fe42-26e5-4a1f-b580-8cefdfabe586}" FolderPath="Corner Guards\">
+      <Declaration><![CDATA[METHOD loadGuardSequence : BOOL
+VAR_IN_OUT
+	robot : RobotA22;
+	magazine : SkidMagazine;
+	suctions : ARRAY[*] OF SuctionPad;
+	loadStep : INT;
+END_VAR
+VAR_INPUT
+	surfaceID : Surface;
+	material : STRING;
+END_VAR
+VAR_OUTPUT
+	error : BOOL;
+END_VAR
+VAR
+	task : INT;
+	slot : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF material = '' THEN
+	loadGuardSequence := TRUE;
+	RETURN;
+END_IF
+
+CASE loadStep OF
+	0:
+		IF NOT magazine.findSlot(materialID := material, index => slot) THEN //load from staging table
+			error := TRUE;
+			RETURN;
+		END_IF
+		
+		IF robot.Done THEN
+			loadStep := COMPLETE;
+			RETURN;
+		END_IF
+		
+		CASE surfaceID OF
+			Surface.TOP_LEFT, Surface.TOP_RIGHT: 		task := A22.LOAD_CORNER_GUARD_UPPER;
+			Surface.BOTTOM_LEFT, Surface.BOTTOM_RIGHT:	task := A22.LOAD_CORNER_GUARD_LOWER;
+		END_CASE
+		
+		robot.setGroup(group := 1, value := task);
+		robot.setGroup(group := 2, value := slot);
+		
+	COMPLETE:
+		suctions[2].enable := TRUE;
+		loadGuardSequence := TRUE;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="loadLeftCornerCardboards" Id="{5220eb17-3d60-4a35-a2d9-12b1f5a6525f}" FolderPath="Cardboard (Corner)\">
+      <Declaration><![CDATA[METHOD PROTECTED loadLeftCornerCardboards : BOOL
+VAR_INPUT
+	pair : REFERENCE TO PositionMaterials;
+END_VAR
+VAR
+	suctionsArrLeft, suctionsArrRight : POINTER TO SuctionPad;
+	nextSetLeft, nextSetRight : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[{warning disable C0371}
+CASE cornerSetLeft OF
+	0:
+		cornerSetLeft := Surface.TOP_RIGHT;
+		loadStepLeft := 0;
+		
+	Surface.TOP_RIGHT: 
+		IF
+			leftCornerSequence(
+				robot:= robotLeft, 
+				skid:= skidLeft, 
+				suctions := suctionTopRight,
+				loadStep:= loadStepLeft, 
+				surfaceID:= Surface.TOP_RIGHT,
+				material:= pair.topRight, 
+				foldPos0:= pair.topRightFold, 
+				foldPos1:= 0, 
+				error=> )
+		THEN
+			cornerSetLeft := Surface.TOP_LEFT;
+			loadStepLeft := 0;
+		END_IF
+		
+	Surface.TOP_LEFT: 
+		IF
+			leftCornerSequence(
+				robot:= robotLeft, 
+				skid:= skidLeft, 
+				suctions := suctionTopLeft,
+				loadStep:= loadStepLeft, 
+				surfaceID:= Surface.TOP_LEFT,
+				material:= pair.topLeft, 
+				foldPos0:= pair.topLeftFold, 
+				foldPos1:= 0, 
+				error=> )
+		THEN
+			cornerSetLeft := Surface.BOTTOM_RIGHT;
+			loadStepLeft := 0;
+		END_IF
+		
+	Surface.BOTTOM_RIGHT: 
+		IF
+			leftCornerSequence(
+				robot:= robotLeft, 
+				skid:= skidLeft, 
+				suctions := suctionBottomRight,
+				loadStep:= loadStepLeft, 
+				surfaceID:= Surface.BOTTOM_RIGHT,
+				material:= pair.bottomRight, 
+				foldPos0:= pair.bottomRightFold, 
+				foldPos1:= 0, 
+				error=> )
+		THEN
+			cornerSetLeft := Surface.BOTTOM_LEFT;
+			loadStepLeft := 0;
+		END_IF
+		
+	Surface.BOTTOM_LEFT: 
+		IF
+			leftCornerSequence(
+				robot:= robotLeft, 
+				skid:= skidLeft, 
+				suctions := suctionBottomLeft,
+				loadStep:= loadStepLeft, 
+				surfaceID:= Surface.BOTTOM_LEFT,
+				material:= pair.bottomLeft, 
+				foldPos0:= pair.bottomLeftFold, 
+				foldPos1:= 0, 
+				error=> )
+		THEN
+			cornerSetLeft := COMPLETE;
+			loadStepLeft := 0;
+		END_IF
+END_CASE
+
+//------------------------------------------------------------
+IF cornerSetLeft = COMPLETE THEN
+	loadStepLeft := 0;
+	cornerSetLeft := 0;
+	loadLeftCornerCardboards := TRUE;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="loadRightCornerCardboards" Id="{ccdab2eb-d382-4ec7-bb9d-d70515ff692c}" FolderPath="Cardboard (Corner)\">
+      <Declaration><![CDATA[METHOD PROTECTED loadRightCornerCardboards : BOOL
+VAR_INPUT
+	pair : REFERENCE TO PositionMaterials;
+END_VAR
+VAR
+	suctionsArrLeft, suctionsArrRight : POINTER TO SuctionPad;
+	nextSetLeft, nextSetRight : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[{warning disable C0371}
+CASE cornerSetRight OF
+	0:
+		cornerSetRight := Surface.TOP_RIGHT;
+		loadStepRight := 0;
+		
+	Surface.TOP_RIGHT: 
+		IF
+			rightCornerSequence(
+				robot:= robotRight, 
+				skid:= skidRight, 
+				suctions := suctionTopRight,
+				loadStep:= loadStepRight, 
+				surfaceID:= Surface.TOP_RIGHT,
+				material:= pair.topRight, 
+				foldPos0:= pair.topRightFold, 
+				foldPos1:= 0, 
+				error=> )
+		THEN
+			cornerSetRight := Surface.BOTTOM_RIGHT;
+			loadStepRight := 0;
+		END_IF
+		
+	Surface.BOTTOM_RIGHT: 
+		IF
+			rightCornerSequence(
+				robot:= robotRight, 
+				skid:= skidRight, 
+				suctions := suctionBottomRight,
+				loadStep:= loadStepRight, 
+				surfaceID:= Surface.BOTTOM_RIGHT,
+				material:= pair.bottomRight, 
+				foldPos0:= pair.bottomRightFold, 
+				foldPos1:= 0, 
+				error=> )
+		THEN
+			cornerSetRight := Surface.BOTTOM_RIGHT;
+			loadStepRight := 0;
+		END_IF
+		
+		cornerSetRight := COMPLETE;			
+		loadStepRight := COMPLETE;
+		
+END_CASE
+
+//------------------------------------------------------------
+IF cornerSetRight = COMPLETE THEN	
+	loadStepRight := 0;
+	cornerSetRight := 0;
+	loadRightCornerCardboards := TRUE;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="rightCornerSequence" Id="{879cd7f3-c4e8-4979-a4c5-8a1bacb14790}" FolderPath="Cardboard (Corner)\">
+      <Declaration><![CDATA[METHOD PROTECTED rightCornerSequence : BOOL
+VAR_IN_OUT
+	robot : RobotA22;
+	skid : SkidMagazine;
+	suctions : POINTER TO SuctionPad; //array of SuctionPads, casts from [1..3] to [0..2]
+	loadStep : INT;
+END_VAR
+VAR_INPUT
+	surfaceID : Surface;
+	material : STRING;
+	foldPos0 : INT;
+	foldPos1 : INT;
+END_VAR
+VAR_OUTPUT
+	error : BOOL;
+END_VAR
+VAR
+	column : INT;
+END_VAR
+VAR CONSTANT
+	suctionDistance : INT := 10;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[{warning disable C0371}
+IF material = '' THEN
+	rightCornerSequence := TRUE;
+	RETURN;
+END_IF
+
+CASE loadStep OF
+	0:
+		robot.clearCommand();
+		IF robot.Ready THEN
+			loadStep := 10;
+		END_IF
+		
+	10: //overhead to insertion
+		IF wrapper.Overhead = '' THEN
+			RETURN;
+		END_IF
+		(*
+		IF robot.eoatDistance < suctionDistance THEN
+			robot.HoldMaterial := wrapper.Overhead;
+		END_IF
+		*)
+	
+		IF robot.Done THEN
+			loadStep := COMPLETE;
+			RETURN;
+		END_IF
+		
+		CASE surfaceID OF
+			Surface.TOP_RIGHT:		robot.setGroup(group := 1, value := A22.LOAD_OVERHEAD_TO_UPPER_CORNER);
+			Surface.BOTTOM_RIGHT:	robot.setGroup(group := 1, value := A22.LOAD_OVERHEAD_TO_LOWER_CORNER);
+		END_CASE
+		robot.setGroup(group := 2, value := foldPos0);
+		robot.setGroup(group := 3, value := foldPos1);
+	
+	COMPLETE:
+		robot.clearCommand();
+		
+		CASE surfaceID OF
+			Surface.TOP_RIGHT:		suctionTopRight[1].enable := suctionTopRight[3].enable := TRUE;
+			Surface.BOTTOM_RIGHT:	suctionBottomRight[1].enable := suctionBottomRight[3].enable := TRUE;
+		END_CASE
+		
+		//suctions[0].enable := TRUE;
+		//suctions[2].enable := TRUE;
+		
+		rightCornerSequence := TRUE;
+	
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="CardboardCornerGuardEx">
+      <LineId Id="777" Count="115" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="CardboardCornerGuardEx.callLocalModules">
+      <LineId Id="2" Count="22" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="CardboardCornerGuardEx.leftCornerSequence">
+      <LineId Id="2342" Count="41" />
+      <LineId Id="2419" Count="0" />
+      <LineId Id="2423" Count="0" />
+      <LineId Id="2421" Count="1" />
+      <LineId Id="2420" Count="0" />
+      <LineId Id="2384" Count="14" />
+      <LineId Id="2412" Count="5" />
+      <LineId Id="2424" Count="0" />
+      <LineId Id="946" Count="0" />
+    </LineIds>
+    <LineIds Name="CardboardCornerGuardEx.load">
+      <LineId Id="457" Count="0" />
+      <LineId Id="460" Count="0" />
+      <LineId Id="327" Count="1" />
+      <LineId Id="440" Count="0" />
+      <LineId Id="442" Count="1" />
+      <LineId Id="602" Count="0" />
+      <LineId Id="601" Count="0" />
+      <LineId Id="603" Count="1" />
+      <LineId Id="488" Count="0" />
+      <LineId Id="487" Count="0" />
+      <LineId Id="489" Count="0" />
+      <LineId Id="594" Count="0" />
+      <LineId Id="629" Count="1" />
+      <LineId Id="560" Count="0" />
+      <LineId Id="562" Count="1" />
+      <LineId Id="566" Count="0" />
+      <LineId Id="568" Count="0" />
+      <LineId Id="561" Count="0" />
+      <LineId Id="631" Count="0" />
+      <LineId Id="504" Count="0" />
+      <LineId Id="518" Count="0" />
+      <LineId Id="524" Count="0" />
+      <LineId Id="526" Count="0" />
+      <LineId Id="525" Count="0" />
+      <LineId Id="523" Count="0" />
+      <LineId Id="505" Count="2" />
+      <LineId Id="527" Count="2" />
+      <LineId Id="531" Count="0" />
+      <LineId Id="508" Count="0" />
+      <LineId Id="510" Count="0" />
+      <LineId Id="490" Count="0" />
+    </LineIds>
+    <LineIds Name="CardboardCornerGuardEx.loadCornerCardboards">
+      <LineId Id="1472" Count="88" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="CardboardCornerGuardEx.loadCornerCardboardsEx">
+      <LineId Id="921" Count="73" />
+      <LineId Id="1011" Count="7" />
+      <LineId Id="1056" Count="2" />
+      <LineId Id="1070" Count="0" />
+      <LineId Id="1060" Count="9" />
+      <LineId Id="1055" Count="0" />
+      <LineId Id="1022" Count="1" />
+      <LineId Id="1072" Count="13" />
+      <LineId Id="1071" Count="0" />
+      <LineId Id="1086" Count="0" />
+      <LineId Id="1024" Count="1" />
+      <LineId Id="1087" Count="0" />
+      <LineId Id="1030" Count="0" />
+      <LineId Id="1048" Count="6" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="CardboardCornerGuardEx.loadCornerGuards">
+      <LineId Id="496" Count="56" />
+      <LineId Id="39" Count="0" />
+    </LineIds>
+    <LineIds Name="CardboardCornerGuardEx.loadFlats">
+      <LineId Id="108" Count="0" />
+      <LineId Id="35" Count="2" />
+      <LineId Id="65" Count="1" />
+      <LineId Id="68" Count="0" />
+      <LineId Id="70" Count="2" />
+      <LineId Id="64" Count="0" />
+      <LineId Id="73" Count="0" />
+      <LineId Id="76" Count="1" />
+      <LineId Id="79" Count="3" />
+      <LineId Id="74" Count="0" />
+      <LineId Id="40" Count="0" />
+      <LineId Id="61" Count="0" />
+      <LineId Id="42" Count="4" />
+      <LineId Id="86" Count="1" />
+      <LineId Id="89" Count="7" />
+      <LineId Id="98" Count="3" />
+      <LineId Id="47" Count="0" />
+      <LineId Id="49" Count="9" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+    <LineIds Name="CardboardCornerGuardEx.loadFlatSequence">
+      <LineId Id="234" Count="6" />
+      <LineId Id="268" Count="0" />
+      <LineId Id="241" Count="23" />
+      <LineId Id="269" Count="1" />
+      <LineId Id="265" Count="2" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="CardboardCornerGuardEx.loadGuardSequence">
+      <LineId Id="6" Count="10" />
+      <LineId Id="74" Count="2" />
+      <LineId Id="78" Count="0" />
+      <LineId Id="77" Count="0" />
+      <LineId Id="17" Count="0" />
+      <LineId Id="49" Count="2" />
+      <LineId Id="53" Count="0" />
+      <LineId Id="70" Count="0" />
+      <LineId Id="73" Count="0" />
+      <LineId Id="71" Count="0" />
+      <LineId Id="27" Count="1" />
+      <LineId Id="45" Count="0" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="CardboardCornerGuardEx.loadLeftCornerCardboards">
+      <LineId Id="921" Count="73" />
+      <LineId Id="1095" Count="0" />
+      <LineId Id="1049" Count="1" />
+      <LineId Id="1096" Count="0" />
+      <LineId Id="1054" Count="0" />
+      <LineId Id="1097" Count="0" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="CardboardCornerGuardEx.loadRightCornerCardboards">
+      <LineId Id="921" Count="0" />
+      <LineId Id="1013" Count="5" />
+      <LineId Id="1056" Count="2" />
+      <LineId Id="1070" Count="0" />
+      <LineId Id="1060" Count="9" />
+      <LineId Id="1055" Count="0" />
+      <LineId Id="1022" Count="1" />
+      <LineId Id="1072" Count="13" />
+      <LineId Id="1071" Count="0" />
+      <LineId Id="1086" Count="0" />
+      <LineId Id="1024" Count="1" />
+      <LineId Id="1087" Count="0" />
+      <LineId Id="1095" Count="3" />
+      <LineId Id="1101" Count="2" />
+      <LineId Id="1030" Count="0" />
+    </LineIds>
+    <LineIds Name="CardboardCornerGuardEx.rightCornerSequence">
+      <LineId Id="467" Count="0" />
+      <LineId Id="315" Count="5" />
+      <LineId Id="380" Count="0" />
+      <LineId Id="386" Count="0" />
+      <LineId Id="381" Count="0" />
+      <LineId Id="384" Count="0" />
+      <LineId Id="383" Count="0" />
+      <LineId Id="385" Count="0" />
+      <LineId Id="321" Count="0" />
+      <LineId Id="443" Count="2" />
+      <LineId Id="439" Count="3" />
+      <LineId Id="437" Count="1" />
+      <LineId Id="374" Count="1" />
+      <LineId Id="377" Count="0" />
+      <LineId Id="376" Count="0" />
+      <LineId Id="325" Count="2" />
+      <LineId Id="329" Count="0" />
+      <LineId Id="333" Count="0" />
+      <LineId Id="371" Count="1" />
+      <LineId Id="344" Count="1" />
+      <LineId Id="387" Count="0" />
+      <LineId Id="408" Count="0" />
+      <LineId Id="410" Count="2" />
+      <LineId Id="409" Count="0" />
+      <LineId Id="388" Count="0" />
+      <LineId Id="346" Count="0" />
+      <LineId Id="379" Count="0" />
+      <LineId Id="389" Count="0" />
+      <LineId Id="347" Count="1" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -64,9 +64,9 @@ moduleA22(
 	suctionBottomLeft:= suctionA22BottomLeft, 
 	suctionBottomRight:= suctionA22BottomRight, 
 	
-	generalError=> test, 
-	failLeft=> test, 
-	failRight=> test);]]></ST>
+	generalError=> , 
+	failLeft=> , 
+	failRight=> );]]></ST>
       </Implementation>
     </Action>
     <LineIds Name="MAIN">

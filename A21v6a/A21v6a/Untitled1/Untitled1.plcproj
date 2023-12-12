@@ -133,10 +133,16 @@
     <Compile Include="POUs\A21b - Wood Bunk\AOIs\AOI_LoadWoodBunk.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\A21b - Wood Bunk\AOIs\AOI_WoodBunkAlarms.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="POUs\FB_System.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\Hardware Calls\InsertionQuality.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\Hardware Calls\SetSuctionsPtrArr.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\Hardware Calls\SuctionQuality.TcPOU">

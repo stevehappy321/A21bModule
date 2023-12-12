@@ -2,11 +2,11 @@
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
   <POU Name="AOI_StageWoodBunk" Id="{6c864042-c983-4c24-b88e-aa9f17c286e4}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK AOI_StageWoodBunk
-VAR_IN_OUT CONSTANT
-	sectionID : SectionEnum;
-END_VAR
 VAR_INPUT
 	execute : BOOL;
+END_VAR
+VAR_IN_OUT CONSTANT
+	sectionID : SectionEnum;
 END_VAR
 VAR_IN_OUT
 	robot : RobotA21;
@@ -19,15 +19,18 @@ VAR_INPUT
 END_VAR
 VAR_OUTPUT
 	busy : BOOL;
-	done : BOOL;
+	done : BOOL; //this done signal stays on until next execution
 	error : BOOL;
 	
 	recovery : BOOL;
 	failCounter : INT;
+	
+	donePulse : BOOL; //this done signal only stays on for 1 cycle after completion
 END_VAR
 VAR
-	trigger : R_TRIG;
 	run : BOOL;
+	trigger : R_TRIG;	
+	doneTrigger : R_TRIG;
 	
 	magazineColumn : INT;
 	step : (IDLE, PREP_ROBOT, GET_FROM_MAGAZINE, PLACE_ON_TABLE, COMPLETE);
@@ -45,6 +48,8 @@ IF error THEN
 END_IF
 *)
 trigger(CLK:= execute, Q=> );
+doneTrigger(CLK:= done, Q=> donePulse);
+
 busy := trigger.Q OR step > 0;
 
 IF step > IDLE AND_THEN NOT preExecution() THEN //conditions to track before execution
@@ -54,10 +59,11 @@ END_IF
 //follow the template as is
 CASE step OF
 	IDLE:
-		IF trigger.Q THEN
-			recovery := FALSE;
+		IF trigger.Q THEN //reset outputs
 			done := FALSE;
 			error := FALSE;
+			recovery := FALSE;
+			
 			step := PREP_ROBOT;
 		END_IF
 		
@@ -153,19 +159,21 @@ failCounter := 0;
     </Method>
     <LineIds Name="AOI_StageWoodBunk">
       <LineId Id="882" Count="1" />
-      <LineId Id="1076" Count="0" />
-      <LineId Id="1075" Count="0" />
-      <LineId Id="1077" Count="1" />
+      <LineId Id="1179" Count="3" />
       <LineId Id="906" Count="1" />
+      <LineId Id="1140" Count="1" />
       <LineId Id="996" Count="0" />
       <LineId Id="998" Count="2" />
       <LineId Id="997" Count="0" />
       <LineId Id="908" Count="3" />
       <LineId Id="1002" Count="0" />
-      <LineId Id="1040" Count="0" />
-      <LineId Id="1003" Count="2" />
+      <LineId Id="1134" Count="1" />
+      <LineId Id="1004" Count="0" />
+      <LineId Id="1136" Count="0" />
+      <LineId Id="1005" Count="0" />
       <LineId Id="917" Count="3" />
-      <LineId Id="922" Count="38" />
+      <LineId Id="922" Count="37" />
+      <LineId Id="1127" Count="0" />
     </LineIds>
     <LineIds Name="AOI_StageWoodBunk.preExecution">
       <LineId Id="18" Count="0" />

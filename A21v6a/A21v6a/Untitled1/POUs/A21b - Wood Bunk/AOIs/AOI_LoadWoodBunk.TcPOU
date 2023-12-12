@@ -2,21 +2,27 @@
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
   <POU Name="AOI_LoadWoodBunk" Id="{8729b1eb-ce03-40b7-afa3-0137a80b10ea}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK AOI_LoadWoodBunk
-VAR_IN_OUT CONSTANT
-	sectionID : SectionEnum;
-END_VAR
 VAR_INPUT
 	execute : BOOL;
+END_VAR
+VAR_IN_OUT CONSTANT
+	sectionID : SectionEnum;
 END_VAR
 VAR_IN_OUT
 	robot : RobotA21;
 	table : StagingTable;
 	suctions : ARRAY[*] OF SuctionPad;
+	//if assigned using . operator instead of (), this becomes a pointer - use numPads isntead of UPPER_BOUND/LOWER_BOUND
 	loadedMaterials : ARRAY[*] OF STRING;
 END_VAR
 VAR_INPUT
 	surfaceID : Surface;
 	material : STRING;
+	
+	//suctionI1 : DINT;
+	//suctionI2 : DINT;
+	
+	numPads : DINT;
 END_VAR
 VAR_OUTPUT
 	busy : BOOL;
@@ -25,23 +31,39 @@ VAR_OUTPUT
 	
 	recovery : BOOL;
 	failCounter : INT;
+	
+	donePulse : BOOL;
 END_VAR
 VAR
 	run : BOOL;
 	trigger : R_TRIG;
+	doneTrigger : R_TRIG;
 	
 	slot : INT;
 	
 	suctionTimer : TON;
-	step : (IDLE, PREP_ROBOT, GET_FROM_TABLE, LOAD_TO_INSERTION, COMPLETE, RECOVERY_IDLE, RECOVERY_REMOVE, RECOVERY_WAIT, RECOVERY_STAGE);
+	step : (IDLE, PREP_ROBOT, GET_FROM_TABLE, LOAD_TO_INSERTION, COMPLETE, RECOVERY_IDLE, RECOVERY_REMOVE, RECOVERY_STAGE);
 END_VAR
-VAR CONSTANT
+VAR
+	start, end : DINT;
+	i : DINT;
+	test : BOOL;
+END_VAR
+VAR_STAT CONSTANT
 	suctionDelay : TIME := T#2S;
+	suctionDistance : INT := 10;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[{warning disable C0371}
-
+(*
+IF suctions <> 0 THEN
+	FOR i:=0 TO numPads-1 BY 1 DO
+		suctions[i].enable := test;
+	END_FOR
+END_IF
+*)
 trigger(CLK:= execute, Q=> );
+doneTrigger(CLK:= done, Q=> donePulse);
 busy := trigger.Q OR step > 0;
 
 IF step > IDLE AND_THEN NOT preExecution() THEN //conditions to track before execution
@@ -52,12 +74,17 @@ END_IF
 if required bunk was not found on table - restage entire table
 if bunk was not loaded correctly - remove bunk, then restage entire table
 *)
+
+start := LOWER_BOUND(loadedMaterials, 1);
+end := UPPER_BOUND(loadedMaterials, 1);
+
 CASE step OF
 	IDLE:
-		IF trigger.Q THEN
-			recovery := FALSE;
+		IF trigger.Q THEN //reset outputs
 			done := FALSE;
 			error := FALSE;
+			recovery := FALSE;
+			
 			step := PREP_ROBOT;
 		END_IF
 		
@@ -105,8 +132,8 @@ CASE step OF
 		END_IF
 		
 		CASE surfaceID OF
-			Surface.TOP, Surface.BOTTOM:	SetSuctions(suctions, TRUE);
-			Surface.LEFT, Surface.RIGHT:	SetSuctions(suctions, TRUE );
+			Surface.TOP, Surface.BOTTOM:	SetSuctionsPtrArr(suctions := suctions, numPads := numPads, state := TRUE);
+			Surface.LEFT, Surface.RIGHT:	SetSuctionsPtrArr(suctions := suctions, numPads := numPads, state := TRUE);
 		END_CASE
 		
 		IF robot.Done THEN
@@ -144,7 +171,6 @@ CASE step OF
 		
 	RECOVERY_REMOVE:
 		IF robot.Done THEN
-			//step := RECOVERY_WAIT;
 			step := RECOVERY_STAGE;
 			RETURN;
 		END_IF
@@ -154,12 +180,6 @@ CASE step OF
 			Surface.LEFT, Surface.RIGHT:	robot.setGroup(group := 1, value := A21.REMOVE_BUNK_SIDE);
 			Surface.BOTTOM:					robot.setGroup(group := 1, value := A21.REMOVE_BUNK_BOTTOM);
 		END_CASE
-	
-	RECOVERY_WAIT: //this step is unused for now
-		robot.clearCommand();
-		IF robot.Ready THEN
-			step := RECOVERY_STAGE;
-		END_IF
 	
 	RECOVERY_STAGE:	
 		recovery := TRUE;
@@ -213,24 +233,39 @@ failCounter := 0;
     </Method>
     <LineIds Name="AOI_LoadWoodBunk">
       <LineId Id="1997" Count="0" />
+      <LineId Id="2356" Count="0" />
+      <LineId Id="2334" Count="0" />
+      <LineId Id="2336" Count="0" />
+      <LineId Id="2354" Count="0" />
+      <LineId Id="2340" Count="0" />
       <LineId Id="2233" Count="0" />
+      <LineId Id="2344" Count="0" />
       <LineId Id="2147" Count="0" />
+      <LineId Id="2359" Count="0" />
       <LineId Id="1999" Count="0" />
       <LineId Id="2186" Count="2" />
       <LineId Id="2171" Count="0" />
       <LineId Id="2234" Count="0" />
       <LineId Id="2191" Count="2" />
       <LineId Id="2167" Count="0" />
+      <LineId Id="2326" Count="0" />
+      <LineId Id="2331" Count="0" />
+      <LineId Id="2329" Count="0" />
+      <LineId Id="2325" Count="0" />
       <LineId Id="2027" Count="0" />
       <LineId Id="2157" Count="0" />
       <LineId Id="2161" Count="0" />
-      <LineId Id="2271" Count="0" />
-      <LineId Id="2162" Count="4" />
+      <LineId Id="2318" Count="1" />
+      <LineId Id="2316" Count="0" />
+      <LineId Id="2321" Count="0" />
+      <LineId Id="2164" Count="2" />
       <LineId Id="2159" Count="0" />
       <LineId Id="2037" Count="7" />
       <LineId Id="2046" Count="56" />
       <LineId Id="2156" Count="0" />
-      <LineId Id="2104" Count="35" />
+      <LineId Id="2104" Count="15" />
+      <LineId Id="2121" Count="8" />
+      <LineId Id="2136" Count="3" />
       <LineId Id="2146" Count="0" />
       <LineId Id="1749" Count="0" />
     </LineIds>
