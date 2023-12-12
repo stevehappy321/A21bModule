@@ -2469,6 +2469,16 @@
 				<Link VarA="PlcTask Outputs^Hardware.suctionA21Top[3].enable" VarB="Channel 11^Output"/>
 			</OwnerB>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^EK1200^JUNC_A21^SB01">
+				<Link VarA="PlcTask Inputs^ContainerArrays.tableHmiA21Left[10].occupied" VarB="Channel 10^Input"/>
+				<Link VarA="PlcTask Inputs^ContainerArrays.tableHmiA21Left[1].occupied" VarB="Channel 1^Input"/>
+				<Link VarA="PlcTask Inputs^ContainerArrays.tableHmiA21Left[2].occupied" VarB="Channel 2^Input"/>
+				<Link VarA="PlcTask Inputs^ContainerArrays.tableHmiA21Left[3].occupied" VarB="Channel 3^Input"/>
+				<Link VarA="PlcTask Inputs^ContainerArrays.tableHmiA21Left[4].occupied" VarB="Channel 4^Input"/>
+				<Link VarA="PlcTask Inputs^ContainerArrays.tableHmiA21Left[5].occupied" VarB="Channel 5^Input"/>
+				<Link VarA="PlcTask Inputs^ContainerArrays.tableHmiA21Left[6].occupied" VarB="Channel 6^Input"/>
+				<Link VarA="PlcTask Inputs^ContainerArrays.tableHmiA21Left[7].occupied" VarB="Channel 7^Input"/>
+				<Link VarA="PlcTask Inputs^ContainerArrays.tableHmiA21Left[8].occupied" VarB="Channel 8^Input"/>
+				<Link VarA="PlcTask Inputs^ContainerArrays.tableHmiA21Left[9].occupied" VarB="Channel 9^Input"/>
 				<Link VarA="PlcTask Inputs^Hardware.horizontalDriveA21Left.home" VarB="Channel 11^Input"/>
 				<Link VarA="PlcTask Inputs^Hardware.horizontalDriveA21Left.innerLimit" VarB="Channel 12^Input"/>
 				<Link VarA="PlcTask Inputs^Hardware.suctionA21Left[1].occupied" VarB="Channel 13^Input"/>
@@ -2477,6 +2487,16 @@
 				<Link VarA="PlcTask Inputs^Hardware.suctionA21Left[4].occupied" VarB="Channel 16^Input"/>
 			</OwnerB>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^EK1200^JUNC_A21^SB02">
+				<Link VarA="PlcTask Inputs^ContainerArrays.tableHmiA21Right[10].occupied" VarB="Channel 10^Input"/>
+				<Link VarA="PlcTask Inputs^ContainerArrays.tableHmiA21Right[1].occupied" VarB="Channel 1^Input"/>
+				<Link VarA="PlcTask Inputs^ContainerArrays.tableHmiA21Right[2].occupied" VarB="Channel 2^Input"/>
+				<Link VarA="PlcTask Inputs^ContainerArrays.tableHmiA21Right[3].occupied" VarB="Channel 3^Input"/>
+				<Link VarA="PlcTask Inputs^ContainerArrays.tableHmiA21Right[4].occupied" VarB="Channel 4^Input"/>
+				<Link VarA="PlcTask Inputs^ContainerArrays.tableHmiA21Right[5].occupied" VarB="Channel 5^Input"/>
+				<Link VarA="PlcTask Inputs^ContainerArrays.tableHmiA21Right[6].occupied" VarB="Channel 6^Input"/>
+				<Link VarA="PlcTask Inputs^ContainerArrays.tableHmiA21Right[7].occupied" VarB="Channel 7^Input"/>
+				<Link VarA="PlcTask Inputs^ContainerArrays.tableHmiA21Right[8].occupied" VarB="Channel 8^Input"/>
+				<Link VarA="PlcTask Inputs^ContainerArrays.tableHmiA21Right[9].occupied" VarB="Channel 9^Input"/>
 				<Link VarA="PlcTask Inputs^Hardware.horizontalDriveA21Right.home" VarB="Channel 11^Input"/>
 				<Link VarA="PlcTask Inputs^Hardware.horizontalDriveA21Right.innerLimit" VarB="Channel 12^Input"/>
 				<Link VarA="PlcTask Inputs^Hardware.suctionA21Right[1].occupied" VarB="Channel 13^Input"/>
