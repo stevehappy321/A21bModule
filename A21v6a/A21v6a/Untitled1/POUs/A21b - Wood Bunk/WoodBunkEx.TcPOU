@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
   <POU Name="WoodBunkEx" Id="{7c192e4b-e9ee-4c1c-a070-15e2c6191789}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK WoodBunkEx
 VAR_IN_OUT //controls
@@ -2468,6 +2468,9 @@ CASE loadStep OF
 		IF aoiLoadLeft.done AND aoiLoadRight.done THEN
 			aoiLoadLeft.execute := aoiLoadRight.execute := FALSE;
 			aoiLoadLeft.material := aoiLoadRight.material := '';
+			
+			aoiLoadLeft.reset();
+			aoiLoadRight.reset();
 			loadStep := 10;
 			RETURN;
 		END_IF
@@ -2486,12 +2489,12 @@ CASE loadStep OF
 		aoiLoadRight.execute := NOT aoiLoadRight.done AND NOT aoiLoadRight.busy;
 		
 	10: //sides
-		IF
-			(aoiLoadLeft.material = pair.left AND aoiLoadLeft.done) AND
-			(aoiLoadRight.material = pair.right AND aoiLoadRight.done)
-		THEN
+		IF aoiLoadLeft.done AND aoiLoadRight.done THEN
 			aoiLoadLeft.execute := aoiLoadRight.execute := FALSE;
 			aoiLoadLeft.material := aoiLoadRight.material := '';
+			
+			aoiLoadLeft.reset();
+			aoiLoadRight.reset();
 			loadStep := COMPLETE;
 			RETURN;
 		END_IF
@@ -2785,6 +2788,7 @@ validateSuctionQuality :=
       <LineId Id="1669" Count="0" />
       <LineId Id="1673" Count="0" />
       <LineId Id="1683" Count="0" />
+      <LineId Id="1803" Count="2" />
       <LineId Id="1674" Count="1" />
       <LineId Id="1414" Count="0" />
       <LineId Id="1679" Count="0" />
@@ -2799,12 +2803,10 @@ validateSuctionQuality :=
       <LineId Id="1774" Count="0" />
       <LineId Id="1700" Count="2" />
       <LineId Id="1137" Count="1" />
-      <LineId Id="1680" Count="2" />
-      <LineId Id="1536" Count="0" />
-      <LineId Id="1540" Count="0" />
-      <LineId Id="1684" Count="0" />
-      <LineId Id="1541" Count="1" />
-      <LineId Id="1535" Count="0" />
+      <LineId Id="1798" Count="2" />
+      <LineId Id="1806" Count="2" />
+      <LineId Id="1801" Count="1" />
+      <LineId Id="1797" Count="0" />
       <LineId Id="1754" Count="0" />
       <LineId Id="1382" Count="0" />
       <LineId Id="1589" Count="0" />

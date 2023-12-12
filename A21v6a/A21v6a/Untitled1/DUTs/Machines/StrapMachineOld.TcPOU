@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
-  <POU Name="MAIN" Id="{b80a0c4b-c6af-42e3-9ea6-1e5c8f9c9f0a}" SpecialFunc="None">
-    <Declaration><![CDATA[PROGRAM MAIN
+  <POU Name="StrapMachineOld" Id="{b80a0c4b-c6af-42e3-9ea6-1e5c8f9c9f0a}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK StrapMachineOld
 VAR
 	manual : BOOL; //:= TRUE;
 	
@@ -84,7 +84,7 @@ CASE step OF
 		END_IF
 END_CASE]]></ST>
     </Implementation>
-    <LineIds Name="MAIN">
+    <LineIds Name="StrapMachineOld">
       <LineId Id="520" Count="13" />
       <LineId Id="537" Count="4" />
       <LineId Id="590" Count="0" />

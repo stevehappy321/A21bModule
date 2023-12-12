@@ -88,6 +88,9 @@
     <Compile Include="DUTs\Machines\KukaRobot.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DUTs\Machines\StrapMachineOld.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="DUTs\Machines\RobotA21.TcPOU">
       <SubType>Code</SubType>
     </Compile>

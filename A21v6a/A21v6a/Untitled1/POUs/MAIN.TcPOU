@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
   <POU Name="MAIN" Id="{9caf58b7-eccf-4a65-a3e3-2c8d81beb312}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM MAIN
 VAR
@@ -12,6 +12,8 @@ VAR
 	
 	exec1 : BOOL;
 	exec2 : BOOL;
+	
+	testMachine : StrapMachineOld;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[CallHardware(); //start program with hardware call - pass values and arrays into function blocks
@@ -19,7 +21,10 @@ SetupHardware(); //initialize values
 
 runModules(); //LLD
 
-CallHardware(); //end program with hardware call]]></ST>
+CallHardware(); //end program with hardware call
+
+
+testMachine();]]></ST>
     </Implementation>
     <Action Name="runModules" Id="{797c012e-5535-4cfd-a7fe-f38cfe08cb9f}">
       <Implementation>
@@ -996,6 +1001,8 @@ CallHardware(); //end program with hardware call]]></ST>
       <LineId Id="4241" Count="0" />
       <LineId Id="4227" Count="0" />
       <LineId Id="3760" Count="0" />
+      <LineId Id="4256" Count="1" />
+      <LineId Id="4255" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>
