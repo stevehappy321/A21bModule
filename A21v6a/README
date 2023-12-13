@@ -1,0 +1,5 @@
+every major has the following components:
+  2 AOIs to encapsulate the lowest level logic, 1 for each robot
+  an extended method (<method name>Ex) to control the master logic
+  a general method to invoke the extended method for both robots
+
