@@ -24,10 +24,13 @@ VAR_OUTPUT
 	
 	recovery : BOOL;
 	failCounter : INT;
+	
+	donePulse : BOOL;
 END_VAR
 VAR
 	run : BOOL;
 	trigger : R_TRIG;
+	doneTrigger : R_TRIG;
 	
 	step : (IDLE, PREP_ROBOT, RETRACT_CONVEYORS, GET_FROM_SKID, LOAD_TO_BUNDLE, COMPLETE);
 	column : INT;
@@ -39,6 +42,7 @@ END_VAR]]></Declaration>
       <ST><![CDATA[{warning disable C0371}
 
 trigger(CLK:= execute, Q=> );
+doneTrigger(CLK:= done, Q=> donePulse);
 busy := trigger.Q OR step > 0;
 
 IF step > IDLE AND_THEN NOT preExecution() THEN //conditions to track before execution
@@ -49,10 +53,11 @@ trigger(CLK:= execute, Q=> run);
 
 CASE step OF
 	IDLE:
-		IF run THEN
-			recovery := FALSE;
+		IF trigger.Q THEN //reset outputs
 			done := FALSE;
 			error := FALSE;
+			recovery := FALSE;
+			
 			step := PREP_ROBOT;
 		END_IF
 	
@@ -87,12 +92,14 @@ CASE step OF
 		IF robot.Done THEN
 			step := COMPLETE;
 			RETURN;
-		ELSIF robot.materialAtHoldingPosition.4 OR robot.materialAtHoldingPosition.5 THEN //bits 4 and 5 are chipboard in position
+		ELSIF robot.materialAtHoldingPosition.4 OR robot.materialAtHoldingPosition.5 THEN //bits 4 and 5 = chipboard in position
 			step := LOAD_TO_BUNDLE;
 			RETURN;
 		END_IF
-		
-		robot.setGroup(group := 1, value := A21.PLACE_CHIPBOARD_TOP);
+		CASE surfaceID OF
+			Surface.TOP:		robot.setGroup(group := 1, value := A21.PLACE_CHIPBOARD_TOP);
+			Surface.BOTTOM:		robot.setGroup(group := 1, value := A21.PLACE_CHIPBOARD_BOTTOM);
+		END_CASE
 		robot.setGroup(group := 2, value := column);
 		
 	LOAD_TO_BUNDLE: //place to bundle
@@ -143,8 +150,36 @@ END_IF
 preExecution := TRUE;]]></ST>
       </Implementation>
     </Method>
+    <Method Name="reset" Id="{c555b2eb-8ea4-4c0e-ae04-a1dfdf5a7951}">
+      <Declaration><![CDATA[METHOD reset : BOOL
+VAR_INPUT
+END_VAR
+VAR
+	temp : AOI_LoadChipboard;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//(*
+done := FALSE;
+error := FALSE;
+recovery := FALSE;
+column := 0;
+step := 0;
+
+failCounter := 0;
+//*)
+//THIS^ := temp;]]></ST>
+      </Implementation>
+    </Method>
     <LineIds Name="AOI_LoadChipboard">
-      <LineId Id="260" Count="80" />
+      <LineId Id="260" Count="1" />
+      <LineId Id="375" Count="5" />
+      <LineId Id="267" Count="5" />
+      <LineId Id="385" Count="5" />
+      <LineId Id="278" Count="37" />
+      <LineId Id="391" Count="0" />
+      <LineId Id="393" Count="0" />
+      <LineId Id="392" Count="0" />
+      <LineId Id="317" Count="23" />
       <LineId Id="144" Count="0" />
     </LineIds>
     <LineIds Name="AOI_LoadChipboard.preExecution">
@@ -153,6 +188,17 @@ preExecution := TRUE;]]></ST>
       <LineId Id="5" Count="0" />
       <LineId Id="20" Count="0" />
       <LineId Id="19" Count="0" />
+    </LineIds>
+    <LineIds Name="AOI_LoadChipboard.reset">
+      <LineId Id="23" Count="0" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="17" Count="0" />
+      <LineId Id="11" Count="0" />
+      <LineId Id="6" Count="0" />
+      <LineId Id="13" Count="0" />
+      <LineId Id="12" Count="0" />
+      <LineId Id="24" Count="1" />
     </LineIds>
   </POU>
 </TcPlcObject>

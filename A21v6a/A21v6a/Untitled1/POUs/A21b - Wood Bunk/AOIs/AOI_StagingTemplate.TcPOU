@@ -43,10 +43,9 @@ CASE step OF
 		END_IF
 		
 	GENERATE:
-		//if staging array is empty, then fill the array
 		//strings contain garbage chars after a null byte, they must be manually cleaned before checking if they are byte-empty
 		CleanStringsArray(arr := stagingArray);
-		IF ArrayIsEmpty(arr := ADR(stagingArray), arrSize := SIZEOF(stagingArray)) THEN
+		IF ArrayIsEmpty(arr := ADR(stagingArray), arrSize := SIZEOF(stagingArray)) THEN //if staging array is empty, fill the array
 			createStagingArray(
 				includeTop:= includeTop, 
 				includeLeft:= includeLeft, 
@@ -213,7 +212,8 @@ END_VAR]]></Declaration>
       </Implementation>
     </Method>
     <LineIds Name="AOI_StagingTemplate">
-      <LineId Id="449" Count="47" />
+      <LineId Id="449" Count="13" />
+      <LineId Id="464" Count="32" />
       <LineId Id="223" Count="0" />
     </LineIds>
     <LineIds Name="AOI_StagingTemplate.addToStagingArray">

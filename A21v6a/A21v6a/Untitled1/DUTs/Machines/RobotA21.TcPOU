@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
   <POU Name="RobotA21" Id="{b0860a5e-6e08-407c-9dba-697264065907}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK RobotA21 EXTENDS KukaRobot
 VAR_OUTPUT //from outputs array

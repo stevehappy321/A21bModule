@@ -22,23 +22,26 @@ VAR_OUTPUT
 END_VAR
 VAR	
 	holdPost : TON;
-	delay : TON;
+	timeoutDelay : TON;
+	resetDelay : TP;
 	
 	start : BOOL;
 	step : (SETUP, RUN, WAIT);
 END_VAR
 VAR_STAT CONSTANT
-	pulseTime : TIME := T#100MS;
-	holdTime : TIME := T#500MS;
 	maxDelay : TIME := T#30S;
+	pulseWidth : TIME := T#500MS;
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[holdPost(IN:= , PT:= holdTime, Q=> , ET=> );
-delay(IN:= step > 0 OR start, PT:= maxDelay, Q=> timeout, ET=> );
+      <ST><![CDATA[holdPost(IN:= , PT:= pulseWidth, Q=> , ET=> );
+timeoutDelay(IN:= (step > 0), PT:= maxDelay, Q=> timeout, ET=> );
 
-IF delay.Q THEN
-	delay.IN := FALSE;
-	//timeout := TRUE;
+resetDelay(IN:= error AND NOT resetDelay.Q , PT:= pulseWidth, Q=> , ET=> );
+reset := resetDelay.Q AND (resetDelay.ET > resetDelay.PT/2);
+
+IF timeoutDelay.Q THEN
+	timeoutDelay.IN := FALSE;
+	timeout := TRUE;
 	//busy := FALSE;
 	
 	start := FALSE;
@@ -49,13 +52,13 @@ enable := bEnable AND robot1.strapSafetyIn AND robot2.strapSafetyIn;
 
 CASE step OF
 	SETUP:
-		//busy := FALSE;
 		IF error THEN
 			enable := FALSE;
 			execute := FALSE;
-			clear();
-			
-		ELSIF start AND enable THEN //strapping does not start if error
+			RETURN;
+		END_IF
+		
+		IF start AND enable (*AND ready*) THEN //strapping does not start if error
 			start := FALSE;
 			step := RUN;
 		END_IF
@@ -74,13 +77,12 @@ CASE step OF
 	WAIT: //due to the use of DC motors instead of stepper motors in the machine, a short delay is required before next strap
 		IF home THEN
 			holdPost.IN := TRUE;
-			enable := FALSE;
 			execute := FALSE;
+			enable := FALSE;
 		END_IF
 		
 		IF holdPost.Q THEN
 			holdPost.IN := FALSE;
-			done := TRUE;
 			step := 0;
 		END_IF
 		
@@ -114,16 +116,7 @@ reset should be continuously called until machine returns evidence that it is re
 machine is expected to not respond to reset signals if it is already in an idle state
 *)]]></Declaration>
       <Implementation>
-        <ST><![CDATA[enable := FALSE;
-execute := FALSE;
-
-IF error THEN
-	reset := NOT reset;
-ELSE
-	reset := FALSE;
-END_IF
-
-clear := NOT error;]]></ST>
+        <ST><![CDATA[]]></ST>
       </Implementation>
     </Method>
     <Method Name="strap" Id="{8221f6b6-4ed9-46c5-a2f2-3e9b4c2e4608}">
@@ -142,22 +135,16 @@ start := TRUE;]]></ST>
       </Implementation>
     </Method>
     <LineIds Name="StrapMachine">
-      <LineId Id="1108" Count="10" />
-      <LineId Id="1211" Count="0" />
-      <LineId Id="1210" Count="0" />
-      <LineId Id="1119" Count="3" />
-      <LineId Id="1128" Count="0" />
-      <LineId Id="1215" Count="1" />
-      <LineId Id="1212" Count="0" />
-      <LineId Id="1214" Count="0" />
-      <LineId Id="1132" Count="47" />
+      <LineId Id="1853" Count="1" />
+      <LineId Id="1856" Count="0" />
+      <LineId Id="1930" Count="0" />
+      <LineId Id="1857" Count="14" />
+      <LineId Id="1873" Count="24" />
+      <LineId Id="1963" Count="1" />
+      <LineId Id="1900" Count="25" />
       <LineId Id="576" Count="0" />
     </LineIds>
     <LineIds Name="StrapMachine.clear">
-      <LineId Id="75" Count="4" />
-      <LineId Id="82" Count="1" />
-      <LineId Id="86" Count="0" />
-      <LineId Id="88" Count="0" />
       <LineId Id="87" Count="0" />
     </LineIds>
     <LineIds Name="StrapMachine.strap">

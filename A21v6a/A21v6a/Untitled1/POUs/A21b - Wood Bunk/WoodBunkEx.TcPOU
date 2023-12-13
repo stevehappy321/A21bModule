@@ -40,14 +40,14 @@ VAR
 	step : (IDLE, STAGING, LOAD_WB, PUSH, STRAP, RELEASE, COMPLETE := 1050);
 	iPair : INT;
 	
-	loadStep : INT;
-	stageStep : INT;
+	//loadStep : INT;
+	//stageStep : INT;
 	
 	stageStepLeft, stageStepRight : INT;
-	leftDone, rightDone : BOOL;
+	loadStepLeft, loadStepRight : INT;
 END_VAR
 VAR //local types
-	demoHeight : REAL := 600; //mm
+	demoHeight : REAL := 640; //mm
 	materialsArr : ARRAY[0..GVL.maxPairs] OF PositionMaterials := [
 		( position := 0, top := 'WDS20', left := 'WDS20', right := 'WDS20', bottom := 'WDB20' )];
 		//( position := 69, top := 'WDS20', left := 'WDS20', right := 'WDS20', bottom := 'WDB20' )
@@ -58,6 +58,7 @@ VAR //local types
 END_VAR
 VAR CONSTANT
 	sectionID : SectionEnum := SectionEnum.WOOD_BUNK;
+	suctionReleaseDelay : TIME := T#1000MS;
 END_VAR
 VAR
 	//AOIs encapsulate functionality and reduce the number of module variables
@@ -65,33 +66,24 @@ VAR
 	aoiStageLeft, aoiStageRight : AOI_StageWoodBunk; 
 	aoiLoadLeft, aoiLoadRight : AOI_LoadWoodBunk;
 	
-	topSuctionDelay : TON;
-	
-	a,b,c,d : BOOL;
+	suctionRelease : TON;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[callLocalModules(); //initialize local modules
 
-blocks(); //call local function blocks
-
-IF robotRight.Done THEN
-	robotRight.clearCommand();
-END_IF
+blocks(); //cyclically call AOIs and library FBs
 
 IF stop THEN
 	stopSequence(); //stop everything
 	RETURN;
 END_IF
+
 //(*
 IF NOT insertionLeft.screw.HomeSet OR NOT insertionRight.screw.HomeSet THEN
-	homingSequence(); //homing all motion devices and robots
+	homingSequence(); //home all motion devices and robots
 	RETURN;
 END_IF
 //*)
-a S= suctionTop[1].occupied AND suctionTop[2].occupied AND suctionTop[3].occupied;
-b S= suctionLeft[1].occupied AND suctionLeft[2].occupied AND suctionLeft[3].occupied AND suctionLeft[4].occupied;
-c S= suctionRight[1].occupied AND suctionRight[2].occupied AND suctionRight[3].occupied AND suctionRight[4].occupied;
-d S= suctionBottom[1].occupied AND suctionBottom[2].occupied;
 
 CASE step OF
 	IDLE:
@@ -123,8 +115,6 @@ CASE step OF
 			
 			stageStepLeft := stageStepRight := 0;
 			
-			leftDone := rightDone := FALSE;
-			
 			execute := FALSE;
 			done := FALSE;
 			step := LOAD_WB;
@@ -152,6 +142,9 @@ CASE step OF
 			aoiLoadLeft.reset();
 			aoiLoadRight.reset();
 			
+			loadStepLeft := loadStepRight := 0;
+			stageStepLeft := stageStepRight := 0;
+			
 			done := FALSE;
 			suctionEnableTop := suctionEnableLeft := suctionEnableRight := suctionEnableBottom := FALSE;
 			execute := FALSE;
@@ -162,15 +155,18 @@ CASE step OF
 	PUSH:
 		IF
 			(manualStep AND_THEN execute) OR
-			(latchLeft AND latchRight AND pistonBottom.extended)
+			(NOT manualStep AND latchLeft AND latchRight AND pistonBottom.extended)
 		THEN
+			insertionLeft.stop();
+			insertionRight.stop();
+			
 			latchLeft := latchRight := FALSE;
 			execute := FALSE;
 			step := STRAP;
 			RETURN;
 		END_IF
 		
-		IF NOT validateSuctionQuality(checkTop:= TRUE, checkLeft:= TRUE, checkRight:= FALSE, checkBottom:= FALSE) THEN
+		IF NOT validateInsertion(checkTop:= FALSE, checkLeft:= FALSE, checkRight:= FALSE, checkBottom:= FALSE) THEN
 			error := TRUE;
 			RETURN;
 		END_IF
@@ -199,23 +195,21 @@ CASE step OF
 		END_IF
 		pistonBottom.extend();
 		
-	STRAP:
-		topSuctionDelay(IN:= , PT:= T#1S, Q=> , ET=> );
-		
+	STRAP:	
 		strapper.bEnable := TRUE;
 		IF strapper.done THEN
-			topSuctionDelay.IN := FALSE;
+			suctionRelease.IN := FALSE;
 			step := RELEASE;
 			RETURN;
 		END_IF
 		
-		IF topSuctionDelay.Q THEN
+		IF suctionRelease.Q THEN
 			SetSuctions(suctionTop, FALSE);
 			SetSuctions(suctionLeft, FALSE);
 			SetSuctions(suctionRight, FALSE);
 			SetSuctions(suctionBottom, FALSE);
 		ELSIF strapper.atBundleLevel THEN
-			topSuctionDelay.IN := TRUE;
+			suctionRelease.IN := TRUE;
 		END_IF
 		
 		IF strapper.ready THEN
@@ -223,7 +217,7 @@ CASE step OF
 		END_IF
 		
 		IF execute THEN
-			topSuctionDelay.IN := FALSE;
+			suctionRelease.IN := FALSE;
 			execute := FALSE;
 			step := RELEASE;
 		END_IF
@@ -248,8 +242,6 @@ CASE step OF
 		//reset everything
 		iPair := (iPair + 1) MOD GVL.maxPairs;
 		step := IDLE;
-		
-		a := b := c := d := FALSE;
 END_CASE]]></ST>
     </Implementation>
     <Folder Name="Actions" Id="{4a4594ef-dea4-4aa0-b286-04c344ad8bce}" />
@@ -2406,7 +2398,7 @@ insertionLeft(
 	screw:= horizontalDriveLeft, 
 	contact=> , 
 	softContact=> , 
-	busy=> , 
+	active=> , 
 	error=> , 
 	home=> , 
 	homingComplete=> , 
@@ -2418,11 +2410,13 @@ insertionRight(
 	screw:= horizontalDriveRight,  
 	contact=> , 
 	softContact=> , 
-	busy=> , 
+	active=> , 
 	error=> , 
 	home=> , 
 	homingComplete=> , 
-	sliderPos=> );]]></ST>
+	sliderPos=> );
+	
+suctionRelease(IN:= , PT:= suctionReleaseDelay, Q=> , ET=> );]]></ST>
       </Implementation>
     </Action>
     <Action Name="homingSequence" Id="{7653a770-9078-4c2c-aad4-1564dbc9f3b2}" FolderPath="Actions\">
@@ -2442,9 +2436,47 @@ VAR_OUTPUT
 END_VAR
 VAR
 	pair : REFERENCE TO PositionMaterials REF= materialsArr[pairIndex];
+	errorLeft, errorRight : BOOL;
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[{warning disable C0371}
+(*
+this is the new code for loading wood bunks from staging table to insertion
+loading sequences are independent as each side has its own step variable
+can be extended by changing the include<> parameters
+
+*)
+load :=
+	loadEx(
+		robot:= robotLeft, 
+		aoiLoad:= aoiLoadLeft, 
+		loadStep:= loadStepLeft, 
+		pairIndex:= pairIndex, 
+		includeTop:= TRUE, 
+		includeLeft:= TRUE, 
+		includeRight:= FALSE, 
+		includeBottom:= FALSE, 
+		error=> errorLeft)
+	AND
+	loadEx(
+		robot:= robotRight, 
+		aoiLoad:= aoiLoadRight, 
+		loadStep:= loadStepRight, 
+		pairIndex:= pairIndex, 
+		includeTop:= FALSE, 
+		includeLeft:= FALSE, 
+		includeRight:= TRUE, 
+		includeBottom:= TRUE, 
+		error=> errorRight);
+		
+error := errorLeft OR errorRight;
+
+(*
+below is the old code for loading wood bunks from staging table to insertion
+it loads wood bunks in sets - top/bottom, then sides
+if one side is finished loading a set before the other, it waits until the other side is done before advancing the set
+*)
+(*
 IF robotLeft.error OR robotRight.error THEN
 	error := TRUE;
 	RETURN;
@@ -2468,6 +2500,9 @@ CASE loadStep OF
 		IF aoiLoadLeft.done AND aoiLoadRight.done THEN
 			aoiLoadLeft.execute := aoiLoadRight.execute := FALSE;
 			aoiLoadLeft.material := aoiLoadRight.material := '';
+			
+			aoiLoadLeft.reset();
+			aoiLoadRight.reset();
 			loadStep := 10;
 			RETURN;
 		END_IF
@@ -2486,12 +2521,12 @@ CASE loadStep OF
 		aoiLoadRight.execute := NOT aoiLoadRight.done AND NOT aoiLoadRight.busy;
 		
 	10: //sides
-		IF
-			(aoiLoadLeft.material = pair.left AND aoiLoadLeft.done) AND
-			(aoiLoadRight.material = pair.right AND aoiLoadRight.done)
-		THEN
+		IF aoiLoadLeft.done AND aoiLoadRight.done THEN
 			aoiLoadLeft.execute := aoiLoadRight.execute := FALSE;
 			aoiLoadLeft.material := aoiLoadRight.material := '';
+			
+			aoiLoadLeft.reset();
+			aoiLoadRight.reset();
 			loadStep := COMPLETE;
 			RETURN;
 		END_IF
@@ -2552,7 +2587,109 @@ ELSE
 END_IF
 //--------------------------------------------------
 	
-error := aoiLoadLeft.error OR aoiLoadRight.error;]]></ST>
+error := aoiLoadLeft.error OR aoiLoadRight.error;
+*)]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="loadEx" Id="{26e40d6d-60a4-4c2c-bba4-a7493624a410}">
+      <Declaration><![CDATA[METHOD loadEx : BOOL
+VAR_IN_OUT
+	robot : RobotA21;
+	aoiLoad : AOI_LoadWoodBunk;
+	loadStep : INT;
+END_VAR
+VAR_INPUT
+	pairIndex : INT;
+	includeTop, includeLeft, includeRight, includeBottom : BOOL;
+END_VAR
+VAR_OUTPUT
+	error : BOOL;
+END_VAR
+VAR
+	pair : REFERENCE TO PositionMaterials REF= materialsArr[pairIndex];
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF robot.error THEN
+	error := TRUE;
+	RETURN;
+ELSIF robot.reservation <> sectionID AND_THEN NOT robot.reserve(sectionID) THEN
+	RETURN;
+ELSIF robot.tool <> sectionID AND_THEN NOT robot.changeEOAT(targetTool := sectionID) THEN
+	RETURN;
+END_IF
+
+CASE loadStep OF
+	0:
+		loadStep := Surface.TOP;
+	
+	Surface.TOP:		
+		IF NOT includeTop OR aoiLoad.donePulse THEN
+			aoiLoad.execute := FALSE;
+			aoiLoad.material := '';
+			loadStep := Surface.BOTTOM;
+			RETURN;
+		END_IF
+		
+		aoiLoad.surfaceID := Surface.TOP;
+		aoiLoad.material := pair.top;
+		aoiLoad.suctions := suctionTop;
+		aoiLoad.numPads := UPPER_BOUND(suctionTop, 1) - LOWER_BOUND(suctionTop, 1) + 1;
+		
+		aoiLoad.execute := NOT aoiLoad.busy;
+		
+	Surface.BOTTOM:
+		IF NOT includeBottom OR aoiLoad.donePulse THEN
+			aoiLoad.execute := FALSE;
+			aoiLoad.material := '';
+			loadStep := Surface.LEFT;
+			RETURN;
+		END_IF
+		
+		aoiLoad.surfaceID := Surface.BOTTOM;
+		aoiLoad.material := pair.bottom;
+		aoiLoad.suctions := suctionBottom;
+		aoiLoad.numPads := UPPER_BOUND(suctionBottom, 1) - LOWER_BOUND(suctionBottom, 1) + 1;
+		
+		aoiLoad.execute := NOT aoiLoad.busy;
+		
+	Surface.LEFT: //sides
+		IF NOT includeLeft OR aoiLoad.donePulse THEN
+			aoiLoad.execute := FALSE;
+			aoiLoad.material := '';
+			loadStep := Surface.RIGHT;
+			RETURN;
+		END_IF
+		
+		aoiLoad.surfaceID := Surface.LEFT;
+		aoiLoad.material := pair.left;
+		aoiLoad.suctions := suctionLeft;
+		aoiLoad.numPads := UPPER_BOUND(suctionLeft, 1) - LOWER_BOUND(suctionLeft, 1) + 1;
+		
+		aoiLoad.execute := NOT aoiLoad.busy;
+		
+	Surface.RIGHT:
+		IF NOT includeRight OR aoiLoad.donePulse THEN
+			aoiLoad.execute := FALSE;
+			aoiLoad.material := '';
+			loadStep := COMPLETE;
+			RETURN;
+		END_IF
+		
+		aoiLoad.surfaceID := Surface.RIGHT;
+		aoiLoad.material := pair.right;
+		aoiLoad.suctions := suctionRight;
+		aoiLoad.numPads := UPPER_BOUND(suctionRight, 1) - LOWER_BOUND(suctionRight, 1) + 1;
+		
+		aoiLoad.execute := NOT aoiLoad.busy;
+		
+	COMPLETE:				
+		robot.release(sectionID);
+		
+		aoiLoad.material := '';
+		aoiLoad.execute := FALSE;
+		
+		loadEx := TRUE;
+END_CASE]]></ST>
       </Implementation>
     </Method>
     <Method Name="stage" Id="{394ea3b0-a477-4afc-b551-89e83b2984a7}">
@@ -2631,7 +2768,7 @@ VAR_IN_OUT
 	stageStep : INT;
 END_VAR
 VAR_INPUT
-	includeTop, includeLeft, includeRight, includeBottom : BOOL; 
+	includeTop, includeLeft, includeRight, includeBottom : BOOL;
 END_VAR
 VAR_OUTPUT
 	error : BOOL;
@@ -2708,8 +2845,8 @@ robotRight.clearCommand();
 //stop conveyors]]></ST>
       </Implementation>
     </Action>
-    <Method Name="validateSuctionQuality" Id="{b1904323-60a7-4bcf-ac74-c2042e21b0b7}">
-      <Declaration><![CDATA[METHOD PRIVATE validateSuctionQuality : BOOL
+    <Method Name="validateInsertion" Id="{b1904323-60a7-4bcf-ac74-c2042e21b0b7}">
+      <Declaration><![CDATA[METHOD PRIVATE validateInsertion : BOOL
 VAR_INPUT
 	checkTop : BOOL;
 	checkLeft : BOOL;
@@ -2718,7 +2855,7 @@ VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[validateSuctionQuality := 
+        <ST><![CDATA[validateInsertion := 
 	(NOT checkTop OR_ELSE SuctionQuality(suctions:= suctionTop)) AND
 	(NOT checkLeft OR_ELSE SuctionQuality(suctions:= suctionLeft)) AND
 	(NOT checkRight OR_ELSE SuctionQuality(suctions:= suctionRight)) AND
@@ -2754,20 +2891,14 @@ validateSuctionQuality :=
       </Implementation>
     </Method>
     <LineIds Name="WoodBunkEx">
-      <LineId Id="8488" Count="23" />
-      <LineId Id="8734" Count="0" />
-      <LineId Id="8513" Count="14" />
-      <LineId Id="8830" Count="0" />
-      <LineId Id="8529" Count="8" />
-      <LineId Id="8828" Count="1" />
-      <LineId Id="8756" Count="1" />
-      <LineId Id="8538" Count="125" />
+      <LineId Id="9490" Count="7" />
+      <LineId Id="9662" Count="0" />
+      <LineId Id="9498" Count="163" />
       <LineId Id="4805" Count="0" />
     </LineIds>
     <LineIds Name="WoodBunkEx.callLocalModules">
-      <LineId Id="2" Count="0" />
-      <LineId Id="5" Count="22" />
-      <LineId Id="1" Count="0" />
+      <LineId Id="30" Count="25" />
+      <LineId Id="29" Count="0" />
     </LineIds>
     <LineIds Name="WoodBunkEx.homingSequence">
       <LineId Id="2" Count="1" />
@@ -2775,6 +2906,26 @@ validateSuctionQuality :=
     </LineIds>
     <LineIds Name="WoodBunkEx.load">
       <LineId Id="1193" Count="0" />
+      <LineId Id="1915" Count="2" />
+      <LineId Id="1920" Count="0" />
+      <LineId Id="1919" Count="0" />
+      <LineId Id="1883" Count="0" />
+      <LineId Id="1882" Count="0" />
+      <LineId Id="1885" Count="8" />
+      <LineId Id="1884" Count="0" />
+      <LineId Id="1894" Count="0" />
+      <LineId Id="1896" Count="0" />
+      <LineId Id="1907" Count="2" />
+      <LineId Id="1900" Count="4" />
+      <LineId Id="1895" Count="0" />
+      <LineId Id="1905" Count="0" />
+      <LineId Id="1880" Count="0" />
+      <LineId Id="1911" Count="0" />
+      <LineId Id="1910" Count="0" />
+      <LineId Id="1913" Count="1" />
+      <LineId Id="1918" Count="0" />
+      <LineId Id="1912" Count="0" />
+      <LineId Id="1879" Count="0" />
       <LineId Id="1574" Count="4" />
       <LineId Id="1746" Count="2" />
       <LineId Id="1579" Count="7" />
@@ -2785,38 +2936,20 @@ validateSuctionQuality :=
       <LineId Id="1669" Count="0" />
       <LineId Id="1673" Count="0" />
       <LineId Id="1683" Count="0" />
-      <LineId Id="1674" Count="1" />
-      <LineId Id="1414" Count="0" />
-      <LineId Id="1679" Count="0" />
-      <LineId Id="1375" Count="0" />
-      <LineId Id="1587" Count="0" />
-      <LineId Id="1378" Count="0" />
-      <LineId Id="1773" Count="0" />
-      <LineId Id="1617" Count="0" />
-      <LineId Id="1376" Count="0" />
-      <LineId Id="1588" Count="0" />
-      <LineId Id="1380" Count="0" />
-      <LineId Id="1774" Count="0" />
-      <LineId Id="1700" Count="2" />
+      <LineId Id="1803" Count="2" />
+      <LineId Id="1674" Count="0" />
+      <LineId Id="1864" Count="0" />
+      <LineId Id="1863" Count="0" />
+      <LineId Id="1850" Count="11" />
+      <LineId Id="1835" Count="0" />
       <LineId Id="1137" Count="1" />
-      <LineId Id="1680" Count="2" />
-      <LineId Id="1536" Count="0" />
-      <LineId Id="1540" Count="0" />
-      <LineId Id="1684" Count="0" />
-      <LineId Id="1541" Count="1" />
-      <LineId Id="1535" Count="0" />
-      <LineId Id="1754" Count="0" />
-      <LineId Id="1382" Count="0" />
-      <LineId Id="1589" Count="0" />
-      <LineId Id="1383" Count="0" />
-      <LineId Id="1775" Count="0" />
-      <LineId Id="1384" Count="1" />
-      <LineId Id="1590" Count="0" />
-      <LineId Id="1381" Count="0" />
-      <LineId Id="1697" Count="0" />
-      <LineId Id="1776" Count="0" />
-      <LineId Id="1698" Count="0" />
-      <LineId Id="1787" Count="0" />
+      <LineId Id="1798" Count="2" />
+      <LineId Id="1806" Count="2" />
+      <LineId Id="1801" Count="0" />
+      <LineId Id="1878" Count="0" />
+      <LineId Id="1797" Count="0" />
+      <LineId Id="1866" Count="11" />
+      <LineId Id="1819" Count="0" />
       <LineId Id="1330" Count="0" />
       <LineId Id="1185" Count="0" />
       <LineId Id="1189" Count="1" />
@@ -2838,6 +2971,49 @@ validateSuctionQuality :=
       <LineId Id="1493" Count="0" />
       <LineId Id="1733" Count="0" />
       <LineId Id="1390" Count="0" />
+      <LineId Id="1881" Count="0" />
+    </LineIds>
+    <LineIds Name="WoodBunkEx.loadEx">
+      <LineId Id="44" Count="10" />
+      <LineId Id="134" Count="0" />
+      <LineId Id="132" Count="1" />
+      <LineId Id="137" Count="0" />
+      <LineId Id="139" Count="1" />
+      <LineId Id="185" Count="0" />
+      <LineId Id="141" Count="0" />
+      <LineId Id="136" Count="0" />
+      <LineId Id="64" Count="0" />
+      <LineId Id="66" Count="1" />
+      <LineId Id="212" Count="0" />
+      <LineId Id="68" Count="0" />
+      <LineId Id="74" Count="1" />
+      <LineId Id="228" Count="0" />
+      <LineId Id="230" Count="0" />
+      <LineId Id="236" Count="11" />
+      <LineId Id="229" Count="0" />
+      <LineId Id="77" Count="1" />
+      <LineId Id="147" Count="0" />
+      <LineId Id="149" Count="0" />
+      <LineId Id="184" Count="0" />
+      <LineId Id="160" Count="0" />
+      <LineId Id="151" Count="2" />
+      <LineId Id="155" Count="1" />
+      <LineId Id="211" Count="0" />
+      <LineId Id="157" Count="1" />
+      <LineId Id="100" Count="0" />
+      <LineId Id="161" Count="1" />
+      <LineId Id="170" Count="0" />
+      <LineId Id="173" Count="0" />
+      <LineId Id="186" Count="0" />
+      <LineId Id="175" Count="3" />
+      <LineId Id="180" Count="1" />
+      <LineId Id="210" Count="0" />
+      <LineId Id="182" Count="1" />
+      <LineId Id="164" Count="0" />
+      <LineId Id="101" Count="2" />
+      <LineId Id="105" Count="3" />
+      <LineId Id="110" Count="0" />
+      <LineId Id="5" Count="0" />
     </LineIds>
     <LineIds Name="WoodBunkEx.stage">
       <LineId Id="1128" Count="0" />
@@ -2902,7 +3078,7 @@ validateSuctionQuality :=
       <LineId Id="8" Count="0" />
       <LineId Id="7" Count="0" />
     </LineIds>
-    <LineIds Name="WoodBunkEx.validateSuctionQuality">
+    <LineIds Name="WoodBunkEx.validateInsertion">
       <LineId Id="76" Count="3" />
       <LineId Id="74" Count="1" />
       <LineId Id="72" Count="0" />

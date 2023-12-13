@@ -32,7 +32,7 @@ VAR
 	trigger : R_TRIG;	
 	doneTrigger : R_TRIG;
 	
-	magazineColumn : INT;
+	column : INT;
 	step : (IDLE, PREP_ROBOT, GET_FROM_MAGAZINE, PLACE_ON_TABLE, COMPLETE);
 END_VAR
 VAR CONSTANT
@@ -74,13 +74,13 @@ CASE step OF
 		END_IF
 	
 	GET_FROM_MAGAZINE: //grab from magazine
-		IF NOT magazine.findSlot(material := material, index => magazineColumn) THEN
+		IF NOT magazine.findSlot(material := material, index => column) THEN
 			error := TRUE;
 			RETURN;
 		END_IF
 		
 		IF robot.eoatDistance < suctionDistance THEN //robot is grabbing material
-			robot.HoldMaterial := magazine.getSlot(i := magazineColumn);
+			robot.HoldMaterial := magazine.getSlot(i := column);
 		END_IF
 		
 		IF robot.Done THEN
@@ -89,7 +89,7 @@ CASE step OF
 		END_IF
 		
 		robot.setGroup(group := 1, value := A21.STAGE_BUNK);
-		robot.setGroup(group := 2, value := magazineColumn);
+		robot.setGroup(group := 2, value := column);
 		robot.setGroup(group := 3, value := slot);
 
 	COMPLETE: //check here if staging is successful or needs to be repeated
@@ -158,21 +158,7 @@ failCounter := 0;
       </Implementation>
     </Method>
     <LineIds Name="AOI_StageWoodBunk">
-      <LineId Id="882" Count="1" />
-      <LineId Id="1179" Count="3" />
-      <LineId Id="906" Count="1" />
-      <LineId Id="1140" Count="1" />
-      <LineId Id="996" Count="0" />
-      <LineId Id="998" Count="2" />
-      <LineId Id="997" Count="0" />
-      <LineId Id="908" Count="3" />
-      <LineId Id="1002" Count="0" />
-      <LineId Id="1134" Count="1" />
-      <LineId Id="1004" Count="0" />
-      <LineId Id="1136" Count="0" />
-      <LineId Id="1005" Count="0" />
-      <LineId Id="917" Count="3" />
-      <LineId Id="922" Count="37" />
+      <LineId Id="1257" Count="66" />
       <LineId Id="1127" Count="0" />
     </LineIds>
     <LineIds Name="AOI_StageWoodBunk.preExecution">

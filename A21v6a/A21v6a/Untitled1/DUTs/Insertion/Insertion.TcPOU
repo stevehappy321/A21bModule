@@ -13,7 +13,7 @@ VAR_OUTPUT
 	contact AT %I* : BOOL; //may be removed from this FB and put into a 3rd GVL for floating sensors
 	softContact : BOOL; //temporary
 	
-	busy : BOOL;
+	active : BOOL;
 	error : BOOL;
 	home : BOOL;
 	
@@ -31,7 +31,7 @@ Insertion instance should be declared and called in module scope, with the drive
 
 homingComplete := (*slider.HomeSet AND*) screw.HomeSet;
 
-busy := slider.Busy OR screw.Busy;
+active := slider.Busy OR screw.Busy;
 error := slider.Error OR screw.Error;
 home := slider.AtHome AND screw.AtHome;
 
@@ -114,7 +114,7 @@ END_VAR]]></Declaration>
       </Implementation>
     </Method>
     <LineIds Name="Insertion">
-      <LineId Id="224" Count="7" />
+      <LineId Id="280" Count="7" />
       <LineId Id="137" Count="0" />
     </LineIds>
     <LineIds Name="Insertion.align">

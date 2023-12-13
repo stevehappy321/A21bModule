@@ -17,11 +17,7 @@ VAR_IN_OUT
 END_VAR
 VAR_INPUT
 	surfaceID : Surface;
-	material : STRING;
-	
-	//suctionI1 : DINT;
-	//suctionI2 : DINT;
-	
+	material : STRING;	
 	numPads : DINT;
 END_VAR
 VAR_OUTPUT
@@ -45,23 +41,16 @@ VAR
 	step : (IDLE, PREP_ROBOT, GET_FROM_TABLE, LOAD_TO_INSERTION, COMPLETE, RECOVERY_IDLE, RECOVERY_REMOVE, RECOVERY_STAGE);
 END_VAR
 VAR
-	start, end : DINT;
 	i : DINT;
 	test : BOOL;
 END_VAR
-VAR_STAT CONSTANT
+VAR CONSTANT
 	suctionDelay : TIME := T#2S;
 	suctionDistance : INT := 10;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[{warning disable C0371}
-(*
-IF suctions <> 0 THEN
-	FOR i:=0 TO numPads-1 BY 1 DO
-		suctions[i].enable := test;
-	END_FOR
-END_IF
-*)
+
 trigger(CLK:= execute, Q=> );
 doneTrigger(CLK:= done, Q=> donePulse);
 busy := trigger.Q OR step > 0;
@@ -74,9 +63,6 @@ END_IF
 if required bunk was not found on table - restage entire table
 if bunk was not loaded correctly - remove bunk, then restage entire table
 *)
-
-start := LOWER_BOUND(loadedMaterials, 1);
-end := UPPER_BOUND(loadedMaterials, 1);
 
 CASE step OF
 	IDLE:
@@ -233,13 +219,7 @@ failCounter := 0;
     </Method>
     <LineIds Name="AOI_LoadWoodBunk">
       <LineId Id="1997" Count="0" />
-      <LineId Id="2356" Count="0" />
-      <LineId Id="2334" Count="0" />
-      <LineId Id="2336" Count="0" />
-      <LineId Id="2354" Count="0" />
-      <LineId Id="2340" Count="0" />
-      <LineId Id="2233" Count="0" />
-      <LineId Id="2344" Count="0" />
+      <LineId Id="2411" Count="0" />
       <LineId Id="2147" Count="0" />
       <LineId Id="2359" Count="0" />
       <LineId Id="1999" Count="0" />
@@ -248,9 +228,6 @@ failCounter := 0;
       <LineId Id="2234" Count="0" />
       <LineId Id="2191" Count="2" />
       <LineId Id="2167" Count="0" />
-      <LineId Id="2326" Count="0" />
-      <LineId Id="2331" Count="0" />
-      <LineId Id="2329" Count="0" />
       <LineId Id="2325" Count="0" />
       <LineId Id="2027" Count="0" />
       <LineId Id="2157" Count="0" />
