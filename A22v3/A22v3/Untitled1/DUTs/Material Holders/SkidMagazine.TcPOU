@@ -21,7 +21,7 @@ END_VAR]]></Declaration>
         <ST><![CDATA[errorBounds := i < LOWER_BOUND(slots, 1) OR i > UPPER_BOUND(slots, 1);
 
 IF NOT errorBounds THEN
-	occupied[i] := occupancy;
+	slots[i].occupied := occupancy;
 END_IF]]></ST>
       </Implementation>
     </Method>

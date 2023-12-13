@@ -87,10 +87,10 @@
     <Compile Include="DUTs\Material Holders\MaterialHolder.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\Material Holders\SkidMagazine.TcPOU">
+    <Compile Include="DUTs\Material Holders\MaterialSlot.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\Material Holders\HmiSlotOccupancy.TcDUT">
+    <Compile Include="DUTs\Material Holders\SkidMagazine.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DUTs\PositionMaterials.TcDUT">

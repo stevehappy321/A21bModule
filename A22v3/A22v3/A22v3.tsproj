@@ -1010,7 +1010,7 @@ External Setpoint Generation:
 		</System>
 		<Plc>
 			<Project GUID="{9EBFE716-1EFF-4899-8C57-2D56B56C6F29}" Name="Untitled1" PrjFilePath="Untitled1\Untitled1.plcproj" TmcFilePath="Untitled1\Untitled1.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{B0489D12-0841-EA4F-0083-CD50370BD3A2}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{D5903211-FBA7-1535-16C4-27A6059BBA39}">
 					<Name>Untitled1 Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
@@ -1231,6 +1231,70 @@ External Setpoint Generation:
 						</Var>
 						<Var>
 							<Name>Hardware.suctionA22Bottom[2].occupied</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>ContainerArrays.skidHmiA22Left[1].occupied</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>ContainerArrays.skidHmiA22Left[2].occupied</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>ContainerArrays.skidHmiA22Left[3].occupied</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>ContainerArrays.skidHmiA22Left[4].occupied</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>ContainerArrays.skidHmiA22Left[5].occupied</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>ContainerArrays.skidHmiA22Left[6].occupied</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>ContainerArrays.skidHmiA22Right[1].occupied</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>ContainerArrays.skidHmiA22Right[2].occupied</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>ContainerArrays.skidHmiA22Right[3].occupied</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>ContainerArrays.skidHmiA22Right[4].occupied</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>ContainerArrays.skidHmiA22Right[5].occupied</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>ContainerArrays.skidHmiA22Right[6].occupied</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>ContainerArrays.magazineHmiA22Left[1].occupied</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>ContainerArrays.magazineHmiA22Left[2].occupied</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>ContainerArrays.magazineHmiA22Right[1].occupied</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>ContainerArrays.magazineHmiA22Right[2].occupied</Name>
 							<Type>BOOL</Type>
 						</Var>
 					</Vars>

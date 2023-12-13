@@ -53,11 +53,10 @@ VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[(*
-IF NOT slider.homeSet THEN
+        <ST><![CDATA[IF NOT slider.homeSet THEN
 	slider.homingSequence();
 END_IF
-*)
+
 
 IF NOT screw.homeSet THEN
 	screw.homingSequence();
@@ -121,7 +120,6 @@ END_VAR]]></Declaration>
       <LineId Id="36" Count="0" />
     </LineIds>
     <LineIds Name="Insertion.homingSequence">
-      <LineId Id="21" Count="0" />
       <LineId Id="5" Count="0" />
       <LineId Id="9" Count="1" />
       <LineId Id="12" Count="0" />

@@ -77,7 +77,7 @@ CASE step OF
 		END_IF
 		
 	GET_FROM_STORAGE:		
-		IF NOT magazine.findSlot(materialID := material, index => column) THEN
+		IF NOT magazine.findSlot(material := material, index => column) THEN
 			error := TRUE;
 			RETURN;
 		END_IF

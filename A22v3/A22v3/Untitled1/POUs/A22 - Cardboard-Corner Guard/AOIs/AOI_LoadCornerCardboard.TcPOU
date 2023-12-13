@@ -208,7 +208,7 @@ END_VAR
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[{warning disable C0371}
-IF NOT skid.findSlot(materialID:= material, index=> column) THEN
+IF NOT skid.findSlot(material := material, index=> column) THEN
 	error := TRUE;
 	RETURN;
 END_IF

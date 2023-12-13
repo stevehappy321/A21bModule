@@ -107,19 +107,13 @@ END_VAR]]></Declaration>
       <ST><![CDATA[callLocalModules();
 
 IF stop THEN //may need to turn off suction
-	insertionLeft.stop();
-	insertionRight.stop();
-	pistonBottom.stop();
-	
-	robotLeft.clearCommand();
-	robotRight.clearCommand();
+	stopSequence();
 	RETURN;
 END_IF
 
-IF NOT (insertionLeft.homingComplete AND insertionRight.homingComplete) THEN
-	insertionLeft.homingSequence();
-	insertionRight.homingSequence();
-	pistonBottom.retract();
+IF NOT insertionLeft.homingComplete OR NOT insertionRight.homingComplete THEN
+	homingSequence();
+	RETURN;
 END_IF
 
 CASE step OF
@@ -1798,6 +1792,13 @@ insertionRight(
 	sliderPos=> );]]></ST>
       </Implementation>
     </Action>
+    <Action Name="homingSequence" Id="{78b7d1d6-acc4-48dd-8084-f7fed3d74fa3}" FolderPath="Actions\">
+      <Implementation>
+        <ST><![CDATA[insertionLeft.homingSequence();
+insertionRight.homingSequence();
+pistonBottom.retract();]]></ST>
+      </Implementation>
+    </Action>
     <Method Name="leftCornerSequence" Id="{08bffef9-e349-4b7d-9ae3-92f5a7d8876a}" FolderPath="Cardboard (Corner)\">
       <Declaration><![CDATA[METHOD PROTECTED leftCornerSequence : BOOL
 VAR_IN_OUT
@@ -1838,7 +1839,7 @@ CASE loadStep OF
 		END_IF
 		
 	10: //skid to bender
-		IF NOT skid.findSlot(materialID:= material, index=> column) THEN
+		IF NOT skid.findSlot(material:= material, index=> column) THEN
 			error := TRUE;
 			RETURN;
 		END_IF
@@ -2603,12 +2604,30 @@ CASE loadStep OF
 END_CASE]]></ST>
       </Implementation>
     </Method>
+    <Action Name="stopSequence" Id="{acdc0711-6542-4403-a9a7-c5cefe95a89f}" FolderPath="Actions\">
+      <Implementation>
+        <ST><![CDATA[insertionLeft.stop();
+insertionRight.stop();
+pistonBottom.stop();
+
+robotLeft.clearCommand();
+robotRight.clearCommand();]]></ST>
+      </Implementation>
+    </Action>
     <LineIds Name="CardboardCornerGuardEx">
-      <LineId Id="990" Count="115" />
+      <LineId Id="990" Count="2" />
+      <LineId Id="998" Count="4" />
+      <LineId Id="1005" Count="0" />
+      <LineId Id="1209" Count="0" />
+      <LineId Id="1006" Count="99" />
       <LineId Id="9" Count="0" />
     </LineIds>
     <LineIds Name="CardboardCornerGuardEx.callLocalModules">
       <LineId Id="2" Count="22" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="CardboardCornerGuardEx.homingSequence">
+      <LineId Id="2" Count="1" />
       <LineId Id="1" Count="0" />
     </LineIds>
     <LineIds Name="CardboardCornerGuardEx.leftCornerSequence">
@@ -2761,6 +2780,10 @@ END_CASE]]></ST>
       <LineId Id="389" Count="0" />
       <LineId Id="347" Count="1" />
       <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="CardboardCornerGuardEx.stopSequence">
+      <LineId Id="2" Count="4" />
+      <LineId Id="1" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>

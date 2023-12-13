@@ -6,11 +6,11 @@
       <ST><![CDATA[robot3();
 robot4();
 
-skidA22Left(slots := skidSlotsA22Left, occupied := skidOccupancyA22Left, hmiTable := skidHmiA22Left);
-skidA22Right(slots := skidSlotsA22Right, occupied := skidOccupancyA22Right, hmiTable := skidHmiA22Right);
+skidA22Left(slots := skidHmiA22Left);
+skidA22Right(slots := skidHmiA22Right);
 
-magazineA22Left(slots := magazineSlotsA22Left, occupied := magazineOccupancyA22Left, hmiTable := magazineHmiA22Left);
-magazineA22Right(slots := magazineSlotsA22Right, occupied := magazineOccupancyA22Right, hmiTable := magazineHmiA22Right);
+magazineA22Left(slots := magazineHmiA22Left);
+magazineA22Right(slots := magazineHmiA22Right);
 
 wrapperA22();
 benderA22Left();
