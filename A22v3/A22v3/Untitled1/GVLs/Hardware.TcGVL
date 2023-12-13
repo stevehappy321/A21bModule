@@ -14,7 +14,7 @@ VAR_GLOBAL //complete modules
 	overhead : STRING;
 	
 	horizontalDriveA22Left, horizontalDriveA22Right : ServoNC;
-	verticalDriveA22Left, verticalDriveA22Right : ClearLinkMC;
+	verticalDriveA22Left, verticalDriveA22Right : ClearLinkMC := (homingDirection := TRUE, maxSeparation := 1000);
 	pistonA22Bottom : SimplePiston;
 	
 	(*

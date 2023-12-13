@@ -23,6 +23,8 @@ VAR
 	resetTimer : TP;
 	
 	mode : (DISABLE, HOLD, TARGET, CONTINUOUS, RESET_ERR);
+	
+	maxSeparation : LREAL;
 END_VAR
 VAR_STAT CONSTANT
 	resetTime : TIME := T#1000MS;
@@ -162,7 +164,7 @@ CASE step OF
 	Homing.OUT:
 		bEnable := TRUE;
 		A := FALSE;
-		B := TRUE;
+		B := TRUE; //this pulls the slider towards the motor
 		brakeRelease := TRUE;
 		
 		minHoming.IN := TRUE;
@@ -195,7 +197,13 @@ VAR_INPUT
 	newTarget : LREAL;
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[targetPos := newTarget;
+        <ST><![CDATA[IF homingDirection THEN //homing is outwards
+	targetPos := maxSeparation - newTarget;
+	
+ELSE //homing is inwards
+	targetPos := newTarget;
+END_IF
+
 mode := TARGET;]]></ST>
       </Implementation>
     </Method>
@@ -353,7 +361,12 @@ END_VAR
       <LineId Id="133" Count="0" />
     </LineIds>
     <LineIds Name="ClearLinkMC.moveAbsolute">
-      <LineId Id="16" Count="0" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="26" Count="1" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="29" Count="0" />
       <LineId Id="8" Count="0" />
     </LineIds>
     <LineIds Name="ClearLinkMC.moveContinuous">

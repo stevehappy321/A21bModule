@@ -47,9 +47,6 @@
     <Compile Include="DUTs\Insertion\Drives\SimplePiston.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\Insertion\Drives\TeknicHW.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="DUTs\Insertion\Insertion.TcPOU">
       <SubType>Code</SubType>
       <LinkAlways>true</LinkAlways>

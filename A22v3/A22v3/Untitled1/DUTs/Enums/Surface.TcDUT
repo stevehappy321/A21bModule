@@ -5,6 +5,8 @@
 //{attribute 'strict'}
 TYPE Surface :
 (
+	NULL,
+	
 	TOP,
 	LEFT,
 	RIGHT,

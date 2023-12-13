@@ -5,7 +5,9 @@
 {attribute 'strict'}
 TYPE Surface :
 (
-	TOP := 1,
+	NULL,
+	
+	TOP,
 	LEFT,
 	RIGHT,
 	BOTTOM,
@@ -15,7 +17,7 @@ TYPE Surface :
 	BOTTOM_RIGHT,
 	
 	size
-)BYTE;
+);
 END_TYPE
 ]]></Declaration>
   </DUT>

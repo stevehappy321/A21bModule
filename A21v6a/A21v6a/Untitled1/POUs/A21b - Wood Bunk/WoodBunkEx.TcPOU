@@ -2618,6 +2618,8 @@ ELSIF robot.tool <> sectionID AND_THEN NOT robot.changeEOAT(targetTool := sectio
 	RETURN;
 END_IF
 
+error := aoiLoad.error;
+
 CASE loadStep OF
 	0:
 		loadStep := Surface.TOP;
@@ -2652,7 +2654,7 @@ CASE loadStep OF
 		
 		aoiLoad.execute := NOT aoiLoad.busy;
 		
-	Surface.LEFT: //sides
+	Surface.LEFT:
 		IF NOT includeLeft OR aoiLoad.donePulse THEN
 			aoiLoad.execute := FALSE;
 			aoiLoad.material := '';
@@ -2974,7 +2976,10 @@ validateSuctionQuality :=
       <LineId Id="1881" Count="0" />
     </LineIds>
     <LineIds Name="WoodBunkEx.loadEx">
-      <LineId Id="44" Count="10" />
+      <LineId Id="44" Count="7" />
+      <LineId Id="264" Count="0" />
+      <LineId Id="263" Count="0" />
+      <LineId Id="52" Count="2" />
       <LineId Id="134" Count="0" />
       <LineId Id="132" Count="1" />
       <LineId Id="137" Count="0" />

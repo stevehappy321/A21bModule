@@ -80,7 +80,7 @@
 		</System>
 		<Plc>
 			<Project GUID="{D232006A-254D-4F35-9BFE-5131CC19FE71}" Name="Untitled1" PrjFilePath="Untitled1\Untitled1.plcproj" TmcFilePath="Untitled1\Untitled1.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{0E0995CE-3FAD-5C50-FBEC-DC4F214C1427}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{9E345DBA-5367-9D9B-FBD3-D10A283597A4}">
 					<Name>Untitled1 Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
@@ -166,22 +166,6 @@
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.toolStorageA21Left.pos1ChipboardEOAT</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.toolStorageA21Left.pos1WoodBunkEOAT</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.toolStorageA21Left.pos2ChipboardEOAT</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.toolStorageA21Left.pos2WoodBunkEOAT</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
 							<Name>Hardware.robot1.offline</Name>
 							<Type>BOOL</Type>
 						</Var>
@@ -198,6 +182,22 @@
 							<Type GUID="{0CC845D8-9BA1-18CF-F192-2496916AED96}">ARRAY [1..20] OF WORD</Type>
 						</Var>
 						<Var>
+							<Name>Hardware.toolStorageA21Left.pos1ChipboardEOAT</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.toolStorageA21Left.pos1WoodBunkEOAT</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.toolStorageA21Left.pos2ChipboardEOAT</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.toolStorageA21Left.pos2WoodBunkEOAT</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
 							<Name>Hardware.toolStorageA21Right.pos1ChipboardEOAT</Name>
 							<Type>BOOL</Type>
 						</Var>
@@ -211,14 +211,6 @@
 						</Var>
 						<Var>
 							<Name>Hardware.toolStorageA21Right.pos2WoodBunkEOAT</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.suctionA21Bottom[1].occupied</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.suctionA21Bottom[2].occupied</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
@@ -385,6 +377,14 @@
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
+							<Name>Hardware.suctionA21Bottom[1].occupied</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.suctionA21Bottom[2].occupied</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
 							<Name>MAIN.moduleWB.insertionLeft.contact</Name>
 							<Comment><![CDATA[may be removed from this FB and put into a 3rd GVL for floating sensors]]></Comment>
 							<Type>BOOL</Type>
@@ -420,14 +420,6 @@
 						<Var>
 							<Name>Hardware.robot2.outputs</Name>
 							<Type GUID="{FCDAFB1E-2CF0-0830-625A-4C0917D98604}">ARRAY [1..50] OF WORD</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.suctionA21Bottom[1].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.suctionA21Bottom[2].enable</Name>
-							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>Hardware.strapperA21.enable</Name>
@@ -533,6 +525,14 @@
 						</Var>
 						<Var>
 							<Name>Hardware.suctionA21Right[4].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.suctionA21Bottom[1].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.suctionA21Bottom[2].enable</Name>
 							<Type>BOOL</Type>
 						</Var>
 					</Vars>
