@@ -3017,7 +3017,20 @@ VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[//no specific tasks yet, free run and testing]]></ST>
+        <ST><![CDATA[{warning disable C0371}
+//no specific tasks yet, free run and testing
+SetSuctions(suctionTop, suctionEnableTop);
+SetSuctions(suctionLeft, suctionEnableLeft);
+SetSuctions(suctionRight, suctionEnableRight);
+SetSuctions(suctionBottom, suctionEnableBottom);
+
+IF robotLeft.Done THEN
+	robotLeft.clearCommand();
+END_IF
+
+IF robotRight.Done THEN
+	robotRight.clearCommand();
+END_IF]]></ST>
       </Implementation>
     </Method>
     <Method Name="process" Id="{125184ca-77bd-471a-a90f-30ac270f7324}">
@@ -3267,6 +3280,7 @@ insertionLeft.reset();
 insertionRight.reset();
 
 ps_Resetting := 
+	reset AND
 	NOT insertionLeft.error AND
 	NOT insertionRight.error AND
 	NOT strapper.error AND
@@ -3362,6 +3376,7 @@ CASE pmlState OF
 	
     ePMLState_Resetting:
 		IF ps_Resetting() THEN
+			reset := FALSE;
 			pmlStateMachine.M_StateComplete();
 		END_IF
 		
@@ -3748,7 +3763,16 @@ validateSuctionQuality :=
       <LineId Id="5" Count="0" />
     </LineIds>
     <LineIds Name="WoodBunkEx.maintenance">
+      <LineId Id="21" Count="0" />
       <LineId Id="5" Count="0" />
+      <LineId Id="10" Count="2" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="14" Count="0" />
+      <LineId Id="13" Count="0" />
+      <LineId Id="15" Count="1" />
+      <LineId Id="18" Count="0" />
+      <LineId Id="17" Count="0" />
+      <LineId Id="19" Count="1" />
     </LineIds>
     <LineIds Name="WoodBunkEx.process">
       <LineId Id="6" Count="0" />
@@ -3783,7 +3807,9 @@ validateSuctionQuality :=
     </LineIds>
     <LineIds Name="WoodBunkEx.ps_Resetting">
       <LineId Id="15" Count="0" />
-      <LineId Id="7" Count="7" />
+      <LineId Id="7" Count="3" />
+      <LineId Id="19" Count="0" />
+      <LineId Id="11" Count="3" />
       <LineId Id="6" Count="0" />
     </LineIds>
     <LineIds Name="WoodBunkEx.ps_Stopping">
@@ -3796,7 +3822,9 @@ validateSuctionQuality :=
       <LineId Id="5" Count="0" />
     </LineIds>
     <LineIds Name="WoodBunkEx.runPML">
-      <LineId Id="533" Count="85" />
+      <LineId Id="533" Count="55" />
+      <LineId Id="664" Count="0" />
+      <LineId Id="589" Count="29" />
       <LineId Id="661" Count="2" />
       <LineId Id="619" Count="40" />
       <LineId Id="1" Count="0" />

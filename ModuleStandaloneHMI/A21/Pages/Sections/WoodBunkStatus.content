@@ -561,8 +561,6 @@
 
 </div>
 <div id="TcHmiCheckbox_1" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiCheckbox" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="10" data-tchmi-left-unit="px" data-tchmi-text="Left" data-tchmi-top="602" data-tchmi-top-unit="px" data-tchmi-width="100" data-tchmi-width-unit="px"   data-tchmi-state-symbol="%s%PLC1.MAIN.moduleWB::suctionEnableLeft%/s%">
-
-
 </div>
 <div id="TcHmiCheckbox_2" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiCheckbox" data-tchmi-height="26" data-tchmi-height-unit="px" data-tchmi-left="10" data-tchmi-left-unit="px" data-tchmi-text="Right" data-tchmi-top="638" data-tchmi-top-unit="px" data-tchmi-width="100" data-tchmi-width-unit="px" data-tchmi-state-symbol="%s%PLC1.MAIN.moduleWB::suctionEnableRight%/s%">
 </div>
@@ -754,7 +752,7 @@
       {
         "objectType": "WriteToSymbol",
         "active": true,
-        "symbolExpression": "%ctrl%TcHmiInput_6::Text%/ctrl%",
+        "symbolExpression": "%ctrl%TcHmiInput_4::Text%/ctrl%",
         "value": {
           "objectType": "Symbol",
           "valueType": "tchmi:general#/definitions/String",
