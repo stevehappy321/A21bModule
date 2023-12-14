@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
   <POU Name="MAIN" Id="{9caf58b7-eccf-4a65-a3e3-2c8d81beb312}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM MAIN
 VAR
@@ -405,7 +405,7 @@ CallHardware(); //end program with hardware call]]></ST>
                           <v n="LValue">false</v>
                           <v n="Boolean">false</v>
                           <v n="IsInstance">true</v>
-                          <v n="Id">219L</v>
+                          <v n="Id">275L</v>
                         </o>
                         <o n="OutputItems" t="OutputItemList">
                           <l2 n="OutputItems" cet="Operand">
@@ -442,6 +442,70 @@ CallHardware(); //end program with hardware call]]></ST>
                               <v n="IsInstance">false</v>
                               <v n="Id">222L</v>
                             </o>
+                            <o>
+                              <v n="Operand">""</v>
+                              <v n="Type">"E_PMLProtectedUnitMode"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">true</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">271L</v>
+                            </o>
+                            <o>
+                              <v n="Operand">""</v>
+                              <v n="Type">"E_PMLState"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">true</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">272L</v>
+                            </o>
+                            <o>
+                              <v n="Operand">""</v>
+                              <v n="Type">"E_PMLProtectedUnitMode"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">true</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">273L</v>
+                            </o>
+                            <o>
+                              <v n="Operand">""</v>
+                              <v n="Type">"E_PMLCommand"</v>
+                              <v n="Comment">""</v>
+                              <v n="SymbolComment">""</v>
+                              <v n="Address">""</v>
+                              <o n="Flags" t="Flags">
+                                <v n="Flags">0</v>
+                                <v n="Fixed">false</v>
+                                <v n="Extensible">false</v>
+                              </o>
+                              <v n="LValue">true</v>
+                              <v n="Boolean">false</v>
+                              <v n="IsInstance">false</v>
+                              <v n="Id">274L</v>
+                            </o>
                           </l2>
                         </o>
                         <o n="Flags" t="Flags">
@@ -469,82 +533,6 @@ CallHardware(); //end program with hardware call]]></ST>
                               <v n="Id">224L</v>
                             </o>
                             <v n="Id">223L</v>
-                          </o>
-                          <o>
-                            <o n="Operand" t="Operand">
-                              <v n="Operand">"exec2"</v>
-                              <v n="Type">"BOOL"</v>
-                              <v n="Comment">""</v>
-                              <v n="SymbolComment">""</v>
-                              <v n="Address">""</v>
-                              <o n="Flags" t="Flags">
-                                <v n="Flags">0</v>
-                                <v n="Fixed">false</v>
-                                <v n="Extensible">false</v>
-                              </o>
-                              <v n="LValue">false</v>
-                              <v n="Boolean">false</v>
-                              <v n="IsInstance">false</v>
-                              <v n="Id">226L</v>
-                            </o>
-                            <v n="Id">225L</v>
-                          </o>
-                          <o>
-                            <o n="Operand" t="Operand">
-                              <v n="Operand">"stop"</v>
-                              <v n="Type">"BOOL"</v>
-                              <v n="Comment">""</v>
-                              <v n="SymbolComment">""</v>
-                              <v n="Address">""</v>
-                              <o n="Flags" t="Flags">
-                                <v n="Flags">0</v>
-                                <v n="Fixed">false</v>
-                                <v n="Extensible">false</v>
-                              </o>
-                              <v n="LValue">false</v>
-                              <v n="Boolean">false</v>
-                              <v n="IsInstance">false</v>
-                              <v n="Id">228L</v>
-                            </o>
-                            <v n="Id">227L</v>
-                          </o>
-                          <o>
-                            <o n="Operand" t="Operand">
-                              <v n="Operand">"manualStep"</v>
-                              <v n="Type">"BOOL"</v>
-                              <v n="Comment">""</v>
-                              <v n="SymbolComment">""</v>
-                              <v n="Address">""</v>
-                              <o n="Flags" t="Flags">
-                                <v n="Flags">0</v>
-                                <v n="Fixed">false</v>
-                                <v n="Extensible">false</v>
-                              </o>
-                              <v n="LValue">false</v>
-                              <v n="Boolean">true</v>
-                              <v n="IsInstance">false</v>
-                              <v n="Id">230L</v>
-                            </o>
-                            <v n="Id">229L</v>
-                          </o>
-                          <o>
-                            <o n="Operand" t="Operand">
-                              <v n="Operand">"manualSuction"</v>
-                              <v n="Type">"BOOL"</v>
-                              <v n="Comment">""</v>
-                              <v n="SymbolComment">""</v>
-                              <v n="Address">""</v>
-                              <o n="Flags" t="Flags">
-                                <v n="Flags">0</v>
-                                <v n="Fixed">false</v>
-                                <v n="Extensible">false</v>
-                              </o>
-                              <v n="LValue">false</v>
-                              <v n="Boolean">true</v>
-                              <v n="IsInstance">false</v>
-                              <v n="Id">232L</v>
-                            </o>
-                            <v n="Id">231L</v>
                           </o>
                           <o>
                             <o n="Operand" t="Operand">
@@ -892,10 +880,6 @@ CallHardware(); //end program with hardware call]]></ST>
                         <o n="InputParam" t="ParamList">
                           <l2 n="Names" cet="String">
                             <v>EN</v>
-                            <v>execute</v>
-                            <v>stop</v>
-                            <v>manualStep</v>
-                            <v>manualSuction</v>
                             <v>robotLeft</v>
                             <v>robotRight</v>
                             <v>toolStorageLeft</v>
@@ -917,10 +901,6 @@ CallHardware(); //end program with hardware call]]></ST>
                           </l2>
                           <l2 n="Types" cet="String">
                             <v>BOOL</v>
-                            <v>BOOL[REF]</v>
-                            <v>BOOL[REF]</v>
-                            <v>BOOL[REF]</v>
-                            <v>BOOL[REF]</v>
                             <v>RobotA21[REF]</v>
                             <v>RobotA21[REF]</v>
                             <v>A21ToolStorage[REF]</v>
@@ -946,11 +926,19 @@ CallHardware(); //end program with hardware call]]></ST>
                             <v>ENO</v>
                             <v>done</v>
                             <v>error</v>
+                            <v>pmlMode</v>
+                            <v>pmlState</v>
+                            <v>pmlModeRequest</v>
+                            <v>pmlCommand</v>
                           </l2>
                           <l2 n="Types" cet="String">
                             <v>BOOL</v>
                             <v>BOOL</v>
                             <v>BOOL</v>
+                            <v>E_PMLProtectedUnitMode</v>
+                            <v>E_PMLState</v>
+                            <v>E_PMLProtectedUnitMode</v>
+                            <v>E_PMLCommand</v>
                           </l2>
                         </o>
                         <v n="CallType" t="Operator">FunctionBlock</v>
@@ -959,7 +947,7 @@ CallHardware(); //end program with hardware call]]></ST>
                         <n n="STSnippet" />
                         <v n="ContainsExtensibleInputs">false</v>
                         <v n="ProvidesSTSnippet">false</v>
-                        <v n="Id">220L</v>
+                        <v n="Id">276L</v>
                       </o>
                     </l2>
                     <l2 n="Connectors" />

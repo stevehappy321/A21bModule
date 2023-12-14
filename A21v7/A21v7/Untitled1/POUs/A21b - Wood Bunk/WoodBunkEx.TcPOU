@@ -1,14 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
   <POU Name="WoodBunkEx" Id="{7c192e4b-e9ee-4c1c-a070-15e2c6191789}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK WoodBunkEx
-VAR_IN_OUT //controls
-	execute : BOOL;
-	stop : BOOL;
-	
-	manualStep : BOOL; //this should be redundant - delete
-	manualSuction : BOOL; //this should be redundant - delete and move manual suction functionality to PML MAINTENANCE mode
-END_VAR
 VAR_IN_OUT //references to required hardware
 	robotLeft, robotRight : RobotA21;
 	toolStorageLeft, toolStorageRight : A21ToolStorage;
@@ -27,9 +20,11 @@ VAR_IN_OUT //references to required hardware
 	suctionRight : ARRAY[*] OF SuctionPad; (*1..4*)
 	suctionBottom : ARRAY[*] OF SuctionPad; (*1..2*)
 END_VAR
-VAR
+VAR //controls
+	stop : BOOL;
+	execute : BOOL;
+	hold : BOOL;
 	reset : BOOL;
-	resume : BOOL;
 END_VAR
 VAR_OUTPUT
 	done : BOOL;
@@ -3196,6 +3191,12 @@ insertionLeft.stop();
 insertionRight.stop();
 pistonBottom.stop();
 
+aoiLoadLeft.reset();
+aoiLoadRight.reset();
+
+aoiStageLeft.reset();
+aoiStageRight.reset();
+
 robotLeft.clearCommand();
 robotRight.clearCommand();
 
@@ -3283,6 +3284,12 @@ END_VAR
 insertionLeft.stop();
 insertionRight.stop();
 pistonBottom.stop();
+
+aoiLoadLeft.reset();
+aoiLoadRight.reset();
+
+aoiStageLeft.reset();
+aoiStageRight.reset();
 
 robotLeft.clearCommand();
 robotRight.clearCommand();
@@ -3385,6 +3392,9 @@ CASE pmlState OF
 		END_IF
 	
 	ePMLState_Execute: 
+		IF hold THEN
+			pmlCommand := ePMLCommand_Hold;
+		END_IF
 		IF ps_Execute() THEN
 			pmlStateMachine.M_StateComplete();
 			pmlCommand := ePMLCommand_Complete;
@@ -3402,7 +3412,7 @@ CASE pmlState OF
 		END_IF
 	
 	ePMLState_Held:
-		IF resume THEN
+		IF NOT hold THEN
 			pmlCommand := ePMLCommand_Unhold;
 		END_IF
 	
@@ -3748,7 +3758,10 @@ validateSuctionQuality :=
       <LineId Id="5" Count="0" />
     </LineIds>
     <LineIds Name="WoodBunkEx.ps_Aborting">
-      <LineId Id="6" Count="14" />
+      <LineId Id="6" Count="3" />
+      <LineId Id="25" Count="4" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="10" Count="10" />
       <LineId Id="5" Count="0" />
     </LineIds>
     <LineIds Name="WoodBunkEx.ps_Clearing">
@@ -3775,26 +3788,17 @@ validateSuctionQuality :=
     </LineIds>
     <LineIds Name="WoodBunkEx.ps_Stopping">
       <LineId Id="20" Count="0" />
-      <LineId Id="6" Count="9" />
+      <LineId Id="6" Count="2" />
+      <LineId Id="32" Count="4" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="9" Count="6" />
       <LineId Id="24" Count="3" />
       <LineId Id="5" Count="0" />
     </LineIds>
     <LineIds Name="WoodBunkEx.runPML">
-      <LineId Id="397" Count="6" />
-      <LineId Id="524" Count="1" />
-      <LineId Id="523" Count="0" />
-      <LineId Id="527" Count="0" />
-      <LineId Id="529" Count="1" />
-      <LineId Id="528" Count="0" />
-      <LineId Id="522" Count="0" />
-      <LineId Id="404" Count="1" />
-      <LineId Id="526" Count="0" />
-      <LineId Id="415" Count="2" />
-      <LineId Id="531" Count="0" />
-      <LineId Id="521" Count="0" />
-      <LineId Id="418" Count="46" />
-      <LineId Id="532" Count="0" />
-      <LineId Id="465" Count="55" />
+      <LineId Id="533" Count="85" />
+      <LineId Id="661" Count="2" />
+      <LineId Id="619" Count="40" />
       <LineId Id="1" Count="0" />
     </LineIds>
     <LineIds Name="WoodBunkEx.stage">

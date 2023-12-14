@@ -33,8 +33,8 @@
                 "generate_implicit_init_function": "",
                 "qualified_only": "",
                 "to_string": "",
-                "to_string_function": "__TO_STRING__165",
-                "to_wstring_function": "__TO_WSTRING__165"
+                "to_string_function": "__TO_STRING__193",
+                "to_wstring_function": "__TO_WSTRING__193"
             },
             "enum": [
                 0,
@@ -366,6 +366,863 @@
             "minItems": 6,
             "type": "array"
         },
+        "PLC1.AOI_LoadChipboard": {
+            "attributes": {
+                "contains_implicit_enum": ""
+            },
+            "properties": {
+                "busy": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 8
+                        }
+                    ]
+                },
+                "column": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/INT"
+                        },
+                        {
+                            "propertyOrder": 18
+                        }
+                    ]
+                },
+                "done": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 9
+                        }
+                    ]
+                },
+                "donePulse": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 13
+                        }
+                    ]
+                },
+                "doneTrigger": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc2_Standard.R_TRIG"
+                        },
+                        {
+                            "propertyOrder": 16
+                        }
+                    ]
+                },
+                "error": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 10
+                        }
+                    ]
+                },
+                "execute": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 2
+                        }
+                    ]
+                },
+                "failCounter": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/INT"
+                        },
+                        {
+                            "propertyOrder": 12
+                        }
+                    ]
+                },
+                "loadedMaterials": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.POINTER-TO-STRING-80"
+                        },
+                        {
+                            "attributes": {
+                                "Dimensions": "1",
+                                "variable_length_array": ""
+                            },
+                            "propertyOrder": 5
+                        }
+                    ]
+                },
+                "material": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/STRING%2880%29"
+                        },
+                        {
+                            "propertyOrder": 7
+                        }
+                    ]
+                },
+                "recovery": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 11
+                        }
+                    ]
+                },
+                "robot": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.REFERENCE-TO-RobotA21"
+                        },
+                        {
+                            "propertyOrder": 3
+                        }
+                    ]
+                },
+                "run": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 14
+                        }
+                    ]
+                },
+                "sectionID": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.REFERENCE-TO-SectionEnum"
+                        },
+                        {
+                            "propertyOrder": 1
+                        }
+                    ]
+                },
+                "step": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Implicit_Enum__AOI_LoadChipboard__step"
+                        },
+                        {
+                            "attributes": {
+                                "implicit_enum_type": ""
+                            },
+                            "propertyOrder": 17
+                        }
+                    ]
+                },
+                "storage": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.REFERENCE-TO-SkidMagazine"
+                        },
+                        {
+                            "propertyOrder": 4
+                        }
+                    ]
+                },
+                "suctionDistance": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/INT"
+                        },
+                        {
+                            "propertyOrder": 19
+                        }
+                    ]
+                },
+                "surfaceID": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Surface"
+                        },
+                        {
+                            "propertyOrder": 6
+                        }
+                    ]
+                },
+                "trigger": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc2_Standard.R_TRIG"
+                        },
+                        {
+                            "propertyOrder": 15
+                        }
+                    ]
+                }
+            },
+            "type": "object"
+        },
+        "PLC1.AOI_LoadWoodBunk": {
+            "attributes": {
+                "contains_implicit_enum": ""
+            },
+            "properties": {
+                "busy": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 10
+                        }
+                    ]
+                },
+                "done": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 11
+                        }
+                    ]
+                },
+                "donePulse": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 15
+                        }
+                    ]
+                },
+                "doneTrigger": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc2_Standard.R_TRIG"
+                        },
+                        {
+                            "propertyOrder": 18
+                        }
+                    ]
+                },
+                "error": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 12
+                        }
+                    ]
+                },
+                "execute": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 1
+                        }
+                    ]
+                },
+                "failCounter": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/INT"
+                        },
+                        {
+                            "propertyOrder": 14
+                        }
+                    ]
+                },
+                "i": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/DINT"
+                        },
+                        {
+                            "propertyOrder": 22
+                        }
+                    ]
+                },
+                "loadedMaterials": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.POINTER-TO-STRING-80"
+                        },
+                        {
+                            "attributes": {
+                                "Dimensions": "1",
+                                "variable_length_array": ""
+                            },
+                            "comment": "if assigned using . operator instead of (), this becomes a pointer - use numPads isntead of UPPER_BOUND/LOWER_BOUND",
+                            "propertyOrder": 6
+                        }
+                    ]
+                },
+                "material": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/STRING%2880%29"
+                        },
+                        {
+                            "propertyOrder": 8
+                        }
+                    ]
+                },
+                "numPads": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/DINT"
+                        },
+                        {
+                            "propertyOrder": 9
+                        }
+                    ]
+                },
+                "recovery": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 13
+                        }
+                    ]
+                },
+                "robot": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.REFERENCE-TO-RobotA21"
+                        },
+                        {
+                            "propertyOrder": 3
+                        }
+                    ]
+                },
+                "run": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 16
+                        }
+                    ]
+                },
+                "sectionID": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.REFERENCE-TO-SectionEnum"
+                        },
+                        {
+                            "propertyOrder": 2
+                        }
+                    ]
+                },
+                "slot": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/INT"
+                        },
+                        {
+                            "propertyOrder": 19
+                        }
+                    ]
+                },
+                "step": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Implicit_Enum__AOI_LoadWoodBunk__step"
+                        },
+                        {
+                            "attributes": {
+                                "implicit_enum_type": ""
+                            },
+                            "propertyOrder": 21
+                        }
+                    ]
+                },
+                "suctionDelay": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/TIME"
+                        },
+                        {
+                            "propertyOrder": 24
+                        }
+                    ]
+                },
+                "suctionDistance": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/INT"
+                        },
+                        {
+                            "propertyOrder": 25
+                        }
+                    ]
+                },
+                "suctionTimer": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc2_Standard.TON"
+                        },
+                        {
+                            "propertyOrder": 20
+                        }
+                    ]
+                },
+                "suctions": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.POINTER-TO-SuctionPad"
+                        },
+                        {
+                            "attributes": {
+                                "Dimensions": "1",
+                                "variable_length_array": ""
+                            },
+                            "propertyOrder": 5
+                        }
+                    ]
+                },
+                "surfaceID": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Surface"
+                        },
+                        {
+                            "propertyOrder": 7
+                        }
+                    ]
+                },
+                "table": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.REFERENCE-TO-StagingTable"
+                        },
+                        {
+                            "propertyOrder": 4
+                        }
+                    ]
+                },
+                "test": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 23
+                        }
+                    ]
+                },
+                "trigger": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc2_Standard.R_TRIG"
+                        },
+                        {
+                            "propertyOrder": 17
+                        }
+                    ]
+                }
+            },
+            "type": "object"
+        },
+        "PLC1.AOI_StageWoodBunk": {
+            "attributes": {
+                "contains_implicit_enum": ""
+            },
+            "properties": {
+                "busy": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 8
+                        }
+                    ]
+                },
+                "column": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/INT"
+                        },
+                        {
+                            "propertyOrder": 17
+                        }
+                    ]
+                },
+                "done": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "comment": "this done signal stays on until next execution",
+                            "propertyOrder": 9
+                        }
+                    ]
+                },
+                "donePulse": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "comment": "this done signal only stays on for 1 cycle after completion",
+                            "propertyOrder": 13
+                        }
+                    ]
+                },
+                "doneTrigger": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc2_Standard.R_TRIG"
+                        },
+                        {
+                            "propertyOrder": 16
+                        }
+                    ]
+                },
+                "error": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 10
+                        }
+                    ]
+                },
+                "execute": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 1
+                        }
+                    ]
+                },
+                "failCounter": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/INT"
+                        },
+                        {
+                            "propertyOrder": 12
+                        }
+                    ]
+                },
+                "magazine": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.REFERENCE-TO-SkidMagazine"
+                        },
+                        {
+                            "propertyOrder": 5
+                        }
+                    ]
+                },
+                "material": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/STRING%2880%29"
+                        },
+                        {
+                            "propertyOrder": 7
+                        }
+                    ]
+                },
+                "recovery": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 11
+                        }
+                    ]
+                },
+                "robot": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.REFERENCE-TO-RobotA21"
+                        },
+                        {
+                            "propertyOrder": 3
+                        }
+                    ]
+                },
+                "run": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 14
+                        }
+                    ]
+                },
+                "sectionID": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.REFERENCE-TO-SectionEnum"
+                        },
+                        {
+                            "propertyOrder": 2
+                        }
+                    ]
+                },
+                "slot": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/INT"
+                        },
+                        {
+                            "propertyOrder": 6
+                        }
+                    ]
+                },
+                "step": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Implicit_Enum__AOI_StageWoodBunk__step"
+                        },
+                        {
+                            "attributes": {
+                                "implicit_enum_type": ""
+                            },
+                            "propertyOrder": 18
+                        }
+                    ]
+                },
+                "suctionDistance": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/INT"
+                        },
+                        {
+                            "propertyOrder": 19
+                        }
+                    ]
+                },
+                "table": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.REFERENCE-TO-StagingTable"
+                        },
+                        {
+                            "propertyOrder": 4
+                        }
+                    ]
+                },
+                "trigger": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc2_Standard.R_TRIG"
+                        },
+                        {
+                            "propertyOrder": 15
+                        }
+                    ]
+                }
+            },
+            "type": "object"
+        },
+        "PLC1.AOI_StagingTemplate": {
+            "attributes": {
+                "contains_implicit_enum": ""
+            },
+            "properties": {
+                "busy": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 8
+                        }
+                    ]
+                },
+                "done": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 9
+                        }
+                    ]
+                },
+                "execute": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 1
+                        }
+                    ]
+                },
+                "i": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/INT"
+                        },
+                        {
+                            "propertyOrder": 13
+                        }
+                    ]
+                },
+                "includeBottom": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 7
+                        }
+                    ]
+                },
+                "includeLeft": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 5
+                        }
+                    ]
+                },
+                "includeRight": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 6
+                        }
+                    ]
+                },
+                "includeTop": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 4
+                        }
+                    ]
+                },
+                "materialsArr": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.POINTER-TO-PositionMaterials"
+                        },
+                        {
+                            "attributes": {
+                                "Dimensions": "1",
+                                "variable_length_array": ""
+                            },
+                            "comment": "[0..GVL.maxPairs]",
+                            "propertyOrder": 2
+                        }
+                    ]
+                },
+                "run": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 11
+                        }
+                    ]
+                },
+                "stagingArray": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.ARRAY_0..34_OF-STRING-80"
+                        },
+                        {
+                            "propertyOrder": 14
+                        }
+                    ]
+                },
+                "step": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Implicit_Enum__AOI_StagingTemplate__step"
+                        },
+                        {
+                            "attributes": {
+                                "implicit_enum_type": ""
+                            },
+                            "propertyOrder": 12
+                        }
+                    ]
+                },
+                "table": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.REFERENCE-TO-StagingTable"
+                        },
+                        {
+                            "propertyOrder": 3
+                        }
+                    ]
+                },
+                "template": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.StagingTable"
+                        },
+                        {
+                            "propertyOrder": 15
+                        }
+                    ]
+                },
+                "templateSlots": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.ARRAY_1..10_OF-MaterialSlot"
+                        },
+                        {
+                            "attributes": {
+                                "TcAddressType": "Memory"
+                            },
+                            "propertyOrder": 16
+                        }
+                    ]
+                },
+                "trigger": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc2_Standard.R_TRIG"
+                        },
+                        {
+                            "propertyOrder": 10
+                        }
+                    ]
+                }
+            },
+            "type": "object"
+        },
         "PLC1.ARRAY_0..127_OF-DWORD": {
             "items": {
                 "$ref": "tchmi:general#/definitions/DWORD"
@@ -380,6 +1237,14 @@
             },
             "maxItems": 17,
             "minItems": 17,
+            "type": "array"
+        },
+        "PLC1.ARRAY_0..17_OF-STRING-80": {
+            "items": {
+                "$ref": "tchmi:general#/definitions/STRING%2880%29"
+            },
+            "maxItems": 18,
+            "minItems": 18,
             "type": "array"
         },
         "PLC1.ARRAY_0..1_OF-INT": {
@@ -643,9 +1508,6 @@
                     "$ref": "#/definitions/PLC1.PROPERTY-GET-BOOL"
                 },
                 "Error": {
-                    "$ref": "#/definitions/PLC1.PROPERTY-GET-BOOL"
-                },
-                "HomeSet": {
                     "$ref": "#/definitions/PLC1.PROPERTY-GET-BOOL"
                 },
                 "bEnable": {
@@ -1435,26 +2297,6 @@
                         }
                     ]
                 },
-                "iSlotLeft": {
-                    "allOf": [
-                        {
-                            "$ref": "tchmi:general#/definitions/INT"
-                        },
-                        {
-                            "propertyOrder": 22
-                        }
-                    ]
-                },
-                "iSlotRight": {
-                    "allOf": [
-                        {
-                            "$ref": "tchmi:general#/definitions/INT"
-                        },
-                        {
-                            "propertyOrder": 23
-                        }
-                    ]
-                },
                 "latchLeft": {
                     "allOf": [
                         {
@@ -1476,6 +2318,26 @@
                         }
                     ]
                 },
+                "loadLeft": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.AOI_LoadChipboard"
+                        },
+                        {
+                            "propertyOrder": 23
+                        }
+                    ]
+                },
+                "loadRight": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.AOI_LoadChipboard"
+                        },
+                        {
+                            "propertyOrder": 24
+                        }
+                    ]
+                },
                 "loadSet": {
                     "allOf": [
                         {
@@ -1486,33 +2348,13 @@
                         }
                     ]
                 },
-                "loadStepLeft": {
-                    "allOf": [
-                        {
-                            "$ref": "tchmi:general#/definitions/INT"
-                        },
-                        {
-                            "propertyOrder": 20
-                        }
-                    ]
-                },
-                "loadStepRight": {
-                    "allOf": [
-                        {
-                            "$ref": "tchmi:general#/definitions/INT"
-                        },
-                        {
-                            "propertyOrder": 21
-                        }
-                    ]
-                },
                 "loadedMaterials": {
                     "allOf": [
                         {
                             "$ref": "#/definitions/PLC1.ARRAY_1..4_OF-STRING-80"
                         },
                         {
-                            "propertyOrder": 25
+                            "propertyOrder": 21
                         }
                     ]
                 },
@@ -1533,7 +2375,7 @@
                         },
                         {
                             "comment": "local types",
-                            "propertyOrder": 24
+                            "propertyOrder": 20
                         }
                     ]
                 },
@@ -1564,7 +2406,7 @@
                             "$ref": "#/definitions/PLC1.SectionEnum"
                         },
                         {
-                            "propertyOrder": 26
+                            "propertyOrder": 22
                         }
                     ]
                 },
@@ -1960,9 +2802,6 @@
                     "$ref": "#/definitions/PLC1.PROPERTY-GET-BOOL"
                 },
                 "Error": {
-                    "$ref": "#/definitions/PLC1.PROPERTY-GET-BOOL"
-                },
-                "HomeSet": {
                     "$ref": "#/definitions/PLC1.PROPERTY-GET-BOOL"
                 },
                 "bEnable": {
@@ -2593,6 +3432,160 @@
             },
             "type": "object"
         },
+        "PLC1.Implicit_Enum__AOI_LoadChipboard__step": {
+            "attributes": {
+                "generate_implicit_init_function": "",
+                "qualified_only": ""
+            },
+            "enum": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5
+            ],
+            "options": [
+                {
+                    "label": "IDLE",
+                    "value": 0
+                },
+                {
+                    "label": "PREP_ROBOT",
+                    "value": 1
+                },
+                {
+                    "label": "RETRACT_CONVEYORS",
+                    "value": 2
+                },
+                {
+                    "label": "GET_FROM_SKID",
+                    "value": 3
+                },
+                {
+                    "label": "LOAD_TO_BUNDLE",
+                    "value": 4
+                },
+                {
+                    "label": "COMPLETE",
+                    "value": 5
+                }
+            ],
+            "type": "integer"
+        },
+        "PLC1.Implicit_Enum__AOI_LoadWoodBunk__step": {
+            "attributes": {
+                "generate_implicit_init_function": "",
+                "qualified_only": ""
+            },
+            "enum": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7
+            ],
+            "options": [
+                {
+                    "label": "IDLE",
+                    "value": 0
+                },
+                {
+                    "label": "PREP_ROBOT",
+                    "value": 1
+                },
+                {
+                    "label": "GET_FROM_TABLE",
+                    "value": 2
+                },
+                {
+                    "label": "LOAD_TO_INSERTION",
+                    "value": 3
+                },
+                {
+                    "label": "COMPLETE",
+                    "value": 4
+                },
+                {
+                    "label": "RECOVERY_IDLE",
+                    "value": 5
+                },
+                {
+                    "label": "RECOVERY_REMOVE",
+                    "value": 6
+                },
+                {
+                    "label": "RECOVERY_STAGE",
+                    "value": 7
+                }
+            ],
+            "type": "integer"
+        },
+        "PLC1.Implicit_Enum__AOI_StageWoodBunk__step": {
+            "attributes": {
+                "generate_implicit_init_function": "",
+                "qualified_only": ""
+            },
+            "enum": [
+                0,
+                1,
+                2,
+                3,
+                4
+            ],
+            "options": [
+                {
+                    "label": "IDLE",
+                    "value": 0
+                },
+                {
+                    "label": "PREP_ROBOT",
+                    "value": 1
+                },
+                {
+                    "label": "GET_FROM_MAGAZINE",
+                    "value": 2
+                },
+                {
+                    "label": "PLACE_ON_TABLE",
+                    "value": 3
+                },
+                {
+                    "label": "COMPLETE",
+                    "value": 4
+                }
+            ],
+            "type": "integer"
+        },
+        "PLC1.Implicit_Enum__AOI_StagingTemplate__step": {
+            "attributes": {
+                "generate_implicit_init_function": "",
+                "qualified_only": ""
+            },
+            "enum": [
+                0,
+                1,
+                2
+            ],
+            "options": [
+                {
+                    "label": "IDLE",
+                    "value": 0
+                },
+                {
+                    "label": "GENERATE",
+                    "value": 1
+                },
+                {
+                    "label": "COMPLETE",
+                    "value": 2
+                }
+            ],
+            "type": "integer"
+        },
         "PLC1.Implicit_Enum__AirPiston__mode": {
             "attributes": {
                 "generate_implicit_init_function": "",
@@ -3002,7 +3995,7 @@
         },
         "PLC1.Insertion": {
             "properties": {
-                "busy": {
+                "active": {
                     "allOf": [
                         {
                             "$ref": "tchmi:general#/definitions/BOOL"
@@ -4490,6 +5483,9 @@
                             "$ref": "tchmi:general#/definitions/BOOL"
                         },
                         {
+                            "attributes": {
+                                "TcAddressType": "Input"
+                            },
                             "propertyOrder": 2
                         }
                     ]
@@ -4556,6 +5552,16 @@
                 }
             ]
         },
+        "PLC1.POINTER-TO-PositionMaterials": {
+            "allOf": [
+                {
+                    "allowImplicitAccess": false
+                },
+                {
+                    "$ref": "#/definitions/PLC1.PositionMaterials"
+                }
+            ]
+        },
         "PLC1.POINTER-TO-STRING-80": {
             "allOf": [
                 {
@@ -4573,6 +5579,16 @@
                 },
                 {
                     "$ref": "#/definitions/PLC1.SuctionPad"
+                }
+            ]
+        },
+        "PLC1.POINTER-TO-Tc3_PackML_V2.ST_PMLSubUnitInfo": {
+            "allOf": [
+                {
+                    "allowImplicitAccess": false
+                },
+                {
+                    "$ref": "#/definitions/PLC1.Tc3_PackML_V2.ST_PMLSubUnitInfo"
                 }
             ]
         },
@@ -4999,6 +6015,16 @@
                 },
                 {
                     "$ref": "tchmi:general#/definitions/STRING%2880%29"
+                }
+            ]
+        },
+        "PLC1.REFERENCE-TO-SectionEnum": {
+            "allOf": [
+                {
+                    "allowImplicitAccess": false
+                },
+                {
+                    "$ref": "#/definitions/PLC1.SectionEnum"
                 }
             ]
         },
@@ -6065,8 +7091,8 @@
                 "generate_implicit_init_function": "",
                 "qualified_only": "",
                 "to_string": "",
-                "to_string_function": "__TO_STRING__172",
-                "to_wstring_function": "__TO_WSTRING__172"
+                "to_string_function": "__TO_STRING__200",
+                "to_wstring_function": "__TO_WSTRING__200"
             },
             "enum": [
                 0,
@@ -6344,6 +7370,16 @@
                         }
                     ]
                 },
+                "busy": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 6
+                        }
+                    ]
+                },
                 "extended": {
                     "allOf": [
                         {
@@ -6366,7 +7402,7 @@
                             "attributes": {
                                 "implicit_enum_type": ""
                             },
-                            "propertyOrder": 6
+                            "propertyOrder": 7
                         }
                     ]
                 },
@@ -6414,20 +7450,6 @@
         },
         "PLC1.SkidMagazine": {
             "properties": {
-                "hmiTable": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/PLC1.POINTER-TO-MaterialSlot"
-                        },
-                        {
-                            "attributes": {
-                                "Dimensions": "1",
-                                "variable_length_array": ""
-                            },
-                            "propertyOrder": 3
-                        }
-                    ]
-                },
                 "inPosition": {
                     "allOf": [
                         {
@@ -6437,73 +7459,6 @@
                             "attributes": {
                                 "TcAddressType": "Input"
                             },
-                            "propertyOrder": 6
-                        }
-                    ]
-                },
-                "numSlots": {
-                    "allOf": [
-                        {
-                            "$ref": "tchmi:general#/definitions/INT"
-                        },
-                        {
-                            "propertyOrder": 4
-                        }
-                    ]
-                },
-                "occupied": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/PLC1.POINTER-TO-BOOL"
-                        },
-                        {
-                            "attributes": {
-                                "Dimensions": "1",
-                                "variable_length_array": ""
-                            },
-                            "propertyOrder": 2
-                        }
-                    ]
-                },
-                "slots": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/PLC1.POINTER-TO-STRING-80"
-                        },
-                        {
-                            "attributes": {
-                                "Dimensions": "1",
-                                "variable_length_array": ""
-                            },
-                            "propertyOrder": 1
-                        }
-                    ]
-                },
-                "test": {
-                    "allOf": [
-                        {
-                            "$ref": "tchmi:general#/definitions/INT"
-                        },
-                        {
-                            "propertyOrder": 5
-                        }
-                    ]
-                }
-            },
-            "type": "object"
-        },
-        "PLC1.StagingTable": {
-            "properties": {
-                "hmiTable": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/PLC1.POINTER-TO-MaterialSlot"
-                        },
-                        {
-                            "attributes": {
-                                "Dimensions": "1",
-                                "variable_length_array": ""
-                            },
                             "propertyOrder": 3
                         }
                     ]
@@ -6514,20 +7469,6 @@
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
-                            "propertyOrder": 4
-                        }
-                    ]
-                },
-                "occupied": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/PLC1.POINTER-TO-BOOL"
-                        },
-                        {
-                            "attributes": {
-                                "Dimensions": "1",
-                                "variable_length_array": ""
-                            },
                             "propertyOrder": 2
                         }
                     ]
@@ -6535,7 +7476,7 @@
                 "slots": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/PLC1.POINTER-TO-STRING-80"
+                            "$ref": "#/definitions/PLC1.POINTER-TO-MaterialSlot"
                         },
                         {
                             "attributes": {
@@ -6545,14 +7486,33 @@
                             "propertyOrder": 1
                         }
                     ]
-                },
-                "test": {
+                }
+            },
+            "type": "object"
+        },
+        "PLC1.StagingTable": {
+            "properties": {
+                "numSlots": {
                     "allOf": [
                         {
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
-                            "propertyOrder": 5
+                            "propertyOrder": 2
+                        }
+                    ]
+                },
+                "slots": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.POINTER-TO-MaterialSlot"
+                        },
+                        {
+                            "attributes": {
+                                "Dimensions": "1",
+                                "variable_length_array": ""
+                            },
+                            "propertyOrder": 1
                         }
                     ]
                 }
@@ -6585,16 +7545,6 @@
                         },
                         {
                             "propertyOrder": 1
-                        }
-                    ]
-                },
-                "delay": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/PLC1.Tc2_Standard.TON"
-                        },
-                        {
-                            "propertyOrder": 12
                         }
                     ]
                 },
@@ -6700,13 +7650,23 @@
                         }
                     ]
                 },
+                "resetDelay": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc2_Standard.TP"
+                        },
+                        {
+                            "propertyOrder": 13
+                        }
+                    ]
+                },
                 "start": {
                     "allOf": [
                         {
                             "$ref": "tchmi:general#/definitions/BOOL"
                         },
                         {
-                            "propertyOrder": 13
+                            "propertyOrder": 14
                         }
                     ]
                 },
@@ -6719,7 +7679,7 @@
                             "attributes": {
                                 "implicit_enum_type": ""
                             },
-                            "propertyOrder": 14
+                            "propertyOrder": 15
                         }
                     ]
                 },
@@ -6730,6 +7690,16 @@
                         },
                         {
                             "propertyOrder": 9
+                        }
+                    ]
+                },
+                "timeoutDelay": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc2_Standard.TON"
+                        },
+                        {
+                            "propertyOrder": 12
                         }
                     ]
                 }
@@ -6766,6 +7736,68 @@
                 }
             },
             "type": "object"
+        },
+        "PLC1.Surface": {
+            "attributes": {
+                "generate_implicit_init_function": "",
+                "qualified_only": "",
+                "strict": ""
+            },
+            "enum": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9
+            ],
+            "options": [
+                {
+                    "label": "NULL",
+                    "value": 0
+                },
+                {
+                    "label": "TOP",
+                    "value": 1
+                },
+                {
+                    "label": "LEFT",
+                    "value": 2
+                },
+                {
+                    "label": "RIGHT",
+                    "value": 3
+                },
+                {
+                    "label": "BOTTOM",
+                    "value": 4
+                },
+                {
+                    "label": "TOP_LEFT",
+                    "value": 5
+                },
+                {
+                    "label": "TOP_RIGHT",
+                    "value": 6
+                },
+                {
+                    "label": "BOTTOM_LEFT",
+                    "value": 7
+                },
+                {
+                    "label": "BOTTOM_RIGHT",
+                    "value": 8
+                },
+                {
+                    "label": "size",
+                    "value": 9
+                }
+            ],
+            "type": "integer"
         },
         "PLC1.Tc2_MC2.AXIS_REF": {
             "attributes": {
@@ -12086,6 +13118,525 @@
             },
             "type": "object"
         },
+        "PLC1.Tc3_PackML_V2.E_PMLCommand": {
+            "enum": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10
+            ],
+            "options": [
+                {
+                    "label": "ePMLCommand_Undefined",
+                    "value": 0
+                },
+                {
+                    "label": "ePMLCommand_Reset",
+                    "value": 1
+                },
+                {
+                    "label": "ePMLCommand_Start",
+                    "value": 2
+                },
+                {
+                    "label": "ePMLCommand_Stop",
+                    "value": 3
+                },
+                {
+                    "label": "ePMLCommand_Hold",
+                    "value": 4
+                },
+                {
+                    "label": "ePMLCommand_Unhold",
+                    "value": 5
+                },
+                {
+                    "label": "ePMLCommand_Suspend",
+                    "value": 6
+                },
+                {
+                    "label": "ePMLCommand_Unsuspend",
+                    "value": 7
+                },
+                {
+                    "label": "ePMLCommand_Abort",
+                    "value": 8
+                },
+                {
+                    "label": "ePMLCommand_Clear",
+                    "value": 9
+                },
+                {
+                    "label": "ePMLCommand_Complete",
+                    "value": 10
+                }
+            ],
+            "type": "integer"
+        },
+        "PLC1.Tc3_PackML_V2.E_PMLProtectedUnitMode": {
+            "enum": [
+                0,
+                1,
+                2,
+                3
+            ],
+            "options": [
+                {
+                    "label": "ePMLProtUnitMode_Invalid",
+                    "value": 0
+                },
+                {
+                    "label": "ePMLProtUnitMode_Production",
+                    "value": 1
+                },
+                {
+                    "label": "ePMLProtUnitMode_Maintenance",
+                    "value": 2
+                },
+                {
+                    "label": "ePMLProtUnitMode_Manual",
+                    "value": 3
+                }
+            ],
+            "type": "integer"
+        },
+        "PLC1.Tc3_PackML_V2.E_PMLState": {
+            "enum": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13,
+                14,
+                15,
+                16,
+                17
+            ],
+            "options": [
+                {
+                    "label": "ePMLState_Undefined",
+                    "value": 0
+                },
+                {
+                    "label": "ePMLState_Clearing",
+                    "value": 1
+                },
+                {
+                    "label": "ePMLState_Stopped",
+                    "value": 2
+                },
+                {
+                    "label": "ePMLState_Starting",
+                    "value": 3
+                },
+                {
+                    "label": "ePMLState_Idle",
+                    "value": 4
+                },
+                {
+                    "label": "ePMLState_Suspended",
+                    "value": 5
+                },
+                {
+                    "label": "ePMLState_Execute",
+                    "value": 6
+                },
+                {
+                    "label": "ePMLState_Stopping",
+                    "value": 7
+                },
+                {
+                    "label": "ePMLState_Aborting",
+                    "value": 8
+                },
+                {
+                    "label": "ePMLState_Aborted",
+                    "value": 9
+                },
+                {
+                    "label": "ePMLState_Holding",
+                    "value": 10
+                },
+                {
+                    "label": "ePMLState_Held",
+                    "value": 11
+                },
+                {
+                    "label": "ePMLState_Unholding",
+                    "value": 12
+                },
+                {
+                    "label": "ePMLState_Suspending",
+                    "value": 13
+                },
+                {
+                    "label": "ePMLState_Unsuspending",
+                    "value": 14
+                },
+                {
+                    "label": "ePMLState_Resetting",
+                    "value": 15
+                },
+                {
+                    "label": "ePMLState_Completing",
+                    "value": 16
+                },
+                {
+                    "label": "ePMLState_Complete",
+                    "value": 17
+                }
+            ],
+            "type": "integer"
+        },
+        "PLC1.Tc3_PackML_V2.PML_StateMachine": {
+            "attributes": {
+                "conditionalshow_all_locals": ""
+            },
+            "properties": {
+                "bError": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "comment": "additional",
+                            "propertyOrder": 7
+                        }
+                    ]
+                },
+                "eCommand": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc3_PackML_V2.E_PMLCommand"
+                        },
+                        {
+                            "propertyOrder": 2
+                        }
+                    ]
+                },
+                "eMode": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/DINT"
+                        },
+                        {
+                            "propertyOrder": 1
+                        }
+                    ]
+                },
+                "eState": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc3_PackML_V2.E_PMLState"
+                        },
+                        {
+                            "propertyOrder": 5
+                        }
+                    ]
+                },
+                "eStatePrev": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc3_PackML_V2.E_PMLState"
+                        },
+                        {
+                            "attributes": {
+                                "conditionalshow": ""
+                            },
+                            "propertyOrder": 10
+                        }
+                    ]
+                },
+                "i": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/UDINT"
+                        },
+                        {
+                            "attributes": {
+                                "conditionalshow": ""
+                            },
+                            "propertyOrder": 9
+                        }
+                    ]
+                },
+                "nErrorID": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/UDINT"
+                        },
+                        {
+                            "propertyOrder": 8
+                        }
+                    ]
+                },
+                "pSubUnitInfo": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.POINTER-TO-Tc3_PackML_V2.ST_PMLSubUnitInfo"
+                        },
+                        {
+                            "attributes": {
+                                "conditionalshow": ""
+                            },
+                            "propertyOrder": 12
+                        }
+                    ]
+                },
+                "sState": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/STRING%2880%29"
+                        },
+                        {
+                            "propertyOrder": 6
+                        }
+                    ]
+                },
+                "sStateInternal": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.ARRAY_0..17_OF-STRING-80"
+                        },
+                        {
+                            "attributes": {
+                                "conditionalshow": ""
+                            },
+                            "propertyOrder": 13
+                        }
+                    ]
+                },
+                "stOptions": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc3_PackML_V2.ST_PMLStateMachineOptions"
+                        },
+                        {
+                            "propertyOrder": 4
+                        }
+                    ]
+                },
+                "stSubUnitInfo": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc3_PackML_V2.ST_PMLSubUnitInfo"
+                        },
+                        {
+                            "attributes": {
+                                "conditionalshow": ""
+                            },
+                            "propertyOrder": 11
+                        }
+                    ]
+                },
+                "stSubUnitInfoRef": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc3_PackML_V2.ST_PMLSubUnitInfoRef"
+                        },
+                        {
+                            "propertyOrder": 3
+                        }
+                    ]
+                }
+            },
+            "type": "object"
+        },
+        "PLC1.Tc3_PackML_V2.PML_UnitModeManager": {
+            "attributes": {
+                "conditionalshow_all_locals": ""
+            },
+            "properties": {
+                "bDone": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 6
+                        }
+                    ]
+                },
+                "bError": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 7
+                        }
+                    ]
+                },
+                "bExecute": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 1
+                        }
+                    ]
+                },
+                "eModeCommand": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/DINT"
+                        },
+                        {
+                            "propertyOrder": 2
+                        }
+                    ]
+                },
+                "eModeStatus": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/DINT"
+                        },
+                        {
+                            "propertyOrder": 4
+                        }
+                    ]
+                },
+                "eState": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc3_PackML_V2.E_PMLState"
+                        },
+                        {
+                            "propertyOrder": 3
+                        }
+                    ]
+                },
+                "fbExecute": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc2_Standard.R_TRIG"
+                        },
+                        {
+                            "attributes": {
+                                "conditionalshow": ""
+                            },
+                            "propertyOrder": 9
+                        }
+                    ]
+                },
+                "nErrorId": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/UDINT"
+                        },
+                        {
+                            "propertyOrder": 8
+                        }
+                    ]
+                },
+                "sModeStatus": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/STRING%2880%29"
+                        },
+                        {
+                            "propertyOrder": 5
+                        }
+                    ]
+                }
+            },
+            "type": "object"
+        },
+        "PLC1.Tc3_PackML_V2.ST_PMLStateMachineOptions": {
+            "properties": {
+                "PointerToPointerArray": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "attributes": {
+                                "conditionalshow": ""
+                            },
+                            "propertyOrder": 1
+                        }
+                    ]
+                }
+            },
+            "type": "object"
+        },
+        "PLC1.Tc3_PackML_V2.ST_PMLSubUnitInfo": {
+            "properties": {
+                "Active": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 1
+                        }
+                    ]
+                },
+                "eState": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc3_PackML_V2.E_PMLState"
+                        },
+                        {
+                            "propertyOrder": 2
+                        }
+                    ]
+                }
+            },
+            "type": "object"
+        },
+        "PLC1.Tc3_PackML_V2.ST_PMLSubUnitInfoRef": {
+            "properties": {
+                "ArraySize": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/UDINT"
+                        },
+                        {
+                            "propertyOrder": 2
+                        }
+                    ]
+                },
+                "NoOfSubUnits": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/UDINT"
+                        },
+                        {
+                            "propertyOrder": 3
+                        }
+                    ]
+                },
+                "pArray": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.PVOID"
+                        },
+                        {
+                            "propertyOrder": 1
+                        }
+                    ]
+                }
+            },
+            "type": "object"
+        },
         "PLC1.TeknicHardWire": {
             "attributes": {
                 "contains_implicit_enum": "",
@@ -12345,43 +13896,64 @@
                 "contains_implicit_enum": ""
             },
             "properties": {
-                "a": {
+                "aoiLoadLeft": {
                     "allOf": [
                         {
-                            "$ref": "tchmi:general#/definitions/BOOL"
+                            "$ref": "#/definitions/PLC1.AOI_LoadWoodBunk"
                         },
                         {
-                            "propertyOrder": 61
+                            "propertyOrder": 50
                         }
                     ]
                 },
-                "b": {
+                "aoiLoadRight": {
                     "allOf": [
                         {
-                            "$ref": "tchmi:general#/definitions/BOOL"
+                            "$ref": "#/definitions/PLC1.AOI_LoadWoodBunk"
                         },
                         {
-                            "propertyOrder": 62
+                            "propertyOrder": 51
                         }
                     ]
                 },
-                "c": {
+                "aoiStageLeft": {
                     "allOf": [
                         {
-                            "$ref": "tchmi:general#/definitions/BOOL"
+                            "$ref": "#/definitions/PLC1.AOI_StageWoodBunk"
                         },
                         {
-                            "propertyOrder": 63
+                            "propertyOrder": 48
                         }
                     ]
                 },
-                "d": {
+                "aoiStageRight": {
                     "allOf": [
                         {
-                            "$ref": "tchmi:general#/definitions/BOOL"
+                            "$ref": "#/definitions/PLC1.AOI_StageWoodBunk"
                         },
                         {
-                            "propertyOrder": 64
+                            "propertyOrder": 49
+                        }
+                    ]
+                },
+                "aoiTemplateLeft": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.AOI_StagingTemplate"
+                        },
+                        {
+                            "comment": "AOIs encapsulate functionality and reduce the number of module variables",
+                            "propertyOrder": 46
+                        }
+                    ]
+                },
+                "aoiTemplateRight": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.AOI_StagingTemplate"
+                        },
+                        {
+                            "propertyOrder": 47
                         }
                     ]
                 },
@@ -12392,7 +13964,7 @@
                         },
                         {
                             "comment": "mm",
-                            "propertyOrder": 47
+                            "propertyOrder": 41
                         }
                     ]
                 },
@@ -12402,43 +13974,11 @@
                             "$ref": "tchmi:general#/definitions/BOOL"
                         },
                         {
-                            "comment": "ready : BOOL;",
                             "propertyOrder": 23
                         }
                     ]
                 },
-                "errorLeft": {
-                    "allOf": [
-                        {
-                            "$ref": "tchmi:general#/definitions/BOOL"
-                        },
-                        {
-                            "propertyOrder": 25
-                        }
-                    ]
-                },
-                "errorRight": {
-                    "allOf": [
-                        {
-                            "$ref": "tchmi:general#/definitions/BOOL"
-                        },
-                        {
-                            "propertyOrder": 26
-                        }
-                    ]
-                },
-                "execute": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/PLC1.REFERENCE-TO-BOOL"
-                        },
-                        {
-                            "comment": "controls",
-                            "propertyOrder": 1
-                        }
-                    ]
-                },
-                "generalError": {
+                "error": {
                     "allOf": [
                         {
                             "$ref": "tchmi:general#/definitions/BOOL"
@@ -12448,13 +13988,33 @@
                         }
                     ]
                 },
+                "execute": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 20
+                        }
+                    ]
+                },
+                "hold": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 21
+                        }
+                    ]
+                },
                 "horizontalDriveLeft": {
                     "allOf": [
                         {
                             "$ref": "#/definitions/PLC1.REFERENCE-TO-AirPiston"
                         },
                         {
-                            "propertyOrder": 14
+                            "propertyOrder": 10
                         }
                     ]
                 },
@@ -12464,7 +14024,7 @@
                             "$ref": "#/definitions/PLC1.REFERENCE-TO-AirPiston"
                         },
                         {
-                            "propertyOrder": 15
+                            "propertyOrder": 11
                         }
                     ]
                 },
@@ -12474,27 +14034,7 @@
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
-                            "propertyOrder": 35
-                        }
-                    ]
-                },
-                "iSlotLeft": {
-                    "allOf": [
-                        {
-                            "$ref": "tchmi:general#/definitions/INT"
-                        },
-                        {
-                            "propertyOrder": 45
-                        }
-                    ]
-                },
-                "iSlotRight": {
-                    "allOf": [
-                        {
-                            "$ref": "tchmi:general#/definitions/INT"
-                        },
-                        {
-                            "propertyOrder": 46
+                            "propertyOrder": 34
                         }
                     ]
                 },
@@ -12504,7 +14044,8 @@
                             "$ref": "#/definitions/PLC1.Insertion"
                         },
                         {
-                            "propertyOrder": 57
+                            "comment": "local types",
+                            "propertyOrder": 39
                         }
                     ]
                 },
@@ -12514,7 +14055,7 @@
                             "$ref": "#/definitions/PLC1.Insertion"
                         },
                         {
-                            "propertyOrder": 58
+                            "propertyOrder": 40
                         }
                     ]
                 },
@@ -12524,8 +14065,8 @@
                             "$ref": "tchmi:general#/definitions/BOOL"
                         },
                         {
-                            "comment": "prevents SMC sliders from overshooting the inner limit sensor",
-                            "propertyOrder": 27
+                            "comment": "prevents SMC sliders from overshooting",
+                            "propertyOrder": 53
                         }
                     ]
                 },
@@ -12535,18 +14076,8 @@
                             "$ref": "tchmi:general#/definitions/BOOL"
                         },
                         {
-                            "comment": "prevents SMC sliders from overshooting the inner limit sensor",
-                            "propertyOrder": 28
-                        }
-                    ]
-                },
-                "loadSet": {
-                    "allOf": [
-                        {
-                            "$ref": "tchmi:general#/definitions/INT"
-                        },
-                        {
-                            "propertyOrder": 39
+                            "comment": "prevents SMC sliders from overshooting",
+                            "propertyOrder": 54
                         }
                     ]
                 },
@@ -12556,7 +14087,7 @@
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
-                            "propertyOrder": 40
+                            "propertyOrder": 37
                         }
                     ]
                 },
@@ -12566,7 +14097,7 @@
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
-                            "propertyOrder": 41
+                            "propertyOrder": 38
                         }
                     ]
                 },
@@ -12576,7 +14107,8 @@
                             "$ref": "#/definitions/PLC1.ARRAY_1..4_OF-STRING-80"
                         },
                         {
-                            "propertyOrder": 59
+                            "comment": "( position := 69, top := 'WDS20', left := 'WDS20', right := 'WDS20', bottom := 'WDB20' )];",
+                            "propertyOrder": 43
                         }
                     ]
                 },
@@ -12586,7 +14118,7 @@
                             "$ref": "#/definitions/PLC1.REFERENCE-TO-SkidMagazine"
                         },
                         {
-                            "propertyOrder": 11
+                            "propertyOrder": 7
                         }
                     ]
                 },
@@ -12596,38 +14128,7 @@
                             "$ref": "#/definitions/PLC1.REFERENCE-TO-SkidMagazine"
                         },
                         {
-                            "propertyOrder": 12
-                        }
-                    ]
-                },
-                "manualStep": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/PLC1.REFERENCE-TO-BOOL"
-                        },
-                        {
-                            "propertyOrder": 3
-                        }
-                    ]
-                },
-                "manualSuction": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/PLC1.REFERENCE-TO-BOOL"
-                        },
-                        {
-                            "propertyOrder": 4
-                        }
-                    ]
-                },
-                "masterStep": {
-                    "allOf": [
-                        {
-                            "$ref": "tchmi:general#/definitions/INT"
-                        },
-                        {
-                            "comment": "these 2 ints should replace the 4 ints after",
-                            "propertyOrder": 36
+                            "propertyOrder": 8
                         }
                     ]
                 },
@@ -12637,7 +14138,7 @@
                             "$ref": "#/definitions/PLC1.ARRAY_0..16_OF-PositionMaterials"
                         },
                         {
-                            "propertyOrder": 48
+                            "propertyOrder": 42
                         }
                     ]
                 },
@@ -12647,7 +14148,97 @@
                             "$ref": "#/definitions/PLC1.REFERENCE-TO-SimplePiston"
                         },
                         {
-                            "propertyOrder": 18
+                            "propertyOrder": 14
+                        }
+                    ]
+                },
+                "pmlCommand": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc3_PackML_V2.E_PMLCommand"
+                        },
+                        {
+                            "propertyOrder": 28
+                        }
+                    ]
+                },
+                "pmlMode": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc3_PackML_V2.E_PMLProtectedUnitMode"
+                        },
+                        {
+                            "propertyOrder": 25
+                        }
+                    ]
+                },
+                "pmlModeManager": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc3_PackML_V2.PML_UnitModeManager"
+                        },
+                        {
+                            "propertyOrder": 32
+                        }
+                    ]
+                },
+                "pmlModeRequest": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc3_PackML_V2.E_PMLProtectedUnitMode"
+                        },
+                        {
+                            "propertyOrder": 27
+                        }
+                    ]
+                },
+                "pmlModeString": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/STRING%2880%29"
+                        },
+                        {
+                            "propertyOrder": 29
+                        }
+                    ]
+                },
+                "pmlState": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc3_PackML_V2.E_PMLState"
+                        },
+                        {
+                            "propertyOrder": 26
+                        }
+                    ]
+                },
+                "pmlStateMachine": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc3_PackML_V2.PML_StateMachine"
+                        },
+                        {
+                            "propertyOrder": 31
+                        }
+                    ]
+                },
+                "pmlStateString": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/STRING%2880%29"
+                        },
+                        {
+                            "propertyOrder": 30
+                        }
+                    ]
+                },
+                "reset": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/BOOL"
+                        },
+                        {
+                            "propertyOrder": 22
                         }
                     ]
                 },
@@ -12658,7 +14249,7 @@
                         },
                         {
                             "comment": "references to required hardware",
-                            "propertyOrder": 5
+                            "propertyOrder": 1
                         }
                     ]
                 },
@@ -12668,7 +14259,7 @@
                             "$ref": "#/definitions/PLC1.REFERENCE-TO-RobotA21"
                         },
                         {
-                            "propertyOrder": 6
+                            "propertyOrder": 2
                         }
                     ]
                 },
@@ -12678,17 +14269,7 @@
                             "$ref": "#/definitions/PLC1.SectionEnum"
                         },
                         {
-                            "propertyOrder": 60
-                        }
-                    ]
-                },
-                "stageSet": {
-                    "allOf": [
-                        {
-                            "$ref": "tchmi:general#/definitions/INT"
-                        },
-                        {
-                            "propertyOrder": 42
+                            "propertyOrder": 44
                         }
                     ]
                 },
@@ -12698,7 +14279,7 @@
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
-                            "propertyOrder": 43
+                            "propertyOrder": 35
                         }
                     ]
                 },
@@ -12708,27 +14289,7 @@
                             "$ref": "tchmi:general#/definitions/INT"
                         },
                         {
-                            "propertyOrder": 44
-                        }
-                    ]
-                },
-                "stagingArrayLeft": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/PLC1.ARRAY_0..34_OF-STRING-80"
-                        },
-                        {
-                            "propertyOrder": 55
-                        }
-                    ]
-                },
-                "stagingArrayRight": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/PLC1.ARRAY_0..34_OF-STRING-80"
-                        },
-                        {
-                            "propertyOrder": 56
+                            "propertyOrder": 36
                         }
                     ]
                 },
@@ -12738,7 +14299,7 @@
                             "$ref": "#/definitions/PLC1.REFERENCE-TO-StagingTable"
                         },
                         {
-                            "propertyOrder": 9
+                            "propertyOrder": 5
                         }
                     ]
                 },
@@ -12748,33 +14309,7 @@
                             "$ref": "#/definitions/PLC1.REFERENCE-TO-StagingTable"
                         },
                         {
-                            "propertyOrder": 10
-                        }
-                    ]
-                },
-                "stagingTemplateLeft": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/PLC1.StagingTable"
-                        },
-                        {
-                            "attributes": {
-                                "TcAddressType": "Memory"
-                            },
-                            "propertyOrder": 53
-                        }
-                    ]
-                },
-                "stagingTemplateRight": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/PLC1.StagingTable"
-                        },
-                        {
-                            "attributes": {
-                                "TcAddressType": "Memory"
-                            },
-                            "propertyOrder": 54
+                            "propertyOrder": 6
                         }
                     ]
                 },
@@ -12787,17 +14322,18 @@
                             "attributes": {
                                 "implicit_enum_type": ""
                             },
-                            "propertyOrder": 34
+                            "propertyOrder": 33
                         }
                     ]
                 },
                 "stop": {
                     "allOf": [
                         {
-                            "$ref": "#/definitions/PLC1.REFERENCE-TO-BOOL"
+                            "$ref": "tchmi:general#/definitions/BOOL"
                         },
                         {
-                            "propertyOrder": 2
+                            "comment": "controls",
+                            "propertyOrder": 19
                         }
                     ]
                 },
@@ -12807,27 +14343,7 @@
                             "$ref": "#/definitions/PLC1.REFERENCE-TO-StrapMachine"
                         },
                         {
-                            "propertyOrder": 13
-                        }
-                    ]
-                },
-                "subStepLeft": {
-                    "allOf": [
-                        {
-                            "$ref": "tchmi:general#/definitions/INT"
-                        },
-                        {
-                            "propertyOrder": 37
-                        }
-                    ]
-                },
-                "subStepRight": {
-                    "allOf": [
-                        {
-                            "$ref": "tchmi:general#/definitions/INT"
-                        },
-                        {
-                            "propertyOrder": 38
+                            "propertyOrder": 9
                         }
                     ]
                 },
@@ -12842,7 +14358,7 @@
                                 "variable_length_array": ""
                             },
                             "comment": "1..2",
-                            "propertyOrder": 22
+                            "propertyOrder": 18
                         }
                     ]
                 },
@@ -12852,7 +14368,7 @@
                             "$ref": "tchmi:general#/definitions/BOOL"
                         },
                         {
-                            "propertyOrder": 32
+                            "propertyOrder": 58
                         }
                     ]
                 },
@@ -12862,7 +14378,7 @@
                             "$ref": "tchmi:general#/definitions/BOOL"
                         },
                         {
-                            "propertyOrder": 30
+                            "propertyOrder": 56
                         }
                     ]
                 },
@@ -12872,7 +14388,7 @@
                             "$ref": "tchmi:general#/definitions/BOOL"
                         },
                         {
-                            "propertyOrder": 31
+                            "propertyOrder": 57
                         }
                     ]
                 },
@@ -12882,7 +14398,7 @@
                             "$ref": "tchmi:general#/definitions/BOOL"
                         },
                         {
-                            "propertyOrder": 29
+                            "propertyOrder": 55
                         }
                     ]
                 },
@@ -12897,7 +14413,27 @@
                                 "variable_length_array": ""
                             },
                             "comment": "1..4",
-                            "propertyOrder": 20
+                            "propertyOrder": 16
+                        }
+                    ]
+                },
+                "suctionRelease": {
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/PLC1.Tc2_Standard.TON"
+                        },
+                        {
+                            "propertyOrder": 52
+                        }
+                    ]
+                },
+                "suctionReleaseDelay": {
+                    "allOf": [
+                        {
+                            "$ref": "tchmi:general#/definitions/TIME"
+                        },
+                        {
+                            "propertyOrder": 45
                         }
                     ]
                 },
@@ -12912,27 +14448,7 @@
                                 "variable_length_array": ""
                             },
                             "comment": "1..4",
-                            "propertyOrder": 21
-                        }
-                    ]
-                },
-                "suctionTimerLeft": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/PLC1.Tc2_Standard.TON"
-                        },
-                        {
-                            "propertyOrder": 65
-                        }
-                    ]
-                },
-                "suctionTimerRight": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/PLC1.Tc2_Standard.TON"
-                        },
-                        {
-                            "propertyOrder": 66
+                            "propertyOrder": 17
                         }
                     ]
                 },
@@ -12947,47 +14463,7 @@
                                 "variable_length_array": ""
                             },
                             "comment": "1..3",
-                            "propertyOrder": 19
-                        }
-                    ]
-                },
-                "templateOccupancyLeft": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/PLC1.ARRAY_1..10_OF-BOOL"
-                        },
-                        {
-                            "propertyOrder": 51
-                        }
-                    ]
-                },
-                "templateOccupancyRight": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/PLC1.ARRAY_1..10_OF-BOOL"
-                        },
-                        {
-                            "propertyOrder": 52
-                        }
-                    ]
-                },
-                "templateSlotsLeft": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/PLC1.ARRAY_1..10_OF-STRING-80"
-                        },
-                        {
-                            "propertyOrder": 49
-                        }
-                    ]
-                },
-                "templateSlotsRight": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/PLC1.ARRAY_1..10_OF-STRING-80"
-                        },
-                        {
-                            "propertyOrder": 50
+                            "propertyOrder": 15
                         }
                     ]
                 },
@@ -12997,7 +14473,7 @@
                             "$ref": "#/definitions/PLC1.REFERENCE-TO-A21ToolStorage"
                         },
                         {
-                            "propertyOrder": 7
+                            "propertyOrder": 3
                         }
                     ]
                 },
@@ -13007,17 +14483,7 @@
                             "$ref": "#/definitions/PLC1.REFERENCE-TO-A21ToolStorage"
                         },
                         {
-                            "propertyOrder": 8
-                        }
-                    ]
-                },
-                "topSuctionDelay": {
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/PLC1.Tc2_Standard.TON"
-                        },
-                        {
-                            "propertyOrder": 33
+                            "propertyOrder": 4
                         }
                     ]
                 },
@@ -13027,7 +14493,7 @@
                             "$ref": "#/definitions/PLC1.REFERENCE-TO-ClearLinkMC"
                         },
                         {
-                            "propertyOrder": 16
+                            "propertyOrder": 12
                         }
                     ]
                 },
@@ -13037,7 +14503,7 @@
                             "$ref": "#/definitions/PLC1.REFERENCE-TO-ClearLinkMC"
                         },
                         {
-                            "propertyOrder": 17
+                            "propertyOrder": 13
                         }
                     ]
                 }
@@ -15761,7 +17227,16 @@
             "DYNAMIC": true,
             "MAPPING": "PLC1::ContainerArrays::magazineHmiA21Left",
             "SCHEMA": {
-                "$ref": "tchmi:server#/definitions/PLC1.ARRAY_1..15_OF-MaterialSlot"
+                "allOf": [
+                    {
+                        "attributes": {
+                            "TcAddressType": "Memory"
+                        }
+                    },
+                    {
+                        "$ref": "tchmi:server#/definitions/PLC1.ARRAY_1..15_OF-MaterialSlot"
+                    }
+                ]
             },
             "USEMAPPING": true
         },
@@ -15771,7 +17246,16 @@
             "DYNAMIC": true,
             "MAPPING": "PLC1::ContainerArrays::magazineHmiA21Right",
             "SCHEMA": {
-                "$ref": "tchmi:server#/definitions/PLC1.ARRAY_1..15_OF-MaterialSlot"
+                "allOf": [
+                    {
+                        "attributes": {
+                            "TcAddressType": "Memory"
+                        }
+                    },
+                    {
+                        "$ref": "tchmi:server#/definitions/PLC1.ARRAY_1..15_OF-MaterialSlot"
+                    }
+                ]
             },
             "USEMAPPING": true
         },
@@ -15801,7 +17285,16 @@
             "DYNAMIC": true,
             "MAPPING": "PLC1::ContainerArrays::skidHmiA21Left",
             "SCHEMA": {
-                "$ref": "tchmi:server#/definitions/PLC1.ARRAY_1..2_OF-MaterialSlot"
+                "allOf": [
+                    {
+                        "attributes": {
+                            "TcAddressType": "Memory"
+                        }
+                    },
+                    {
+                        "$ref": "tchmi:server#/definitions/PLC1.ARRAY_1..2_OF-MaterialSlot"
+                    }
+                ]
             },
             "USEMAPPING": true
         },
@@ -15811,7 +17304,16 @@
             "DYNAMIC": true,
             "MAPPING": "PLC1::ContainerArrays::skidHmiA21Right",
             "SCHEMA": {
-                "$ref": "tchmi:server#/definitions/PLC1.ARRAY_1..2_OF-MaterialSlot"
+                "allOf": [
+                    {
+                        "attributes": {
+                            "TcAddressType": "Memory"
+                        }
+                    },
+                    {
+                        "$ref": "tchmi:server#/definitions/PLC1.ARRAY_1..2_OF-MaterialSlot"
+                    }
+                ]
             },
             "USEMAPPING": true
         },
@@ -15841,7 +17343,14 @@
             "DYNAMIC": true,
             "MAPPING": "PLC1::ContainerArrays::tableHmiA21Left",
             "SCHEMA": {
-                "$ref": "tchmi:server#/definitions/PLC1.ARRAY_1..10_OF-MaterialSlot"
+                "allOf": [
+                    {
+                        "comment": ":= [\r\n\t\t(material := 'WDS20', occupied := TRUE), \r\n\t\t(material := 'WDS20', occupied := TRUE), \r\n\t\t(material := 'WDS20', occupied := TRUE), \r\n\t\t(material := 'WDS20', occupied := TRUE)];"
+                    },
+                    {
+                        "$ref": "tchmi:server#/definitions/PLC1.ARRAY_1..10_OF-MaterialSlot"
+                    }
+                ]
             },
             "USEMAPPING": true
         },
@@ -15851,7 +17360,14 @@
             "DYNAMIC": true,
             "MAPPING": "PLC1::ContainerArrays::tableHmiA21Right",
             "SCHEMA": {
-                "$ref": "tchmi:server#/definitions/PLC1.ARRAY_1..10_OF-MaterialSlot"
+                "allOf": [
+                    {
+                        "comment": ":= [\r\n\t\t(material := 'WDS20', occupied := TRUE), \r\n\t\t(material := 'WDB20', occupied := TRUE), \r\n\t\t(material := 'WDS20', occupied := TRUE), \r\n\t\t(material := 'WDB20', occupied := TRUE)];"
+                    },
+                    {
+                        "$ref": "tchmi:server#/definitions/PLC1.ARRAY_1..10_OF-MaterialSlot"
+                    }
+                ]
             },
             "USEMAPPING": true
         },
@@ -15970,7 +17486,7 @@
             "DYNAMIC": true,
             "MAPPING": "PLC1::Hardware::magazineA21Left",
             "SCHEMA": {
-                "$ref": "tchmi:server#/definitions/PLC1.GenericSkidMagazine"
+                "$ref": "tchmi:server#/definitions/PLC1.SkidMagazine"
             },
             "USEMAPPING": true
         },
@@ -15980,7 +17496,7 @@
             "DYNAMIC": true,
             "MAPPING": "PLC1::Hardware::magazineA21Right",
             "SCHEMA": {
-                "$ref": "tchmi:server#/definitions/PLC1.GenericSkidMagazine"
+                "$ref": "tchmi:server#/definitions/PLC1.SkidMagazine"
             },
             "USEMAPPING": true
         },
@@ -16087,7 +17603,7 @@
             "DYNAMIC": true,
             "MAPPING": "PLC1::Hardware::skidA21Left",
             "SCHEMA": {
-                "$ref": "tchmi:server#/definitions/PLC1.GenericSkidMagazine"
+                "$ref": "tchmi:server#/definitions/PLC1.SkidMagazine"
             },
             "USEMAPPING": true
         },
@@ -16097,7 +17613,7 @@
             "DYNAMIC": true,
             "MAPPING": "PLC1::Hardware::skidA21Right",
             "SCHEMA": {
-                "$ref": "tchmi:server#/definitions/PLC1.GenericSkidMagazine"
+                "$ref": "tchmi:server#/definitions/PLC1.SkidMagazine"
             },
             "USEMAPPING": true
         },
@@ -16127,7 +17643,7 @@
             "DYNAMIC": true,
             "MAPPING": "PLC1::Hardware::stagingTableLeft",
             "SCHEMA": {
-                "$ref": "tchmi:server#/definitions/PLC1.GenericStagingTable"
+                "$ref": "tchmi:server#/definitions/PLC1.StagingTable"
             },
             "USEMAPPING": true
         },
@@ -16158,7 +17674,7 @@
             "DYNAMIC": true,
             "MAPPING": "PLC1::Hardware::stagingTableRight",
             "SCHEMA": {
-                "$ref": "tchmi:server#/definitions/PLC1.GenericStagingTable"
+                "$ref": "tchmi:server#/definitions/PLC1.StagingTable"
             },
             "USEMAPPING": true
         },
