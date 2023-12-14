@@ -3250,7 +3250,7 @@ END_VAR
         <ST><![CDATA[CASE pmlMode OF
 	0: //invalid mode
 	ePMLProtUnitMode_Production:	ps_Execute := process(manualMode := FALSE);
-	ePMLProtUnitMode_Maintenance:	//
+	ePMLProtUnitMode_Maintenance:	maintenance();
 	ePMLProtUnitMode_Manual:		ps_Execute := process(manualMode := TRUE);
 END_CASE]]></ST>
       </Implementation>

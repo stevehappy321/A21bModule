@@ -114,14 +114,58 @@
     "event": "A21InsertionLeftExtend.onMouseClick",
     "actions": [
       {
-        "objectType": "WriteToSymbol",
+        "objectType": "Condition",
         "active": true,
-        "symbolExpression": "%s%PLC1.Hardware.horizontalDriveA21Left::mode%/s%",
-        "value": {
-          "objectType": "StaticValue",
-          "valueType": "tchmi:server#/definitions/PLC1.Implicit_Enum__AirPiston__mode",
-          "value": 1
-        },
+        "parts": [
+          {
+            "if": [
+              {
+                "compare1": {
+                  "objectType": "Symbol",
+                  "valueType": "tchmi:general#/definitions/String",
+                  "symbolExpression": "%s%PLC1.MAIN.moduleWB::pmlMode%/s%"
+                },
+                "compare2": {
+                  "objectType": "StaticValue",
+                  "valueType": "tchmi:server#/definitions/PLC1.Tc3_PackML_V2.E_PMLProtectedUnitMode",
+                  "value": 2
+                },
+                "compareOperator": "==",
+                "logic": null
+              },
+              {
+                "compare1": {
+                  "objectType": "Symbol",
+                  "valueType": "tchmi:general#/definitions/String",
+                  "symbolExpression": "%s%PLC1.MAIN.moduleWB::pmlState%/s%"
+                },
+                "compare2": {
+                  "objectType": "StaticValue",
+                  "valueType": "tchmi:server#/definitions/PLC1.Tc3_PackML_V2.E_PMLState",
+                  "value": 6
+                },
+                "compareOperator": "==",
+                "logic": "AND"
+              }
+            ],
+            "then": [
+              {
+                "objectType": "WriteToSymbol",
+                "active": true,
+                "symbolExpression": "%s%PLC1.Hardware.horizontalDriveA21Left::mode%/s%",
+                "value": {
+                  "objectType": "StaticValue",
+                  "valueType": "tchmi:server#/definitions/PLC1.Implicit_Enum__AirPiston__mode",
+                  "value": 1
+                },
+                "asyncWait": true
+              }
+            ]
+          },
+          {
+            "else": []
+          }
+        ],
         "asyncWait": true
       }
     ]
@@ -137,14 +181,58 @@
     "event": "A21InsertionLeftRetract.onMouseClick",
     "actions": [
       {
-        "objectType": "WriteToSymbol",
+        "objectType": "Condition",
         "active": true,
-        "symbolExpression": "%s%PLC1.Hardware.horizontalDriveA21Left::mode%/s%",
-        "value": {
-          "objectType": "StaticValue",
-          "valueType": "tchmi:server#/definitions/PLC1.Implicit_Enum__AirPiston__mode",
-          "value": 2
-        },
+        "parts": [
+          {
+            "if": [
+              {
+                "compare1": {
+                  "objectType": "Symbol",
+                  "valueType": "tchmi:server#/definitions/PLC1.Tc3_PackML_V2.E_PMLProtectedUnitMode",
+                  "symbolExpression": "%s%PLC1.MAIN.moduleWB::pmlMode%/s%"
+                },
+                "compare2": {
+                  "objectType": "StaticValue",
+                  "valueType": "tchmi:server#/definitions/PLC1.Tc3_PackML_V2.E_PMLProtectedUnitMode",
+                  "value": 2
+                },
+                "compareOperator": "==",
+                "logic": null
+              },
+              {
+                "compare1": {
+                  "objectType": "Symbol",
+                  "valueType": "tchmi:server#/definitions/PLC1.Tc3_PackML_V2.E_PMLState",
+                  "symbolExpression": "%s%PLC1.MAIN.moduleWB::pmlState%/s%"
+                },
+                "compare2": {
+                  "objectType": "StaticValue",
+                  "valueType": "tchmi:server#/definitions/PLC1.Tc3_PackML_V2.E_PMLState",
+                  "value": 6
+                },
+                "compareOperator": "==",
+                "logic": "AND"
+              }
+            ],
+            "then": [
+              {
+                "objectType": "WriteToSymbol",
+                "active": true,
+                "symbolExpression": "%s%PLC1.Hardware.horizontalDriveA21Left::mode%/s%",
+                "value": {
+                  "objectType": "StaticValue",
+                  "valueType": "tchmi:server#/definitions/PLC1.Implicit_Enum__AirPiston__mode",
+                  "value": 2
+                },
+                "asyncWait": true
+              }
+            ]
+          },
+          {
+            "else": []
+          }
+        ],
         "asyncWait": true
       }
     ]
@@ -160,14 +248,58 @@
     "event": "A21InsertionLeftHold.onMouseClick",
     "actions": [
       {
-        "objectType": "WriteToSymbol",
+        "objectType": "Condition",
         "active": true,
-        "symbolExpression": "%s%PLC1.Hardware.horizontalDriveA21Left::mode%/s%",
-        "value": {
-          "objectType": "StaticValue",
-          "valueType": "tchmi:server#/definitions/PLC1.Implicit_Enum__AirPiston__mode",
-          "value": 0
-        },
+        "parts": [
+          {
+            "if": [
+              {
+                "compare1": {
+                  "objectType": "Symbol",
+                  "valueType": "tchmi:server#/definitions/PLC1.Tc3_PackML_V2.E_PMLProtectedUnitMode",
+                  "symbolExpression": "%s%PLC1.MAIN.moduleWB::pmlMode%/s%"
+                },
+                "compare2": {
+                  "objectType": "StaticValue",
+                  "valueType": "tchmi:server#/definitions/PLC1.Tc3_PackML_V2.E_PMLProtectedUnitMode",
+                  "value": 2
+                },
+                "compareOperator": "==",
+                "logic": null
+              },
+              {
+                "compare1": {
+                  "objectType": "Symbol",
+                  "valueType": "tchmi:server#/definitions/PLC1.Tc3_PackML_V2.E_PMLState",
+                  "symbolExpression": "%s%PLC1.MAIN.moduleWB::pmlState%/s%"
+                },
+                "compare2": {
+                  "objectType": "StaticValue",
+                  "valueType": "tchmi:server#/definitions/PLC1.Tc3_PackML_V2.E_PMLState",
+                  "value": 6
+                },
+                "compareOperator": "==",
+                "logic": "AND"
+              }
+            ],
+            "then": [
+              {
+                "objectType": "WriteToSymbol",
+                "active": true,
+                "symbolExpression": "%s%PLC1.Hardware.horizontalDriveA21Left::mode%/s%",
+                "value": {
+                  "objectType": "StaticValue",
+                  "valueType": "tchmi:server#/definitions/PLC1.Implicit_Enum__AirPiston__mode",
+                  "value": 0
+                },
+                "asyncWait": true
+              }
+            ]
+          },
+          {
+            "else": []
+          }
+        ],
         "asyncWait": true
       }
     ]
@@ -290,14 +422,58 @@
     "event": "A21InsertionRightExtend.onMouseClick",
     "actions": [
       {
-        "objectType": "WriteToSymbol",
+        "objectType": "Condition",
         "active": true,
-        "symbolExpression": "%s%PLC1.Hardware.horizontalDriveA21Right::mode%/s%",
-        "value": {
-          "objectType": "StaticValue",
-          "valueType": "tchmi:server#/definitions/PLC1.Implicit_Enum__AirPiston__mode",
-          "value": 1
-        },
+        "parts": [
+          {
+            "if": [
+              {
+                "compare1": {
+                  "objectType": "Symbol",
+                  "valueType": "tchmi:server#/definitions/PLC1.Tc3_PackML_V2.E_PMLProtectedUnitMode",
+                  "symbolExpression": "%s%PLC1.MAIN.moduleWB::pmlMode%/s%"
+                },
+                "compare2": {
+                  "objectType": "StaticValue",
+                  "valueType": "tchmi:server#/definitions/PLC1.Tc3_PackML_V2.E_PMLProtectedUnitMode",
+                  "value": 2
+                },
+                "compareOperator": "==",
+                "logic": null
+              },
+              {
+                "compare1": {
+                  "objectType": "Symbol",
+                  "valueType": "tchmi:server#/definitions/PLC1.Tc3_PackML_V2.E_PMLState",
+                  "symbolExpression": "%s%PLC1.MAIN.moduleWB::pmlState%/s%"
+                },
+                "compare2": {
+                  "objectType": "StaticValue",
+                  "valueType": "tchmi:server#/definitions/PLC1.Tc3_PackML_V2.E_PMLState",
+                  "value": 6
+                },
+                "compareOperator": "==",
+                "logic": "AND"
+              }
+            ],
+            "then": [
+              {
+                "objectType": "WriteToSymbol",
+                "active": true,
+                "symbolExpression": "%s%PLC1.Hardware.horizontalDriveA21Right::mode%/s%",
+                "value": {
+                  "objectType": "StaticValue",
+                  "valueType": "tchmi:server#/definitions/PLC1.Implicit_Enum__AirPiston__mode",
+                  "value": 1
+                },
+                "asyncWait": true
+              }
+            ]
+          },
+          {
+            "else": []
+          }
+        ],
         "asyncWait": true
       }
     ]
@@ -312,14 +488,58 @@
     "event": "A21InsertionRightRetract.onMouseClick",
     "actions": [
       {
-        "objectType": "WriteToSymbol",
+        "objectType": "Condition",
         "active": true,
-        "symbolExpression": "%s%PLC1.Hardware.horizontalDriveA21Right::mode%/s%",
-        "value": {
-          "objectType": "StaticValue",
-          "valueType": "tchmi:server#/definitions/PLC1.Implicit_Enum__AirPiston__mode",
-          "value": 2
-        },
+        "parts": [
+          {
+            "if": [
+              {
+                "compare1": {
+                  "objectType": "Symbol",
+                  "valueType": "tchmi:server#/definitions/PLC1.Tc3_PackML_V2.E_PMLProtectedUnitMode",
+                  "symbolExpression": "%s%PLC1.MAIN.moduleWB::pmlMode%/s%"
+                },
+                "compare2": {
+                  "objectType": "StaticValue",
+                  "valueType": "tchmi:server#/definitions/PLC1.Tc3_PackML_V2.E_PMLProtectedUnitMode",
+                  "value": 2
+                },
+                "compareOperator": "==",
+                "logic": null
+              },
+              {
+                "compare1": {
+                  "objectType": "Symbol",
+                  "valueType": "tchmi:server#/definitions/PLC1.Tc3_PackML_V2.E_PMLState",
+                  "symbolExpression": "%s%PLC1.MAIN.moduleWB::pmlState%/s%"
+                },
+                "compare2": {
+                  "objectType": "StaticValue",
+                  "valueType": "tchmi:server#/definitions/PLC1.Tc3_PackML_V2.E_PMLState",
+                  "value": 6
+                },
+                "compareOperator": "==",
+                "logic": "AND"
+              }
+            ],
+            "then": [
+              {
+                "objectType": "WriteToSymbol",
+                "active": true,
+                "symbolExpression": "%s%PLC1.Hardware.horizontalDriveA21Right::mode%/s%",
+                "value": {
+                  "objectType": "StaticValue",
+                  "valueType": "tchmi:server#/definitions/PLC1.Implicit_Enum__AirPiston__mode",
+                  "value": 2
+                },
+                "asyncWait": true
+              }
+            ]
+          },
+          {
+            "else": []
+          }
+        ],
         "asyncWait": true
       }
     ]
@@ -334,14 +554,58 @@
     "event": "A21InsertionRightHold.onMouseClick",
     "actions": [
       {
-        "objectType": "WriteToSymbol",
+        "objectType": "Condition",
         "active": true,
-        "symbolExpression": "%s%PLC1.Hardware.horizontalDriveA21Right::mode%/s%",
-        "value": {
-          "objectType": "StaticValue",
-          "valueType": "tchmi:server#/definitions/PLC1.Implicit_Enum__AirPiston__mode",
-          "value": 0
-        },
+        "parts": [
+          {
+            "if": [
+              {
+                "compare1": {
+                  "objectType": "Symbol",
+                  "valueType": "tchmi:server#/definitions/PLC1.Tc3_PackML_V2.E_PMLProtectedUnitMode",
+                  "symbolExpression": "%s%PLC1.MAIN.moduleWB::pmlMode%/s%"
+                },
+                "compare2": {
+                  "objectType": "StaticValue",
+                  "valueType": "tchmi:server#/definitions/PLC1.Tc3_PackML_V2.E_PMLProtectedUnitMode",
+                  "value": 2
+                },
+                "compareOperator": "==",
+                "logic": null
+              },
+              {
+                "compare1": {
+                  "objectType": "Symbol",
+                  "valueType": "tchmi:server#/definitions/PLC1.Tc3_PackML_V2.E_PMLState",
+                  "symbolExpression": "%s%PLC1.MAIN.moduleWB::pmlState%/s%"
+                },
+                "compare2": {
+                  "objectType": "StaticValue",
+                  "valueType": "tchmi:server#/definitions/PLC1.Tc3_PackML_V2.E_PMLState",
+                  "value": 6
+                },
+                "compareOperator": "==",
+                "logic": "AND"
+              }
+            ],
+            "then": [
+              {
+                "objectType": "WriteToSymbol",
+                "active": true,
+                "symbolExpression": "%s%PLC1.Hardware.horizontalDriveA21Right::mode%/s%",
+                "value": {
+                  "objectType": "StaticValue",
+                  "valueType": "tchmi:server#/definitions/PLC1.Implicit_Enum__AirPiston__mode",
+                  "value": 0
+                },
+                "asyncWait": true
+              }
+            ]
+          },
+          {
+            "else": []
+          }
+        ],
         "asyncWait": true
       }
     ]
