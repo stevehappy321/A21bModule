@@ -3022,7 +3022,7 @@ VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[]]></ST>
+        <ST><![CDATA[//no specific tasks yet, free run and testing]]></ST>
       </Implementation>
     </Method>
     <Method Name="process" Id="{125184ca-77bd-471a-a90f-30ac270f7324}">
@@ -3063,7 +3063,7 @@ CASE step OF
 			done := load(pairIndex := iPair, error => error);
 		END_IF
 		
-		IF manualSuction THEN
+		IF manualMode THEN
 			SetSuctions(suctionTop, suctionEnableTop);
 			SetSuctions(suctionLeft, suctionEnableLeft);
 			SetSuctions(suctionRight, suctionEnableRight);
@@ -3227,17 +3227,17 @@ ps_Clearing :=
 	NOT robotRight.error;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="ps_Completing" Id="{13d5106d-1f4d-4d49-93f3-7e4ba04d0dc5}" FolderPath="PML Inter. States\">
-      <Declaration><![CDATA[METHOD PRIVATE ps_Completing : BOOL
+    <Method Name="ps_Execute" Id="{13d5106d-1f4d-4d49-93f3-7e4ba04d0dc5}" FolderPath="PML Inter. States\">
+      <Declaration><![CDATA[METHOD PRIVATE ps_Execute : BOOL
 VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[CASE pmlMode OF
 	0: //invalid mode
-	ePMLProtUnitMode_Production:	ps_Completing := process(manualMode := FALSE);
+	ePMLProtUnitMode_Production:	ps_Execute := process(manualMode := FALSE);
 	ePMLProtUnitMode_Maintenance:	//
-	ePMLProtUnitMode_Manual:		ps_Completing := process(manualMode := TRUE);
+	ePMLProtUnitMode_Manual:		ps_Execute := process(manualMode := TRUE);
 END_CASE]]></ST>
       </Implementation>
     </Method>
@@ -3306,18 +3306,25 @@ PackML
 	final states - wait for an input or condition and command to new state
 	intermediate states - complete a task and call pmlStateMachine.M_StateComplete() to advance to next state
 	
-command HOLD for minor local errors
-command SUSPEND for external errors
-
-command STOP for controlled stop **with intent to shutdown or vacate for extended time** induced by operator/HMI - otherwise use HOLD
-command ABORT for emergency stop due to machine errors
-
 the following states currently use the same logic (albeit in different methods), implementation may change later
 	ps_Stopping() and ps_Aborting()
 	ps_Resetting() and ps_Clearing()
+	
+STOP - controlled stop **with intent to shutdown or vacate for extended time** induced by operator/HMI - otherwise use HOLD
+ABORT - emergency stop due to machine errors
+
+
+HOLD - minor local issues
+SUSPEND - external issues
+
+EXECUTE - major control logic
+	different modes may require different tasks
+	create methods as required for different modes, then call the correct method in ps_Completing()
+	can be commanded to STOP, ABORT, HOLD, or SUSPEND at any point
+COMPLETING - process complete, move product out of system and finish transition to COMPLETED
 *)
 
-IF
+IF //abort at machine error
 	insertionLeft.error OR 
 	insertionRight.error OR 
 	robotLeft.error OR 
@@ -3326,7 +3333,7 @@ IF
 THEN
 	pmlCommand := ePMLCommand_Abort;
 	
-ELSIF stop THEN
+ELSIF stop THEN //stop at command stop
 	pmlCommand := ePMLCommand_Stop;
 
 ELSIF FALSE (*A2.4 cannot allow bundles to enter*) THEN //FALSE condition never executes - this is temporary
@@ -3354,14 +3361,15 @@ CASE pmlState OF
 	ePMLState_Idle:
 		IF execute THEN
 			execute := FALSE;
-			suctionEnableTop := suctionEnableLeft := suctionEnableRight := suctionEnableBottom := FALSE;
+			//suctionEnableTop := suctionEnableLeft := suctionEnableRight := suctionEnableBottom := FALSE;
 			pmlCommand := ePMLCommand_Start;
 		END_IF		
-		
+		(*
 		SetSuctions(suctionTop, suctionEnableTop);
 		SetSuctions(suctionLeft, suctionEnableLeft);
 		SetSuctions(suctionRight, suctionEnableRight);
 		SetSuctions(suctionBottom, suctionEnableBottom);
+		*)
 	
 	ePMLState_Starting:
 		IF insertionLeft.screw.HomeSet AND insertionRight.screw.HomeSet AND pistonBottom.retracted THEN
@@ -3376,14 +3384,14 @@ CASE pmlState OF
 			pistonBottom.retract();
 		END_IF
 	
-	ePMLState_Execute: //normal start of process, go to next state COMPLETING
-		pmlStateMachine.M_StateComplete();
-		
-	ePMLState_Completing: //this state performs different tasks depending on the mode, refer to the method
-		IF ps_Completing() THEN
+	ePMLState_Execute: 
+		IF ps_Execute() THEN
 			pmlStateMachine.M_StateComplete();
 			pmlCommand := ePMLCommand_Complete;
 		END_IF
+		
+	ePMLState_Completing:
+		pmlStateMachine.M_StateComplete();
 	
 	ePMLState_Complete:
 		pmlCommand := ePMLCommand_Reset;
@@ -3751,7 +3759,7 @@ validateSuctionQuality :=
       <LineId Id="5" Count="0" />
       <LineId Id="9" Count="4" />
     </LineIds>
-    <LineIds Name="WoodBunkEx.ps_Completing">
+    <LineIds Name="WoodBunkEx.ps_Execute">
       <LineId Id="18" Count="4" />
       <LineId Id="10" Count="0" />
     </LineIds>
@@ -3772,34 +3780,21 @@ validateSuctionQuality :=
       <LineId Id="5" Count="0" />
     </LineIds>
     <LineIds Name="WoodBunkEx.runPML">
-      <LineId Id="367" Count="1" />
-      <LineId Id="377" Count="1" />
-      <LineId Id="369" Count="7" />
-      <LineId Id="380" Count="0" />
-      <LineId Id="379" Count="0" />
-      <LineId Id="384" Count="0" />
-      <LineId Id="381" Count="0" />
-      <LineId Id="365" Count="1" />
-      <LineId Id="243" Count="0" />
-      <LineId Id="348" Count="0" />
-      <LineId Id="347" Count="0" />
-      <LineId Id="346" Count="0" />
-      <LineId Id="345" Count="0" />
-      <LineId Id="344" Count="0" />
-      <LineId Id="249" Count="1" />
-      <LineId Id="341" Count="0" />
-      <LineId Id="338" Count="0" />
-      <LineId Id="254" Count="0" />
-      <LineId Id="364" Count="0" />
-      <LineId Id="358" Count="0" />
-      <LineId Id="362" Count="1" />
-      <LineId Id="357" Count="0" />
-      <LineId Id="256" Count="32" />
-      <LineId Id="354" Count="0" />
-      <LineId Id="289" Count="0" />
-      <LineId Id="351" Count="2" />
-      <LineId Id="349" Count="1" />
-      <LineId Id="290" Count="44" />
+      <LineId Id="397" Count="6" />
+      <LineId Id="524" Count="1" />
+      <LineId Id="523" Count="0" />
+      <LineId Id="527" Count="0" />
+      <LineId Id="529" Count="1" />
+      <LineId Id="528" Count="0" />
+      <LineId Id="522" Count="0" />
+      <LineId Id="404" Count="1" />
+      <LineId Id="526" Count="0" />
+      <LineId Id="415" Count="2" />
+      <LineId Id="531" Count="0" />
+      <LineId Id="521" Count="0" />
+      <LineId Id="418" Count="46" />
+      <LineId Id="532" Count="0" />
+      <LineId Id="465" Count="55" />
       <LineId Id="1" Count="0" />
     </LineIds>
     <LineIds Name="WoodBunkEx.stage">
