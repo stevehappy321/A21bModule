@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="StringArrayCloseGaps" Id="{de20d178-933d-4650-a5be-bdde94dcce95}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION StringArrayCloseGaps : BOOL
+VAR_IN_OUT
+	arr : ARRAY[*] OF STRING;
+END_VAR
+VAR
+	i : DINT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <LineIds Name="StringArrayCloseGaps">
+      <LineId Id="7" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

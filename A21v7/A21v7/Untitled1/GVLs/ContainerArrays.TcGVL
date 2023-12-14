@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <GVL Name="ContainerArrays" Id="{a41ac828-3b90-4453-b6ae-c19c2ca38393}">
+    <Declaration><![CDATA[//{attribute 'qualified_only'}
+VAR_GLOBAL
+
+	skidHmiA21Left, skidHmiA21Right AT %M* : ARRAY[1..2] OF MaterialSlot;
+	magazineHmiA21Left, magazineHmiA21Right AT %M* : ARRAY[1..15] OF MaterialSlot;
+	tableHmiA21Left : ARRAY[1..10] OF MaterialSlot; (*:= [
+		(material := 'WDS20', occupied := TRUE), 
+		(material := 'WDS20', occupied := TRUE), 
+		(material := 'WDS20', occupied := TRUE), 
+		(material := 'WDS20', occupied := TRUE)];*)
+	tableHmiA21Right : ARRAY[1..10] OF MaterialSlot; (*:= [
+		(material := 'WDS20', occupied := TRUE), 
+		(material := 'WDB20', occupied := TRUE), 
+		(material := 'WDS20', occupied := TRUE), 
+		(material := 'WDB20', occupied := TRUE)];*)
+	
+END_VAR
+(*
+different material holders have different capacities
+arrays are declared here and passed into material holder instances by reference
+direct access to these arrays is strongly discouraged
+
+hmi arrays are used to display the data on TcHmi datagrids in slot-occupancy struct format
+*)
+]]></Declaration>
+  </GVL>
+</TcPlcObject>
