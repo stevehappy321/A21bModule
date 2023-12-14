@@ -13,6 +13,8 @@ VAR_OUTPUT
 	
 	hlfb AT %I* : REAL; //high level feedback, if -9999 then servo is idle
 	position, targetPos : LREAL;
+	
+	homingDirection : BOOL; //homing direction (F = inwards, T = outwards)
 END_VAR
 VAR
 	pulseRequest : INT;
@@ -340,7 +342,9 @@ END_VAR
       <LineId Id="189" Count="0" />
       <LineId Id="191" Count="1" />
       <LineId Id="190" Count="0" />
-      <LineId Id="135" Count="33" />
+      <LineId Id="135" Count="11" />
+      <LineId Id="214" Count="9" />
+      <LineId Id="157" Count="11" />
       <LineId Id="171" Count="7" />
       <LineId Id="195" Count="0" />
       <LineId Id="182" Count="0" />

@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <GVL Name="ContainerArrays" Id="{a41ac828-3b90-4453-b6ae-c19c2ca38393}">
+    <Declaration><![CDATA[//{attribute 'qualified_only'}
+VAR_GLOBAL
+	
+	skidSlotsA21Left, skidSlotsA21Right : ARRAY[1..2] OF STRING; //chipboard skid
+	skidOccupancyA21Left, skidOccupancyA21Right : ARRAY[1..2] OF BOOL;
+	
+	magazineSlotsA21Left, magazineSlotsA21Right : ARRAY[1..15] OF STRING; //wood bunk magazine
+	magazineOccupancyA21Left, magazineOccupancyA21Right : ARRAY[1..15] OF BOOL;
+	
+	tableSlotsA21Left, tableSlotsA21Right : ARRAY[1..10] OF STRING; //staging table
+	tableOccupancyA21Left, tableOccupancyA21Right AT %I* : ARRAY[1..10] OF BOOL;
+	
+	skidHmiA21Left, skidHmiA21Right : ARRAY[1..2] OF MaterialSlot;
+	magazineHmiA21Left, magazineHmiA21Right : ARRAY[1..15] OF MaterialSlot;
+	tableHmiA21Left : ARRAY[1..10] OF MaterialSlot; (*:= [
+		(material := 'WDS20', occupied := TRUE), 
+		(material := 'WDS20', occupied := TRUE), 
+		(material := 'WDS20', occupied := TRUE), 
+		(material := 'WDS20', occupied := TRUE)];*)
+	tableHmiA21Right : ARRAY[1..10] OF MaterialSlot; (*:= [
+		(material := 'WDS20', occupied := TRUE), 
+		(material := 'WDB20', occupied := TRUE), 
+		(material := 'WDS20', occupied := TRUE), 
+		(material := 'WDB20', occupied := TRUE)];*)
+	
+END_VAR
+(*
+different material holders have different capacities
+arrays are declared here and passed into material holder instances by reference
+direct access to these arrays is strongly discouraged
+
+hmi arrays are used to display the data on TcHmi datagrids in slot-occupancy struct format
+*)
+]]></Declaration>
+  </GVL>
+</TcPlcObject>

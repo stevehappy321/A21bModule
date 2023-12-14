@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <Itf Name="I_Drive" Id="{e1eb8c48-7b7b-492d-8b70-2ec679581052}">
+    <Declaration><![CDATA[INTERFACE I_Drive
+]]></Declaration>
+    <Property Name="AtHome" Id="{d3367613-6051-45a7-bb4e-d3da08972b02}">
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY ABSTRACT AtHome : BOOL]]></Declaration>
+      <Get Name="Get" Id="{f5833afb-75b8-4951-b479-709ca6d37d41}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Property Name="AtInnerLimit" Id="{15cf0b23-5cf7-4a08-95c8-4ec0bf21cd69}">
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY ABSTRACT AtInnerLimit : BOOL]]></Declaration>
+      <Get Name="Get" Id="{6d73dac2-7fd2-4055-8f5a-ee268efd0941}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Property Name="AtOuterLimit" Id="{81cc56f6-a267-43a3-9cc5-05430d7808a0}">
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY ABSTRACT AtOuterLimit : BOOL]]></Declaration>
+      <Get Name="Get" Id="{81944ceb-b046-4f70-b15f-6c1788f26dfd}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Property Name="Busy" Id="{b9f317c0-8d70-497e-b1c4-c9ce1c341d8c}">
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY ABSTRACT Busy : BOOL]]></Declaration>
+      <Get Name="Get" Id="{542f606a-6965-47b8-a90c-0987a4a5aa56}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Property Name="Contact" Id="{897a5d7b-1c9f-456f-bed8-3c373fa9080c}">
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY ABSTRACT Contact : BOOL]]></Declaration>
+      <Get Name="Get" Id="{bd11578c-1271-4920-8a67-83d8eb73782c}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Property Name="Error" Id="{bfa5fc42-6272-44a8-97a1-4e16bed4ae67}">
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY ABSTRACT Error : BOOL]]></Declaration>
+      <Get Name="Get" Id="{75b7eae4-04ec-4db9-9a80-1f0807ffbf1f}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Property Name="HomeSet" Id="{55d8d979-3411-4a92-89a3-450c116ac487}">
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY ABSTRACT HomeSet : BOOL]]></Declaration>
+      <Get Name="Get" Id="{aba12fc3-cb14-4795-b287-e75716726c36}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Method Name="homingSequence" Id="{e3fa5096-da88-4f84-a6d1-7c42475dba98}">
+      <Declaration><![CDATA[METHOD ABSTRACT homingSequence : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="stop" Id="{29a7ef21-dfdd-4749-92df-d8e96ac6dd6b}">
+      <Declaration><![CDATA[METHOD ABSTRACT stop : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+  </Itf>
+</TcPlcObject>

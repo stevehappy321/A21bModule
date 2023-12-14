@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <GVL Name="ContainerArrays" Id="{a41ac828-3b90-4453-b6ae-c19c2ca38393}">
+    <Declaration><![CDATA[//{attribute 'qualified_only'}
+VAR_GLOBAL //data arrays to be passed into material holder FBs - do not access directly
+	skidHmiA22Left, skidHmiA22Right : ARRAY[1...Cardboard.size-1] OF MaterialSlot;
+	magazineHmiA22Left, magazineHmiA22Right : ARRAY[1..CornerGuard.size-1] OF MaterialSlot;
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

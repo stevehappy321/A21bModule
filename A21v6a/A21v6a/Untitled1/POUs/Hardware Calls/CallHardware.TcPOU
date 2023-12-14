@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="CallHardware" Id="{d53bfde7-ef31-4033-a59e-17a8585cdf25}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION CallHardware : BOOL //only purpose of this function is to call modules from Hardware
+VAR_STAT
+	tempLeft, tempRight : INT;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[robot1();	
+robot2();
+
+skidA21Left(slots := skidHmiA21Left);
+skidA21Right(slots := skidHmiA21Right);
+
+stagingTableLeft(slots := tableHmiA21Left);
+stagingTableRight(slots := tableHmiA21Right);
+
+magazineA21Left(slots := magazineHmiA21Left);
+magazineA21Right(slots := magazineHmiA21Right);
+
+strapperA21();
+
+verticalDriveA21Left();
+verticalDriveA21Right();
+horizontalDriveA21Left();
+horizontalDriveA21Right();
+pistonA21Bottom();
+
+(*
+tempLeft := TO_INT(BoolPtrArrayToInteger(arr := stagingTableLeft.occupied, lowerBound := 1, upperBound := 10));
+tempLeft.15 := NOT strapperA21.bEnable AND NOT strapperA21.execute;
+robot1.setGroup(group := 8, value := tempLeft);
+
+tempRight := TO_INT(BoolPtrArrayToInteger(arr := stagingTableRight.occupied, lowerBound := 1, upperBound := 10));
+tempRight.15 := NOT strapperA21.bEnable AND NOT strapperA21.execute;
+robot2.setGroup(group := 8, value := tempRight);
+
+*)]]></ST>
+    </Implementation>
+    <LineIds Name="CallHardware">
+      <LineId Id="216" Count="28" />
+      <LineId Id="77" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

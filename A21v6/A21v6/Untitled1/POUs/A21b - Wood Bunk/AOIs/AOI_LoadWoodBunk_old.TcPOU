@@ -1,0 +1,245 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="AOI_LoadWoodBunk_old" Id="{2882c1a2-8211-4d95-ac70-2bfa95f01e96}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK AOI_LoadWoodBunk_old
+VAR_IN_OUT CONSTANT
+	sectionID : SectionEnum;
+END_VAR
+VAR_INPUT
+	execute : BOOL;
+END_VAR
+VAR_IN_OUT
+	robot : RobotA21;
+	table : StagingTable;
+	suctions : ARRAY[*] OF SuctionPad;
+	loadedMaterials : ARRAY[*] OF STRING;
+END_VAR
+VAR_INPUT
+	surfaceID : Surface;
+	material : STRING;
+END_VAR
+VAR_OUTPUT
+	busy : BOOL;
+	done : BOOL;
+	error : BOOL;
+	
+	recovery : BOOL;
+	failCounter : INT;
+END_VAR
+VAR
+	run : BOOL;
+	trigger : R_TRIG;
+	
+	slot : INT;
+	
+	suctionTimer : TON;
+	step : (IDLE, PREP_ROBOT, GET_FROM_TABLE, LOAD_TO_INSERTION, COMPLETE, RECOVERY_IDLE, RECOVERY_REMOVE, RECOVERY_WAIT, RECOVERY_STAGE);
+END_VAR
+VAR CONSTANT
+	suctionDelay : TIME := T#2S;
+END_VAR
+VAR
+	temp : BOOL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[{warning disable C0371}
+
+trigger(CLK:= execute, Q=> );
+run := (run OR trigger.Q) AND NOT done AND NOT error;
+busy := run;
+
+IF NOT run THEN
+	RETURN;
+END_IF
+
+//--------------------------------------------------
+
+IF material = '' THEN
+	done := TRUE;
+	RETURN;
+END_IF
+
+IF //robot must be ready before execution
+	robot.error OR 
+	robot.reservation <> sectionID OR 
+	robot.tool <> sectionID
+THEN
+	error := TRUE;
+	RETURN;
+END_IF
+
+(*
+if required bunk was not found on table - restage entire table
+if bunk was not loaded correctly - remove bunk, then restage entire table
+*)
+
+CASE step OF
+	IDLE:
+		recovery := FALSE;
+		IF run THEN
+			done := FALSE;
+			error := FALSE;
+			step := PREP_ROBOT;
+		END_IF
+		
+	PREP_ROBOT:
+		robot.clearCommand();
+		
+		IF robot.Ready THEN
+			step := GET_FROM_TABLE;
+			slot := 0;
+		END_IF
+		
+	GET_FROM_TABLE:		
+		IF slot < 1 AND_THEN NOT table.findSlot(materialID := material, index => slot) THEN
+			error := TRUE;
+			step := RECOVERY_STAGE;
+			RETURN;
+		END_IF
+		
+		IF NOT table.isOccupied(i := slot) AND table.getSlot(i := slot) <> '' THEN //move from table to robot gripper
+			robot.HoldMaterial := table.getSlot(i := slot);
+			table.remove(i := slot, materialID => );
+		END_IF
+		
+		IF robot.Done THEN
+			step := COMPLETE;
+			RETURN;
+		ELSIF robot.materialAtHoldingPosition >= 1 AND robot.materialAtHoldingPosition <= 8 THEN
+			step := LOAD_TO_INSERTION;
+			RETURN;
+		END_IF
+		
+		CASE surfaceID OF
+			Surface.TOP: 					robot.setGroup(group := 1, value := A21.LOAD_BUNK_TOP); 
+			Surface.LEFT, Surface.RIGHT: 	robot.setGroup(group := 1, value := A21.LOAD_BUNK_SIDE);
+			Surface.BOTTOM: 				robot.setGroup(group := 1, value := A21.LOAD_BUNK_BOTTOM);
+		END_CASE
+		robot.setGroup(group := 2, value := slot); 
+			
+	LOAD_TO_INSERTION:
+		IF robot.materialAtHoldingPosition > 0 AND robot.HoldMaterial <> '' THEN //move from gripper to insertion
+			IF loadedMaterials[surfaceID] = '' THEN //transfer to insertion as is
+				loadedMaterials[surfaceID] := robot.HoldMaterial;
+			ELSE //join with existing material using underscore _
+				loadedMaterials[surfaceID] := JoinStrings(loadedMaterials[surfaceID], robot.HoldMaterial, '_');
+			END_IF
+			robot.HoldMaterial := '';
+		END_IF
+		
+		CASE surfaceID OF
+			Surface.TOP, Surface.BOTTOM:	SetSuctions(suctions, TRUE);
+			Surface.LEFT, Surface.RIGHT:	SetSuctions(suctions, TRUE );
+		END_CASE
+		
+		IF robot.Done THEN
+			suctionTimer.IN := FALSE;
+			step := COMPLETE;
+			RETURN;
+		END_IF
+		
+		suctionTimer(IN:= , PT:= suctionDelay, Q=> , ET=> );
+		suctionTimer.IN := TRUE;
+		
+		IF suctionTimer.Q THEN
+			robot.setGroup(group := 9, value := robot.materialAtHoldingPosition);
+		END_IF
+	
+	COMPLETE:
+		robot.clearCommand();
+		
+		//check insertion quality
+		IF InsertionQuality(suctions := suctions, insertionMaterial := loadedMaterials[surfaceID], recipeMaterial := material) THEN
+			done := TRUE;
+			slot := 0;
+			step := 0;
+		ELSE //recovery - restage table
+			failCounter := failCounter + 1;
+			step := RECOVERY_IDLE;
+		END_IF
+		
+	//---------RECOVERY-----------------------------------------
+	RECOVERY_IDLE:
+		robot.clearCommand();
+		IF robot.Ready THEN
+			step := RECOVERY_REMOVE;
+		END_IF
+		
+	RECOVERY_REMOVE:
+		IF robot.Done THEN
+			step := RECOVERY_WAIT;
+			RETURN;
+		END_IF
+		
+		CASE surfaceID OF
+			Surface.TOP:					robot.setGroup(group := 1, value := A21.REMOVE_BUNK_TOP);
+			Surface.LEFT, Surface.RIGHT:	robot.setGroup(group := 1, value := A21.REMOVE_BUNK_SIDE);
+			Surface.BOTTOM:					robot.setGroup(group := 1, value := A21.REMOVE_BUNK_BOTTOM);
+		END_CASE
+	
+	RECOVERY_WAIT:
+		robot.clearCommand();
+		IF robot.Ready THEN
+			step := RECOVERY_STAGE;
+		END_IF
+	
+	RECOVERY_STAGE:	
+		recovery := TRUE;
+		
+		IF run THEN
+			step := PREP_ROBOT; //retry
+			recovery := FALSE;
+			RETURN;
+		END_IF
+			
+END_CASE]]></ST>
+    </Implementation>
+    <Method Name="reset" Id="{fe7a447b-2309-44a5-bf8e-4a5fae7c5093}">
+      <Declaration><![CDATA[METHOD reset : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[done := FALSE;
+error := FALSE;
+slot := 0;
+step := 0;
+
+failCounter := 0;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="AOI_LoadWoodBunk_old">
+      <LineId Id="1506" Count="0" />
+      <LineId Id="1746" Count="0" />
+      <LineId Id="1745" Count="0" />
+      <LineId Id="1752" Count="0" />
+      <LineId Id="1751" Count="0" />
+      <LineId Id="1737" Count="0" />
+      <LineId Id="1755" Count="2" />
+      <LineId Id="1761" Count="0" />
+      <LineId Id="1760" Count="0" />
+      <LineId Id="1738" Count="0" />
+      <LineId Id="1729" Count="2" />
+      <LineId Id="1758" Count="0" />
+      <LineId Id="1716" Count="1" />
+      <LineId Id="1762" Count="3" />
+      <LineId Id="1718" Count="1" />
+      <LineId Id="1715" Count="0" />
+      <LineId Id="1528" Count="4" />
+      <LineId Id="1534" Count="10" />
+      <LineId Id="1704" Count="0" />
+      <LineId Id="1545" Count="66" />
+      <LineId Id="1690" Count="0" />
+      <LineId Id="1612" Count="39" />
+      <LineId Id="1749" Count="0" />
+    </LineIds>
+    <LineIds Name="AOI_LoadWoodBunk_old.reset">
+      <LineId Id="5" Count="0" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="11" Count="0" />
+      <LineId Id="6" Count="0" />
+      <LineId Id="13" Count="0" />
+      <LineId Id="12" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -10,17 +10,23 @@ VAR_OUTPUT //from outputs array
 	Ymm : INT;
 	Zmm : INT;
 	angle : INT;
-	cardboardSkidOccupancy : INT;
 	foldPosition0 : INT;
 	foldPosition1 : INT;
-	
-	//cornerGuardMagazineOccupancy : INT;
 END_VAR
 VAR_OUTPUT //from inputs array
 	tool : SectionEnum := SectionEnum.CARDBOARD_CORNERGUARD;
 	suspendedMaterial : STRING;
 	
 	completedTask : A22;
+	eoatDistance : INT;
+	cardboardAvailability : INT;
+	cornerGuardAvailability : INT;
+	materialAtHoldingPosition : INT;
+	//grp6
+	//grp7
+	
+	wrapSafetyIn : BOOL;
+	
 END_VAR
 VAR //HMI data
 	reservationEnum : SectionEnum;
@@ -38,9 +44,8 @@ outputs[4] := Xmm;
 outputs[5] := Ymm;
 outputs[6] := Zmm;
 outputs[7] := angle;
-outputs[8] := cardboardSkidOccupancy;
-outputs[9] := foldPosition0;
-outputs[10] := foldPosition1;
+outputs[8] := foldPosition0;
+outputs[9] := foldPosition1;
 
 refreshParameters();
 
@@ -147,9 +152,8 @@ Xmm := outputs[4];
 Ymm := outputs[5];
 Zmm := outputs[6];
 angle := outputs[7];
-cardboardSkidOccupancy := outputs[8];
-foldPosition0 := outputs[9];
-foldPosition1 := outputs[10]; //unused
+foldPosition0 := outputs[8];
+foldPosition1 := outputs[9];
 
 completedTask := inputs[1];
 (*
@@ -217,7 +221,7 @@ refreshParameters();]]></ST>
       <LineId Id="137" Count="0" />
       <LineId Id="139" Count="5" />
       <LineId Id="138" Count="0" />
-      <LineId Id="147" Count="2" />
+      <LineId Id="147" Count="1" />
       <LineId Id="146" Count="0" />
       <LineId Id="145" Count="0" />
       <LineId Id="181" Count="0" />
@@ -253,7 +257,7 @@ refreshParameters();]]></ST>
     </LineIds>
     <LineIds Name="RobotA22.refreshParameters">
       <LineId Id="31" Count="0" />
-      <LineId Id="6" Count="9" />
+      <LineId Id="6" Count="8" />
       <LineId Id="17" Count="1" />
       <LineId Id="27" Count="0" />
       <LineId Id="19" Count="2" />

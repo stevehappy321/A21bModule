@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="SetupHardware" Id="{ad70243f-26d6-4655-b24b-2a994d19bc18}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION SetupHardware : BOOL
+VAR
+	iCardboardSlot : Cardboard;
+	iCornerGuardSlot : CornerGuard;
+	
+	i : INT;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[FOR iCardboardSlot:=1 TO Cardboard.size-1 BY 1 DO
+	skidA22Left.setSlot(i := iCardboardSlot, material := TO_STRING(iCardboardSlot), error => );
+	skidA22Right.setSlot(i := iCardboardSlot, material := TO_STRING(iCardboardSlot), error => );
+END_FOR
+
+//--------------------------------------------------
+
+FOR iCornerGuardSlot:=1 TO CornerGuard.size-1 BY 1 DO
+	magazineA22Left.setSlot(i := iCornerGuardSlot, material := TO_STRING(iCornerGuardSlot), error => );
+	magazineA22Right.setSlot(i := iCornerGuardSlot, material := TO_STRING(iCornerGuardSlot), error => );
+END_FOR
+
+//--------------------------------------------------
+
+FOR i:=1 TO GVL.maxQueue BY 1 DO
+	{warning disable C0195}
+	magazineA22Left.setOccupancy(i := i, occupancy := IntegerBitAccess( robot3.inputs[3], i-1) );
+	skidA22Left.setOccupancy(i := i, occupancy := IntegerBitAccess( robot3.inputs[4], i-1) );
+	
+	magazineA22Right.setOccupancy(i := i, occupancy := IntegerBitAccess( robot4.inputs[3], i-1) );
+	skidA22Right.setOccupancy(i := i, occupancy := IntegerBitAccess( robot4.inputs[4], i-1) );
+	{warning restore C0195}
+END_FOR
+
+//--------------------------------------------------
+
+verticalDriveA22Left.bEnable := 
+verticalDriveA22Right.bEnable := 
+horizontalDriveA22Left.bEnable := 
+horizontalDriveA22Right.bEnable := 
+pistonA22Bottom.bEnable := 
+TRUE;
+]]></ST>
+    </Implementation>
+    <LineIds Name="SetupHardware">
+      <LineId Id="193" Count="0" />
+      <LineId Id="229" Count="0" />
+      <LineId Id="194" Count="1" />
+      <LineId Id="197" Count="4" />
+      <LineId Id="230" Count="0" />
+      <LineId Id="202" Count="0" />
+      <LineId Id="232" Count="0" />
+      <LineId Id="231" Count="0" />
+      <LineId Id="235" Count="1" />
+      <LineId Id="245" Count="0" />
+      <LineId Id="237" Count="4" />
+      <LineId Id="246" Count="0" />
+      <LineId Id="242" Count="0" />
+      <LineId Id="244" Count="0" />
+      <LineId Id="243" Count="0" />
+      <LineId Id="205" Count="6" />
+      <LineId Id="219" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
