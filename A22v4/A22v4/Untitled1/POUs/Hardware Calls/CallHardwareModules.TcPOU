@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="CallHardwareModules" Id="{d53bfde7-ef31-4033-a59e-17a8585cdf25}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION CallHardwareModules : BOOL //only purpose of this function is to call modules from Hardware]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[robot3();
+robot4();
+
+skidA22Left(slots := skidHmiA22Left);
+skidA22Right(slots := skidHmiA22Right);
+
+magazineA22Left(slots := magazineHmiA22Left);
+magazineA22Right(slots := magazineHmiA22Right);
+
+wrapperA22();
+benderA22Left();
+
+horizontalDriveA22Left();
+horizontalDriveA22Right();
+
+verticalDriveA22Left();
+verticalDriveA22Right();
+
+pistonA22Bottom();]]></ST>
+    </Implementation>
+    <LineIds Name="CallHardwareModules">
+      <LineId Id="57" Count="9" />
+      <LineId Id="75" Count="0" />
+      <LineId Id="68" Count="6" />
+      <LineId Id="30" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="MAIN" Id="{bb23f57b-bfaa-4807-862f-695fb779bd1d}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR_OUTPUT
+	currentTime : TIMESTRUCT;
+END_VAR
+VAR
+	execute : BOOL;
+	manualStep : BOOL := TRUE;
+	manualSuction : BOOL := FALSE;
+	stop : BOOL;
+	
+	moduleA22 : CarCorEx;
+END_VAR
+VAR
+	getLocalTime : FB_LocalSystemTime;
+	test : BOOL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[CallHardwareModules(); //start program with hardware call
+
+SetupHardware();
+
+callModules();
+
+CallHardwareModules(); //end program with hardware call
+
+//BundleToJson();]]></ST>
+    </Implementation>
+    <Action Name="callModules" Id="{524a05bd-aa5d-4749-8232-9d95fc7a69c5}">
+      <Implementation>
+        <ST><![CDATA[getLocalTime(
+	sNetID:= '', 
+	bEnable:= TRUE, 
+	dwCycle:= , 
+	dwOpt:= , 
+	tTimeout:= , 
+	bValid=> , 
+	systemTime=> currentTime, 
+	tzID=> );
+
+moduleA22(
+	benderLeft:= benderA22Left, 
+	robotLeft:= robot3, 
+	robotRight:= robot4, 
+	skidLeft:= skidA22Left, 
+	skidRight:= skidA22Right, 
+	magazineLeft:= magazineA22Left, 
+	magazineRight:= magazineA22Right, 
+	wrapper:= wrapperA22, 
+	horizontalDriveLeft:= horizontalDriveA22Left, 
+	horizontalDriveRight:= horizontalDriveA22Right, 
+	verticalDriveLeft:= verticalDriveA22Left, 
+	verticalDriveRight:= verticalDriveA22Right,  
+	pistonBottom:= pistonA22Bottom, 
+	suctionTopLeft:= suctionA22TopLeft, 
+	suctionTopRight:= suctionA22TopRight, 
+	suctionBottomLeft:= suctionA22BottomLeft, 
+	suctionBottomRight:= suctionA22BottomRight, 
+	suctionBottom:= suctionA22Bottom,
+	pmlModeRequest=> , 
+	pmlMode=> , 
+	pmlState=> , 
+	pmlCommand=> , 
+	stop=> , 
+	execute=> , 
+	hold=> , 
+	reset=> , 
+	done=> , 
+	error=> );]]></ST>
+      </Implementation>
+    </Action>
+    <LineIds Name="MAIN">
+      <LineId Id="1095" Count="7" />
+      <LineId Id="1093" Count="0" />
+    </LineIds>
+    <LineIds Name="MAIN.callModules">
+      <LineId Id="30" Count="7" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="41" Count="0" />
+      <LineId Id="43" Count="1" />
+      <LineId Id="71" Count="5" />
+      <LineId Id="51" Count="0" />
+      <LineId Id="77" Count="2" />
+      <LineId Id="55" Count="0" />
+      <LineId Id="80" Count="4" />
+      <LineId Id="61" Count="9" />
+      <LineId Id="29" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

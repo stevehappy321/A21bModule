@@ -11,10 +11,15 @@ VAR_GLOBAL //complete modules
 	magazineA22Left, magazineA22Right : SkidMagazine;
 	
 	wrapperA22 : WrapMachine;
-	overhead : STRING;
 	
-	horizontalDriveA22Left, horizontalDriveA22Right : ServoNC;
-	verticalDriveA22Left, verticalDriveA22Right : ClearLinkMC := (homingDirection := TRUE, maxSeparation := 1000);
+	horizontalDriveA22Left, horizontalDriveA22Right : ServoNC := (
+		limitSensorDefaultState := TRUE);
+		
+	verticalDriveA22Left, verticalDriveA22Right : ClearLinkMC := (
+		limitSensorDefaultState := TRUE, 
+		homingDirection := TRUE, 
+		maxSeparation := 1000);
+		
 	pistonA22Bottom : SimplePiston;
 	
 	(*

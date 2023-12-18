@@ -38,6 +38,9 @@
     <Compile Include="DUTs\Enums\Surface.TcDUT">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DUTs\Insertion\ABSTRACT\FBA_Drive.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="DUTs\Insertion\Drives\ClearLinkMC.TcPOU">
       <SubType>Code</SubType>
     </Compile>
@@ -50,9 +53,6 @@
     <Compile Include="DUTs\Insertion\Insertion.TcPOU">
       <SubType>Code</SubType>
       <LinkAlways>true</LinkAlways>
-    </Compile>
-    <Compile Include="DUTs\Insertion\ABSTRACT\FBA_Drive.TcPOU">
-      <SubType>Code</SubType>
     </Compile>
     <Compile Include="DUTs\Insertion\ABSTRACT\I_ContinuousDrive.TcIO">
       <SubType>Code</SubType>
@@ -126,7 +126,7 @@
     <Compile Include="POUs\A22 - Cardboard-Corner Guard\AOIs\AOI_LoadFlatCardboard.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\A22 - Cardboard-Corner Guard\CardboardCornerGuardEx.TcPOU">
+    <Compile Include="POUs\A22 - Cardboard-Corner Guard\CorCarEx.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\FB_System.TcPOU">

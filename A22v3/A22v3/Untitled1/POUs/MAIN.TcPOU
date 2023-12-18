@@ -11,7 +11,7 @@ VAR
 	manualSuction : BOOL := FALSE;
 	stop : BOOL;
 	
-	moduleA22 : CardboardCornerGuardEx;
+	moduleA22 : CorCarEx;
 END_VAR
 VAR
 	getLocalTime : FB_LocalSystemTime;
