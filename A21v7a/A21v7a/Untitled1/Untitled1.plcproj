@@ -21,6 +21,12 @@
     <Compile Include="DUTs\A21ToolStorage.TcDUT">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DUTs\Alarms and Status\A21Alarms.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Alarms and Status\PMLStackLight.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="DUTs\Bundle.TcDUT">
       <SubType>Code</SubType>
     </Compile>
@@ -74,9 +80,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DUTs\Insertion\SuctionPad.TcDUT">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DUTs\PMLStackLight.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DUTs\Interval.TcDUT">
@@ -136,7 +139,7 @@
     <Compile Include="POUs\A21b - Wood Bunk\AOIs\AOI_LoadWoodBunk.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\A21Alarms.TcPOU">
+    <Compile Include="POUs\CallHardware.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\FB_System.TcPOU">
@@ -151,10 +154,10 @@
     <Compile Include="POUs\Hardware Functions\SuctionQuality.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\MAIN.TcPOU">
+    <Compile Include="POUs\Hardware Functions\SuctionQualityPtrArr.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\Hardware Functions\CallHardware.TcPOU">
+    <Compile Include="POUs\MAIN.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\Hardware Functions\SetSuctions.TcPOU">
@@ -209,6 +212,7 @@
     <Folder Include="DUTs\Insertion\Prototypes" />
     <Folder Include="DUTs\Machines" />
     <Folder Include="DUTs\Material Holders" />
+    <Folder Include="DUTs\Alarms and Status" />
     <Folder Include="GVLs" />
     <Folder Include="POUs\A21a - Chipboard\AOIs" />
     <Folder Include="POUs\Hardware Functions" />

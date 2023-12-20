@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Refactors>
+  <Renames>
+    <RenamedType>
+      <Type guid="05c7033b-868c-4f69-bfd0-0d7b581f79b9">CALLLOCALMODULES</Type>
+      <From>callLocalModules</From>
+      <To>initModules</To>
+    </RenamedType>
+  </Renames>
+</Refactors>

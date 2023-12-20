@@ -66,7 +66,7 @@
 		</System>
 		<Plc>
 			<Project GUID="{D232006A-254D-4F35-9BFE-5131CC19FE71}" Name="Untitled1" PrjFilePath="Untitled1\Untitled1.plcproj" TmcFilePath="Untitled1\Untitled1.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{72B80DEE-3C36-3574-8DEA-CD3B8EF16CDE}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{DEDBDB19-71C0-5909-2F9A-50D1B3FFBE46}">
 					<Name>Untitled1 Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
@@ -361,22 +361,6 @@
 					</Vars>
 					<Vars VarGrpType="2" AreaNo="1">
 						<Name>PlcTask Outputs</Name>
-						<Var>
-							<Name>MAIN.moduleWB.stackLight.red</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.moduleWB.stackLight.yellow</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.moduleWB.stackLight.blue</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.moduleWB.stackLight.green</Name>
-							<Type>BOOL</Type>
-						</Var>
 						<Var>
 							<Name>Hardware_A21.robot1.forceStop</Name>
 							<Type>BOOL</Type>

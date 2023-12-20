@@ -11,11 +11,12 @@ END_VAR
 VAR_IN_OUT
 	robot : RobotA21;
 	table : StagingTable;
-	suctions : ARRAY[*] OF SuctionPad;
+	//suctions : ARRAY[*] OF SuctionPad;
 	//if assigned using . operator instead of (), this becomes a pointer - use numPads isntead of UPPER_BOUND/LOWER_BOUND
 	loadedMaterials : ARRAY[*] OF STRING;
 END_VAR
 VAR_INPUT
+	suctions : POINTER TO SuctionPad;
 	surfaceID : Surface;
 	material : STRING;	
 	numPads : DINT;
@@ -150,11 +151,17 @@ CASE step OF
 		robot.clearCommand();
 		
 		//check insertion quality
-		IF InsertionQuality(suctions := suctions, insertionMaterial := loadedMaterials[surfaceID], recipeMaterial := material) THEN
+		IF
+			SuctionQualityPtrArr(
+				suctions := suctions,
+				numPads := numPads,
+				insertionMaterial := loadedMaterials[surfaceID],
+				recipeMaterial := material)
+		THEN
 			done := TRUE;
 			slot := 0;
 			step := 0;
-		ELSE //recovery - restage table
+		ELSE //recovery - remove wood bunk and restage
 			failCounter := failCounter + 1;
 			step := RECOVERY_IDLE;
 		END_IF
@@ -259,6 +266,11 @@ failCounter := 0;
       <LineId Id="2472" Count="0" />
       <LineId Id="2468" Count="0" />
       <LineId Id="2069" Count="33" />
+      <LineId Id="2525" Count="0" />
+      <LineId Id="2524" Count="0" />
+      <LineId Id="2528" Count="0" />
+      <LineId Id="2526" Count="1" />
+      <LineId Id="2529" Count="0" />
       <LineId Id="2156" Count="0" />
       <LineId Id="2104" Count="15" />
       <LineId Id="2121" Count="8" />

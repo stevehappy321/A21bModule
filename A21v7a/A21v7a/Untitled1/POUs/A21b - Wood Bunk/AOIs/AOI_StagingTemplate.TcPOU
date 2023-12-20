@@ -19,7 +19,7 @@ END_VAR
 VAR
 	trigger : R_TRIG;
 	run : BOOL;
-	step : (IDLE, GENERATE, COMPLETE);
+	step : (IDLE, GENERATE_ARRAY, GENERATE_TEMPLATE, COMPLETE);
 	i : INT;
 END_VAR
 VAR	
@@ -30,19 +30,23 @@ VAR
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[{warning disable C0371}
+(*
+this AOI can be implemented without steps, but doing so should shorten PLC cycles
+*)
 
 template(slots:= templateSlots);
 
 trigger(CLK:= execute, Q=> run);
+busy := run OR step > 0;
 
 CASE step OF
 	IDLE:
 		IF run THEN
-			step := GENERATE;
+			step := GENERATE_ARRAY;
 			done := FALSE;
 		END_IF
 		
-	GENERATE:
+	GENERATE_ARRAY:
 		//strings contain garbage chars after a null byte, they must be manually cleaned before checking if they are byte-empty
 		CleanStringsArray(arr := stagingArray);
 		IF ArrayIsEmpty(arr := ADR(stagingArray), arrSize := SIZEOF(stagingArray)) THEN //if staging array is empty, fill the array
@@ -53,6 +57,9 @@ CASE step OF
 				includeBottom:= includeBottom);
 		END_IF
 		
+		step := GENERATE_TEMPLATE;
+		
+	GENERATE_TEMPLATE:
 		//copy over the real slots before autofilling, otherwise the template may fill occupied slots
 		table.copyFrom(src := table);
 		
@@ -74,9 +81,7 @@ CASE step OF
 		
 		step := IDLE;
 		
-END_CASE
-
-busy := run OR step > 0;]]></ST>
+END_CASE]]></ST>
     </Implementation>
     <Folder Name="Private" Id="{3c6bf1e6-e944-469b-bcd7-a97f56b268e0}" />
     <Method Name="addToStagingArray" Id="{655ab137-48d6-43ef-8a47-92e88a7eb6e3}" FolderPath="Private\">
@@ -226,9 +231,20 @@ END_VAR]]></Declaration>
       </Implementation>
     </Method>
     <LineIds Name="AOI_StagingTemplate">
-      <LineId Id="449" Count="13" />
-      <LineId Id="464" Count="32" />
-      <LineId Id="223" Count="0" />
+      <LineId Id="449" Count="0" />
+      <LineId Id="534" Count="1" />
+      <LineId Id="450" Count="0" />
+      <LineId Id="536" Count="0" />
+      <LineId Id="451" Count="2" />
+      <LineId Id="530" Count="0" />
+      <LineId Id="532" Count="0" />
+      <LineId Id="455" Count="7" />
+      <LineId Id="464" Count="8" />
+      <LineId Id="529" Count="0" />
+      <LineId Id="528" Count="0" />
+      <LineId Id="473" Count="0" />
+      <LineId Id="527" Count="0" />
+      <LineId Id="474" Count="21" />
     </LineIds>
     <LineIds Name="AOI_StagingTemplate.addToStagingArray">
       <LineId Id="19" Count="4" />

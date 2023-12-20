@@ -19,6 +19,7 @@ VAR_IN_OUT //references to required hardware
 	suctionRight : ARRAY[*] OF SuctionPad; (*1..4*)
 	suctionBottom : ARRAY[*] OF SuctionPad; (*1..2*)
 	
+	stackLight : PMLStackLight;
 	alarms : A21Alarms;
 END_VAR
 VAR_OUTPUT //controls
@@ -67,8 +68,6 @@ VAR
 	aoiStageLeft, aoiStageRight : AOI_StageWoodBunk; 
 	aoiLoadLeft, aoiLoadRight : AOI_LoadWoodBunk;
 	
-	stackLight : PMLStackLight;
-	
 	suctionRelease : TON;
 	
 	//for testing, to be removed when deployoed
@@ -76,7 +75,7 @@ VAR
 	suctionEnableTop, suctionEnableLeft, suctionEnableRight, suctionEnableBottom : BOOL;
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[callLocalModules(); //call local modules
+      <ST><![CDATA[initModules(); //initialize modules
 
 blocks(); //call AOIs and large library FBs
 
@@ -771,11 +770,12 @@ runPML(); //run PackML state machine]]></ST>
                           <v n="Extensible">false</v>
                         </o>
                         <n n="InputFlags" />
-                        <l2 n="InputItems" cet="BoxTreeOperand">
-                          <o>
-                            <o n="Operand" t="Operand">
-                              <v n="Operand">"TRUE"</v>
-                              <v n="Type">"BOOL"</v>
+                        <l2 n="InputItems">
+                          <o t="BoxTreeBox">
+                            <v n="BoxType">"AOI_StagingTemplate.getSlot"</v>
+                            <o n="Instance" t="Operand">
+                              <v n="Operand">"aoiTemplateLeft"</v>
+                              <v n="Type">"AOI_StagingTemplate"</v>
                               <v n="Comment">""</v>
                               <v n="SymbolComment">""</v>
                               <v n="Address">""</v>
@@ -786,12 +786,123 @@ runPML(); //run PackML state machine]]></ST>
                               </o>
                               <v n="LValue">false</v>
                               <v n="Boolean">false</v>
-                              <v n="IsInstance">false</v>
-                              <v n="Id">125L</v>
+                              <v n="IsInstance">true</v>
+                              <v n="Id">550L</v>
                             </o>
-                            <v n="Id">124L</v>
+                            <o n="OutputItems" t="OutputItemList">
+                              <l2 n="OutputItems" cet="Operand">
+                                <n />
+                                <o>
+                                  <v n="Operand">"aoiStageLeft.material"</v>
+                                  <v n="Type">"STRING"</v>
+                                  <v n="Comment">""</v>
+                                  <v n="SymbolComment">""</v>
+                                  <v n="Address">""</v>
+                                  <o n="Flags" t="Flags">
+                                    <v n="Flags">0</v>
+                                    <v n="Fixed">false</v>
+                                    <v n="Extensible">false</v>
+                                  </o>
+                                  <v n="LValue">true</v>
+                                  <v n="Boolean">false</v>
+                                  <v n="IsInstance">false</v>
+                                  <v n="Id">544L</v>
+                                </o>
+                                <o>
+                                  <v n="Operand">""</v>
+                                  <v n="Type">"BOOL"</v>
+                                  <v n="Comment">""</v>
+                                  <v n="SymbolComment">""</v>
+                                  <v n="Address">""</v>
+                                  <o n="Flags" t="Flags">
+                                    <v n="Flags">0</v>
+                                    <v n="Fixed">false</v>
+                                    <v n="Extensible">false</v>
+                                  </o>
+                                  <v n="LValue">true</v>
+                                  <v n="Boolean">false</v>
+                                  <v n="IsInstance">false</v>
+                                  <v n="Id">545L</v>
+                                </o>
+                              </l2>
+                            </o>
+                            <o n="Flags" t="Flags">
+                              <v n="Flags">0</v>
+                              <v n="Fixed">true</v>
+                              <v n="Extensible">false</v>
+                            </o>
+                            <n n="InputFlags" />
+                            <l2 n="InputItems" cet="BoxTreeOperand">
+                              <o>
+                                <o n="Operand" t="Operand">
+                                  <v n="Operand">"TRUE"</v>
+                                  <v n="Type">"BOOL"</v>
+                                  <v n="Comment">""</v>
+                                  <v n="SymbolComment">""</v>
+                                  <v n="Address">""</v>
+                                  <o n="Flags" t="Flags">
+                                    <v n="Flags">0</v>
+                                    <v n="Fixed">false</v>
+                                    <v n="Extensible">false</v>
+                                  </o>
+                                  <v n="LValue">false</v>
+                                  <v n="Boolean">false</v>
+                                  <v n="IsInstance">false</v>
+                                  <v n="Id">125L</v>
+                                </o>
+                                <v n="Id">124L</v>
+                              </o>
+                              <o>
+                                <o n="Operand" t="Operand">
+                                  <v n="Operand">"aoiStageLeft.slot"</v>
+                                  <v n="Type">"INT"</v>
+                                  <v n="Comment">""</v>
+                                  <v n="SymbolComment">""</v>
+                                  <v n="Address">""</v>
+                                  <o n="Flags" t="Flags">
+                                    <v n="Flags">0</v>
+                                    <v n="Fixed">false</v>
+                                    <v n="Extensible">false</v>
+                                  </o>
+                                  <v n="LValue">false</v>
+                                  <v n="Boolean">false</v>
+                                  <v n="IsInstance">false</v>
+                                  <v n="Id">547L</v>
+                                </o>
+                                <v n="Id">546L</v>
+                              </o>
+                            </l2>
+                            <o n="InputParam" t="ParamList">
+                              <l2 n="Names" cet="String">
+                                <v>EN</v>
+                                <v>i</v>
+                              </l2>
+                              <l2 n="Types" cet="String">
+                                <v>BOOL</v>
+                                <v>INT</v>
+                              </l2>
+                            </o>
+                            <o n="OutputParam" t="ParamList">
+                              <l2 n="Names" cet="String">
+                                <v>ENO</v>
+                                <v>getSlot</v>
+                                <v>error</v>
+                              </l2>
+                              <l2 n="Types" cet="String">
+                                <v>BOOL</v>
+                                <v>STRING</v>
+                                <v>BOOL</v>
+                              </l2>
+                            </o>
+                            <v n="CallType" t="Operator">Method</v>
+                            <v n="EN">true</v>
+                            <v n="ENO">true</v>
+                            <n n="STSnippet" />
+                            <v n="ContainsExtensibleInputs">false</v>
+                            <v n="ProvidesSTSnippet">false</v>
+                            <v n="Id">551L</v>
                           </o>
-                          <o>
+                          <o t="BoxTreeOperand">
                             <o n="Operand" t="Operand">
                               <v n="Operand">""</v>
                               <v n="Type">"SectionEnum"</v>
@@ -810,7 +921,7 @@ runPML(); //run PackML state machine]]></ST>
                             </o>
                             <v n="Id">252L</v>
                           </o>
-                          <o>
+                          <o t="BoxTreeOperand">
                             <o n="Operand" t="Operand">
                               <v n="Operand">"sectionID"</v>
                               <v n="Type">"SectionEnum"</v>
@@ -829,7 +940,7 @@ runPML(); //run PackML state machine]]></ST>
                             </o>
                             <v n="Id">254L</v>
                           </o>
-                          <o>
+                          <o t="BoxTreeOperand">
                             <o n="Operand" t="Operand">
                               <v n="Operand">"robotLeft"</v>
                               <v n="Type">"RobotA21"</v>
@@ -848,7 +959,7 @@ runPML(); //run PackML state machine]]></ST>
                             </o>
                             <v n="Id">256L</v>
                           </o>
-                          <o>
+                          <o t="BoxTreeOperand">
                             <o n="Operand" t="Operand">
                               <v n="Operand">"stagingTableLeft"</v>
                               <v n="Type">"StagingTable"</v>
@@ -867,7 +978,7 @@ runPML(); //run PackML state machine]]></ST>
                             </o>
                             <v n="Id">258L</v>
                           </o>
-                          <o>
+                          <o t="BoxTreeOperand">
                             <o n="Operand" t="Operand">
                               <v n="Operand">"magazineLeft"</v>
                               <v n="Type">"SkidMagazine"</v>
@@ -886,7 +997,7 @@ runPML(); //run PackML state machine]]></ST>
                             </o>
                             <v n="Id">260L</v>
                           </o>
-                          <o>
+                          <o t="BoxTreeOperand">
                             <o n="Operand" t="Operand">
                               <v n="Operand">""</v>
                               <v n="Type">"BOOL"</v>
@@ -905,9 +1016,9 @@ runPML(); //run PackML state machine]]></ST>
                             </o>
                             <v n="Id">262L</v>
                           </o>
-                          <o>
+                          <o t="BoxTreeOperand">
                             <o n="Operand" t="Operand">
-                              <v n="Operand">"aoiTemplateLeft.getSlot(aoiStageLeft.slot)"</v>
+                              <v n="Operand">""</v>
                               <v n="Type">"STRING"</v>
                               <v n="Comment">""</v>
                               <v n="SymbolComment">""</v>
@@ -1460,7 +1571,7 @@ runPML(); //run PackML state machine]]></ST>
                           <v n="LValue">false</v>
                           <v n="Boolean">false</v>
                           <v n="IsInstance">true</v>
-                          <v n="Id">352L</v>
+                          <v n="Id">540L</v>
                         </o>
                         <o n="OutputItems" t="OutputItemList">
                           <l2 n="OutputItems" cet="Operand">
@@ -1667,8 +1778,8 @@ runPML(); //run PackML state machine]]></ST>
                           </o>
                           <o>
                             <o n="Operand" t="Operand">
-                              <v n="Operand">""</v>
-                              <v n="Type">"SkidMagazine"</v>
+                              <v n="Operand">"loadedMaterials"</v>
+                              <v n="Type">"ARRAY [Surface.TOP..Surface.BOTTOM] OF STRING"</v>
                               <v n="Comment">""</v>
                               <v n="SymbolComment">""</v>
                               <v n="Address">""</v>
@@ -1686,7 +1797,7 @@ runPML(); //run PackML state machine]]></ST>
                           </o>
                           <o>
                             <o n="Operand" t="Operand">
-                              <v n="Operand">"loadedMaterials"</v>
+                              <v n="Operand">""</v>
                               <v n="Type">"ARRAY [Surface.TOP..Surface.BOTTOM] OF STRING"</v>
                               <v n="Comment">""</v>
                               <v n="SymbolComment">""</v>
@@ -1768,8 +1879,8 @@ runPML(); //run PackML state machine]]></ST>
                             <v>sectionID</v>
                             <v>robot</v>
                             <v>table</v>
-                            <v>suctions</v>
                             <v>loadedMaterials</v>
+                            <v>suctions</v>
                             <v>surfaceID</v>
                             <v>material</v>
                             <v>numPads</v>
@@ -1780,8 +1891,8 @@ runPML(); //run PackML state machine]]></ST>
                             <v>SectionEnum[REF]</v>
                             <v>RobotA21[REF]</v>
                             <v>StagingTable[REF]</v>
-                            <v>POINTER TO SuctionPad</v>
                             <v>POINTER TO STRING</v>
+                            <v>POINTER TO SuctionPad</v>
                             <v>Surface</v>
                             <v>STRING</v>
                             <v>DINT</v>
@@ -1813,7 +1924,7 @@ runPML(); //run PackML state machine]]></ST>
                         <n n="STSnippet" />
                         <v n="ContainsExtensibleInputs">false</v>
                         <v n="ProvidesSTSnippet">false</v>
-                        <v n="Id">353L</v>
+                        <v n="Id">541L</v>
                       </o>
                     </l2>
                     <l2 n="Connectors" />
@@ -1845,7 +1956,7 @@ runPML(); //run PackML state machine]]></ST>
                           <v n="LValue">false</v>
                           <v n="Boolean">false</v>
                           <v n="IsInstance">true</v>
-                          <v n="Id">348L</v>
+                          <v n="Id">538L</v>
                         </o>
                         <o n="OutputItems" t="OutputItemList">
                           <l2 n="OutputItems" cet="Operand">
@@ -2052,8 +2163,8 @@ runPML(); //run PackML state machine]]></ST>
                           </o>
                           <o>
                             <o n="Operand" t="Operand">
-                              <v n="Operand">""</v>
-                              <v n="Type">"SkidMagazine"</v>
+                              <v n="Operand">"loadedMaterials"</v>
+                              <v n="Type">"ARRAY [Surface.TOP..Surface.BOTTOM] OF STRING"</v>
                               <v n="Comment">""</v>
                               <v n="SymbolComment">""</v>
                               <v n="Address">""</v>
@@ -2071,7 +2182,7 @@ runPML(); //run PackML state machine]]></ST>
                           </o>
                           <o>
                             <o n="Operand" t="Operand">
-                              <v n="Operand">"loadedMaterials"</v>
+                              <v n="Operand">""</v>
                               <v n="Type">"ARRAY [Surface.TOP..Surface.BOTTOM] OF STRING"</v>
                               <v n="Comment">""</v>
                               <v n="SymbolComment">""</v>
@@ -2153,8 +2264,8 @@ runPML(); //run PackML state machine]]></ST>
                             <v>sectionID</v>
                             <v>robot</v>
                             <v>table</v>
-                            <v>suctions</v>
                             <v>loadedMaterials</v>
+                            <v>suctions</v>
                             <v>surfaceID</v>
                             <v>material</v>
                             <v>numPads</v>
@@ -2165,8 +2276,8 @@ runPML(); //run PackML state machine]]></ST>
                             <v>SectionEnum[REF]</v>
                             <v>RobotA21[REF]</v>
                             <v>StagingTable[REF]</v>
-                            <v>POINTER TO SuctionPad</v>
                             <v>POINTER TO STRING</v>
+                            <v>POINTER TO SuctionPad</v>
                             <v>Surface</v>
                             <v>STRING</v>
                             <v>DINT</v>
@@ -2198,7 +2309,7 @@ runPML(); //run PackML state machine]]></ST>
                         <n n="STSnippet" />
                         <v n="ContainsExtensibleInputs">false</v>
                         <v n="ProvidesSTSnippet">false</v>
-                        <v n="Id">349L</v>
+                        <v n="Id">539L</v>
                       </o>
                     </l2>
                     <l2 n="Connectors" />
@@ -3008,9 +3119,13 @@ runPML(); //run PackML state machine]]></ST>
         </NWL>
       </Implementation>
     </Action>
-    <Action Name="callLocalModules" Id="{05c7033b-868c-4f69-bfd0-0d7b581f79b9}" FolderPath="Actions\">
+    <Action Name="initModules" Id="{05c7033b-868c-4f69-bfd0-0d7b581f79b9}" FolderPath="Actions\">
       <Implementation>
-        <ST><![CDATA[]]></ST>
+        <ST><![CDATA[{warning disable C0371}
+
+stackLight.pmlState := pmlState;
+//stackLight.lowMaterial := FALSE;
+//stackLight.materialExhausted := FALSE;]]></ST>
       </Implementation>
     </Action>
     <Method Name="load" Id="{41d6aef3-60c1-439a-bdd2-e372cfed0011}" FolderPath="BiCall\">
@@ -3634,7 +3749,7 @@ the following states currently use the same logic (albeit in different methods),
 	ps_Stopping() and ps_Aborting()
 	ps_Resetting() and ps_Clearing()
 	
-STOP - controlled stop **with intent to shutdown or vacate for extended time** induced by operator/HMI - otherwise use HOLD
+STOP - controlled stop induced by operator/HMI **with intent to shut down or change mode** - otherwise use HOLD
 ABORT - emergency stop due to machine errors
 
 
@@ -3647,6 +3762,7 @@ EXECUTE - major control logic
 	can be commanded to STOP, ABORT, HOLD, or SUSPEND at any point
 COMPLETING - process complete, move product out of system and finish transition to COMPLETED
 *)
+
 (*
 IF //abort at machine error
 	insertionLeft.error OR 
@@ -3932,11 +4048,14 @@ validateSuctionQuality :=
       </Implementation>
     </Method>
     <LineIds Name="WoodBunkEx">
-      <LineId Id="10501" Count="3" />
+      <LineId Id="10588" Count="3" />
       <LineId Id="9835" Count="0" />
     </LineIds>
-    <LineIds Name="WoodBunkEx.callLocalModules">
-      <LineId Id="1" Count="0" />
+    <LineIds Name="WoodBunkEx.initModules">
+      <LineId Id="19" Count="0" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="22" Count="1" />
     </LineIds>
     <LineIds Name="WoodBunkEx.load">
       <LineId Id="1193" Count="0" />
@@ -4134,7 +4253,9 @@ validateSuctionQuality :=
       <LineId Id="5" Count="0" />
     </LineIds>
     <LineIds Name="WoodBunkEx.runPML">
-      <LineId Id="533" Count="40" />
+      <LineId Id="533" Count="23" />
+      <LineId Id="681" Count="0" />
+      <LineId Id="557" Count="16" />
       <LineId Id="679" Count="0" />
       <LineId Id="678" Count="0" />
       <LineId Id="680" Count="0" />
