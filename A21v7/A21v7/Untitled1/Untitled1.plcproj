@@ -45,6 +45,9 @@
     <Compile Include="DUTs\EOAT.TcDUT">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DUTs\PMLStackLight.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="DUTs\Insertion\Drives\AirPiston.TcPOU">
       <SubType>Code</SubType>
     </Compile>
@@ -117,7 +120,7 @@
       <SubType>Code</SubType>
       <LinkAlways>true</LinkAlways>
     </Compile>
-    <Compile Include="GVLs\Hardware.TcGVL">
+    <Compile Include="GVLs\Hardware_A21.TcGVL">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="GVLs\Misc.TcGVL">
@@ -133,7 +136,7 @@
     <Compile Include="POUs\A21b - Wood Bunk\AOIs\AOI_LoadWoodBunk.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\A21b - Wood Bunk\AOIs\AOI_WoodBunkAlarms.TcPOU">
+    <Compile Include="POUs\A21Alarms.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\FB_System.TcPOU">

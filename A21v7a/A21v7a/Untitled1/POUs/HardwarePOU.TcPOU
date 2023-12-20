@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="HardwarePOU" Id="{d81e2909-6c4c-4e8f-aa6c-d2dd8ec57ef2}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM HardwarePOU
+VAR_OUTPUT
+	robot1, robot2 : RobotA21;
+	toolStorageA21Left, toolStorageA21Right : A21ToolStorage;
+	
+	skidA21Left, skidA21Right : SkidMagazine;
+	
+	magazineA21Left, magazineA21Right : SkidMagazine;
+	stagingTableLeft, stagingTableRight : StagingTable;
+	
+	strapperA21 : StrapMachine;
+	
+	horizontalDriveA21Left, horizontalDriveA21Right : AirPiston;
+	verticalDriveA21Left, verticalDriveA21Right : ClearLinkMC;
+	pistonA21Bottom : SimplePiston;
+	
+	suctionA21Top : ARRAY[1..3] OF SuctionPad;
+	suctionA21Left : ARRAY[1..4] OF SuctionPad;
+	suctionA21Right : ARRAY[1..4] OF SuctionPad; 
+	suctionA21Bottom : ARRAY[1..2] OF SuctionPad;
+END_VAR
+VAR
+	skidSlotsA21Left, skidSlotsA21Right : ARRAY[1..2] OF STRING; //chipboard skid
+	skidOccupancyA21Left, skidOccupancyA21Right : ARRAY[1..2] OF BOOL;
+	skidHmiA21Left, skidHmiA21Right AT %M* : ARRAY[1..2] OF MaterialSlot;
+	
+	magazineSlotsA21Left, magazineSlotsA21Right : ARRAY[1..15] OF STRING; //wood bunk magazine
+	magazineOccupancyA21Left, magazineOccupancyA21Right : ARRAY[1..15] OF BOOL;
+	magazineHmiA21Left, magazineHmiA21Right AT %M* : ARRAY[1..15] OF MaterialSlot;
+	
+	tableSlotsA21Left, tableSlotsA21Right : ARRAY[1..10] OF STRING; //staging table
+	tableOccupancyA21Left, tableOccupancyA21Right AT %I* : ARRAY[1..10] OF BOOL;
+	tableHmiA21Left, tableHmiA21Right : ARRAY[1..10] OF MaterialSlot;
+END_VAR
+VAR
+	tempLeft, tempRight : INT;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[robot1();	
+robot2();
+
+skidA21Left(slots := skidSlotsA21Left, occupied := skidOccupancyA21Left, hmiTable := skidHmiA21Left);
+skidA21Right(slots := skidSlotsA21Right, occupied := skidOccupancyA21Right, hmiTable := skidHmiA21Right);
+
+stagingTableLeft(slots := tableSlotsA21Left, occupied := tableOccupancyA21Left, hmiTable := tableHmiA21Left);
+stagingTableRight(slots := tableSlotsA21Right, occupied := tableOccupancyA21Right, hmiTable := tableHmiA21Right);
+
+magazineA21Left(slots := magazineSlotsA21Left, occupied := magazineOccupancyA21Left, hmiTable := magazineHmiA21Left);
+magazineA21Right(slots := magazineSlotsA21Right, occupied := magazineOccupancyA21Right, hmiTable := magazineHmiA21Right);
+
+strapperA21();
+
+verticalDriveA21Left();
+verticalDriveA21Right();
+horizontalDriveA21Left();
+horizontalDriveA21Right();
+pistonA21Bottom();
+
+(*
+tempLeft := TO_INT(BoolPtrArrayToInteger(arr := stagingTableLeft.occupied, lowerBound := 1, upperBound := 10));
+tempLeft.15 := NOT strapperA21.bEnable AND NOT strapperA21.execute;
+robot1.setGroup(group := 8, value := tempLeft);
+
+tempRight := TO_INT(BoolPtrArrayToInteger(arr := stagingTableRight.occupied, lowerBound := 1, upperBound := 10));
+tempRight.15 := NOT strapperA21.bEnable AND NOT strapperA21.execute;
+robot2.setGroup(group := 8, value := tempRight);
+*)]]></ST>
+    </Implementation>
+    <Method Name="setup" Id="{58f96a5d-7aa6-4779-9669-8f166d2e2896}">
+      <Declaration><![CDATA[METHOD setup : BOOL
+VAR
+	iWoodBunkSlot : WoodBunk;
+	iChipboardSlot : Chipboard;
+	
+	slotsArr : ARRAY[1..GVL.maxQueue] OF STRING;
+	
+	i : INT;
+	j : INT;
+	
+	temp : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[MEMSET(ADR(slotsArr), 0, SIZEOF(slotsArr));
+FOR iWoodBunkSlot:=1 TO WoodBunk.size-1 BY 1 DO //init wood bunk magazine slots
+	slotsArr[iWoodBunkSlot] := TO_STRING(iWoodBunkSlot);
+END_FOR
+magazineA21Left.setSlots(slotsArr);
+magazineA21Right.setSlots(slotsArr);
+
+
+MEMSET(ADR(slotsArr), 0, SIZEOF(slotsArr));
+FOR iChipboardSlot:=1 TO Chipboard.size-1 BY 1 DO //init chipboard skid slots
+	slotsArr[iChipboardSlot] := TO_STRING(iChipboardSlot);
+END_FOR
+skidA21Left.setSlots(slotsArr);
+skidA21Right.setSlots(slotsArr);
+
+FOR i:=1 TO GVL.maxQueue BY 1 DO //get wood bunk magazine + chipboard skid availability from robot
+	{warning disable C0195}
+	skidA21Left.setOccupancy( i := i, occupancy := IntegerBitAccess(robot1.inputs[4], i-1) );
+	skidA21Right.setOccupancy( i := i, occupancy := IntegerBitAccess(robot2.inputs[4], i-1) );
+
+	magazineA21Left.setOccupancy( i := i, occupancy := IntegerBitAccess(robot1.inputs[3], i-1) );
+	magazineA21Right.setOccupancy( i := i, occupancy := IntegerBitAccess(robot2.inputs[3], i-1) );
+END_FOR
+
+//enable all drives
+verticalDriveA21Left.bEnable := 
+verticalDriveA21Right.bEnable := 
+horizontalDriveA21Left.bEnable := 
+horizontalDriveA21Right.bEnable := 
+pistonA21Bottom.bEnable := 
+TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="HardwarePOU">
+      <LineId Id="27" Count="18" />
+      <LineId Id="114" Count="3" />
+      <LineId Id="50" Count="3" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="118" Count="0" />
+    </LineIds>
+    <LineIds Name="HardwarePOU.setup">
+      <LineId Id="16" Count="29" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

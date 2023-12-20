@@ -3,6 +3,13 @@
   <Itf Name="I_Drive" Id="{e1eb8c48-7b7b-492d-8b70-2ec679581052}">
     <Declaration><![CDATA[INTERFACE I_Drive
 ]]></Declaration>
+    <Property Name="Active" Id="{b9f317c0-8d70-497e-b1c4-c9ce1c341d8c}">
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY ABSTRACT Active : BOOL]]></Declaration>
+      <Get Name="Get" Id="{542f606a-6965-47b8-a90c-0987a4a5aa56}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
     <Property Name="AtHome" Id="{d3367613-6051-45a7-bb4e-d3da08972b02}">
       <Declaration><![CDATA[{attribute 'monitoring':='call'}
 PROPERTY ABSTRACT AtHome : BOOL]]></Declaration>
@@ -10,24 +17,17 @@ PROPERTY ABSTRACT AtHome : BOOL]]></Declaration>
         <Declaration><![CDATA[]]></Declaration>
       </Get>
     </Property>
-    <Property Name="AtInnerLimit" Id="{15cf0b23-5cf7-4a08-95c8-4ec0bf21cd69}">
+    <Property Name="AtInnerLimit" Id="{81cc56f6-a267-43a3-9cc5-05430d7808a0}">
       <Declaration><![CDATA[{attribute 'monitoring':='call'}
 PROPERTY ABSTRACT AtInnerLimit : BOOL]]></Declaration>
-      <Get Name="Get" Id="{6d73dac2-7fd2-4055-8f5a-ee268efd0941}">
-        <Declaration><![CDATA[]]></Declaration>
-      </Get>
-    </Property>
-    <Property Name="AtOuterLimit" Id="{81cc56f6-a267-43a3-9cc5-05430d7808a0}">
-      <Declaration><![CDATA[{attribute 'monitoring':='call'}
-PROPERTY ABSTRACT AtOuterLimit : BOOL]]></Declaration>
       <Get Name="Get" Id="{81944ceb-b046-4f70-b15f-6c1788f26dfd}">
         <Declaration><![CDATA[]]></Declaration>
       </Get>
     </Property>
-    <Property Name="Busy" Id="{b9f317c0-8d70-497e-b1c4-c9ce1c341d8c}">
+    <Property Name="AtOuterLimit" Id="{15cf0b23-5cf7-4a08-95c8-4ec0bf21cd69}">
       <Declaration><![CDATA[{attribute 'monitoring':='call'}
-PROPERTY ABSTRACT Busy : BOOL]]></Declaration>
-      <Get Name="Get" Id="{542f606a-6965-47b8-a90c-0987a4a5aa56}">
+PROPERTY ABSTRACT AtOuterLimit : BOOL]]></Declaration>
+      <Get Name="Get" Id="{6d73dac2-7fd2-4055-8f5a-ee268efd0941}">
         <Declaration><![CDATA[]]></Declaration>
       </Get>
     </Property>
@@ -66,6 +66,12 @@ END_VAR
     </Method>
     <Method Name="stop" Id="{29a7ef21-dfdd-4749-92df-d8e96ac6dd6b}">
       <Declaration><![CDATA[METHOD ABSTRACT stop : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="toHome" Id="{d43fb5d5-cefa-4cbf-b294-d8f59083e287}">
+      <Declaration><![CDATA[METHOD toHome : BOOL
 VAR_INPUT
 END_VAR
 ]]></Declaration>
