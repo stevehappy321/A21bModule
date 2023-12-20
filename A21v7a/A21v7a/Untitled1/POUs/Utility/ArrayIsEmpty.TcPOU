@@ -4,10 +4,10 @@
     <Declaration><![CDATA[FUNCTION ArrayIsEmpty : BOOL
 VAR_INPUT
 	arr : POINTER TO BYTE;
-	arrSize : ULINT;
+	arrSize : LINT;
 END_VAR
 VAR
-	i : ULINT;
+	i : LINT;
 END_VAR
 ]]></Declaration>
     <Implementation>

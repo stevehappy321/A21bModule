@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="CallHardware" Id="{d53bfde7-ef31-4033-a59e-17a8585cdf25}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION CallHardware : BOOL //only purpose of this function is to call modules from Hardware
+VAR_STAT
+	tempLeft, tempRight : INT;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[robot1();	
+robot2();
+
+skidA21Left(slots := skidHmiA21Left);
+skidA21Right(slots := skidHmiA21Right);
+
+stagingTableLeft(slots := tableHmiA21Left);
+stagingTableRight(slots := tableHmiA21Right);
+
+magazineA21Left(slots := magazineHmiA21Left);
+magazineA21Right(slots := magazineHmiA21Right);
+
+strapperA21();
+
+verticalDriveA21Left();
+horizontalDriveA21Left();
+
+verticalDriveA21Right();
+horizontalDriveA21Right();
+
+pistonA21Bottom();
+
+insertionA21Left(
+	enable:= TRUE, 
+	slider:= verticalDriveA21Left, 
+	screw:= horizontalDriveA21Left, 
+	active=> , 
+	error=> , 
+	home=> , 
+	homingComplete=> , 
+	sliderPos=> );
+	
+insertionA21Right(
+	enable:= TRUE, 
+	slider:= verticalDriveA21Right, 
+	screw:= horizontalDriveA21Right, 
+	active=> , 
+	error=> , 
+	home=> , 
+	homingComplete=> , 
+	sliderPos=> );]]></ST>
+    </Implementation>
+    <LineIds Name="CallHardware">
+      <LineId Id="216" Count="14" />
+      <LineId Id="269" Count="1" />
+      <LineId Id="231" Count="0" />
+      <LineId Id="268" Count="0" />
+      <LineId Id="233" Count="2" />
+      <LineId Id="248" Count="3" />
+      <LineId Id="253" Count="3" />
+      <LineId Id="77" Count="0" />
+      <LineId Id="257" Count="0" />
+      <LineId Id="259" Count="3" />
+      <LineId Id="264" Count="3" />
+      <LineId Id="258" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -142,25 +142,25 @@
     <Compile Include="POUs\FB_System.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\Hardware Calls\InsertionQuality.TcPOU">
+    <Compile Include="POUs\Hardware Functions\InsertionQuality.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\Hardware Calls\SetSuctionsPtrArr.TcPOU">
+    <Compile Include="POUs\Hardware Functions\SetSuctionsPtrArr.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\Hardware Calls\SuctionQuality.TcPOU">
+    <Compile Include="POUs\Hardware Functions\SuctionQuality.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\MAIN.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\Hardware Calls\CallHardware.TcPOU">
+    <Compile Include="POUs\Hardware Functions\CallHardware.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\Hardware Calls\SetSuctions.TcPOU">
+    <Compile Include="POUs\Hardware Functions\SetSuctions.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\Hardware Calls\SetupHardware.TcPOU">
+    <Compile Include="POUs\Hardware Functions\SetupHardware.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\A21a - Chipboard\ChipboardEx.TcPOU">
@@ -176,16 +176,13 @@
     <Compile Include="POUs\A21b - Wood Bunk\WoodBunkEx.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\Utility\AddToArray.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="POUs\Utility\AddToStringArray.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\Utility\ArrayIsEmpty.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\Utility\BoolVLArrayToInteger.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\Utility\BoolPtrArrayToInteger.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\Utility\CleanStringsArray.TcPOU">
@@ -214,7 +211,7 @@
     <Folder Include="DUTs\Material Holders" />
     <Folder Include="GVLs" />
     <Folder Include="POUs\A21a - Chipboard\AOIs" />
-    <Folder Include="POUs\Hardware Calls" />
+    <Folder Include="POUs\Hardware Functions" />
     <Folder Include="POUs\A21a - Chipboard" />
     <Folder Include="POUs\A21b - Wood Bunk" />
     <Folder Include="POUs\A21b - Wood Bunk\AOIs" />
