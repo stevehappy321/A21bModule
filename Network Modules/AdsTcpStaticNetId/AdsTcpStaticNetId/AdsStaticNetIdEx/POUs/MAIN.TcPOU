@@ -1,0 +1,150 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="MAIN" Id="{2cbdba0c-ad31-4c75-8f6b-289818655c29}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR_OUTPUT
+	currentTime : TIMESTRUCT;
+	year, month, day : WORD;
+	hour, minute, second : WORD;
+END_VAR
+VAR
+	arr : ARRAY[1..10] OF INT;
+	toWrite : INT := 69;
+	
+	sMessage : STRING := 'from AREA_4';
+	newRecipient : STRING;
+	newData : AdsData;
+	retrievedData : AdsData;
+	
+	sendOnce : BOOL;
+	sendFastNum : BOOL;
+	
+	i : INT := 0;
+	
+	fbLocalSystemTime : FB_LocalSystemTime;
+	adsWrite : FB_WriteAdsSymByName;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[readTime();	
+testComms();
+
+adsMajorNetwork(
+	setMode:= 1,
+	bBusy=> , 
+	err=> , 
+	errid=> , 
+	areaSockets=> , 
+	subarea4Sockets=> );
+	
+adsLocalNetwork(
+	setMode:= 1,
+	bBusy=> , 
+	err=> , 
+	errid=> , 
+	areaSockets=> , 
+	subarea4Sockets=> );
+	
+IF sendOnce OR sendFastNum THEN
+	MEMSET(ADR(newData), 0, SIZEOF(newData));
+	
+	sMessage := TO_STRING(i);
+	
+	newRecipient := TO_STRING(AreaNum.AREA_4);
+	newData.description := EventsEnum.TEST_COMMS;
+	newData.timestamp := currentTime;
+	STRNCPY(ADR(newData.binaryData), ADR(sMessage), SIZEOF(sMessage));
+	newData.binaryData[100000] := 69;
+	
+	IF
+		adsMajorNetwork.sendMessage(recipient := newRecipient, data := newData)
+	THEN
+		i := i + 1;
+		sendOnce := FALSE;
+	END_IF	
+END_IF
+
+retrievedData := AREA_4.receivingData;]]></ST>
+    </Implementation>
+    <Method Name="readTime" Id="{8417ab3c-dc63-40a8-9592-4c004032f0dd}">
+      <Declaration><![CDATA[METHOD readTime : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[fbLocalSystemTime(
+	sNetID:= , 
+	bEnable:= TRUE, 
+	dwCycle:= , 
+	dwOpt:= , 
+	tTimeout:= , 
+	bValid=> , 
+	systemTime=> currentTime, 
+	tzID=> );
+year := currentTime.wYear;
+month := currentTime.wMonth;
+day := currentTime.wDay;
+hour := currentTime.wHour;
+minute := currentTime.wMinute;
+second := currentTime.wSecond;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="testComms" Id="{fa86feba-7de5-43c9-a01d-caaa091888c7}">
+      <Declaration><![CDATA[METHOD testComms : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[adsWrite(
+	bWrite:= NOT adsWrite.bWrite, 
+	sNetId:= '', 
+	nPort:= 851, 
+	sVarName:= 'MAIN.arr[4]', 
+	nSrcAddr:= ADR(toWrite), 
+	nLen:= SIZEOF(toWrite), 
+	tTimeout:= , 
+	eComMode:= , 
+	bBusy=> , 
+	bError=> , 
+	nErrorId=> );]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="MAIN">
+      <LineId Id="339" Count="1" />
+      <LineId Id="138" Count="0" />
+      <LineId Id="325" Count="0" />
+      <LineId Id="344" Count="0" />
+      <LineId Id="326" Count="3" />
+      <LineId Id="178" Count="0" />
+      <LineId Id="330" Count="0" />
+      <LineId Id="332" Count="0" />
+      <LineId Id="343" Count="0" />
+      <LineId Id="333" Count="3" />
+      <LineId Id="331" Count="0" />
+      <LineId Id="165" Count="0" />
+      <LineId Id="148" Count="0" />
+      <LineId Id="225" Count="1" />
+      <LineId Id="149" Count="0" />
+      <LineId Id="174" Count="0" />
+      <LineId Id="169" Count="2" />
+      <LineId Id="173" Count="0" />
+      <LineId Id="320" Count="0" />
+      <LineId Id="168" Count="0" />
+      <LineId Id="155" Count="0" />
+      <LineId Id="314" Count="1" />
+      <LineId Id="311" Count="0" />
+      <LineId Id="313" Count="0" />
+      <LineId Id="312" Count="0" />
+      <LineId Id="159" Count="0" />
+      <LineId Id="324" Count="0" />
+      <LineId Id="208" Count="0" />
+    </LineIds>
+    <LineIds Name="MAIN.readTime">
+      <LineId Id="6" Count="13" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="MAIN.testComms">
+      <LineId Id="6" Count="10" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

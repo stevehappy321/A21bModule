@@ -1,0 +1,171 @@
+<?xml version="1.0"?>
+<TcSmProject xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4024.32">
+	<Project ProjectGUID="{C8C7D0C9-627E-47AA-A3B7-147F0BBFF9C3}" TargetNetId="5.131.216.41.1.1" Target64Bit="true" ShowHideConfigurations="#x106">
+		<System>
+			<Tasks>
+				<Task Id="3" Priority="20" CycleTime="100000" AmsPort="350" AdtTasks="true">
+					<Name>PlcTask</Name>
+				</Task>
+			</Tasks>
+		</System>
+		<Plc>
+			<Project GUID="{4DE04F51-18BF-427A-B658-9516442E17B7}" Name="Untitled1" PrjFilePath="Untitled1\Untitled1.plcproj" TmcFilePath="Untitled1\Untitled1.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{E8955FE2-67C2-27DB-F854-7DE80AAA3B3F}">
+					<Name>Untitled1 Instance</Name>
+					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
+					<Vars VarGrpType="2" AreaNo="1">
+						<Name>PlcTask Outputs</Name>
+						<Var>
+							<Name>MAIN.test</Name>
+							<Type>BYTE</Type>
+						</Var>
+					</Vars>
+					<Contexts>
+						<Context>
+							<Id NeedCalleeCall="true">0</Id>
+							<Name>PlcTask</Name>
+							<ManualConfig>
+								<OTCID>#x02010030</OTCID>
+							</ManualConfig>
+							<Priority>20</Priority>
+							<CycleTime>10000000</CycleTime>
+						</Context>
+					</Contexts>
+					<TaskPouOids>
+						<TaskPouOid Prio="20" OTCID="#x08502001"/>
+					</TaskPouOids>
+				</Instance>
+			</Project>
+		</Plc>
+		<Io>
+			<Device Id="1" DevType="133" AmsPort="28673" AmsNetId="5.131.216.41.2.1" RemoteName="Device 1 (TC3 EIP Scanner)">
+				<Name>Device 1 (TC3 EIP Scanner)</Name>
+				<AddressInfo>
+					<Pnp>
+						<DeviceDesc>X001 (TwinCAT-Intel PCI Ethernet Adapter (Gigabit) </DeviceDesc>
+						<DeviceName>\DEVICE\{445EE7A4-752B-4AE6-BC35-13096D731B5A}</DeviceName>
+						<DeviceData>00010583d829</DeviceData>
+					</Pnp>
+				</AddressInfo>
+				<Image Id="1" AddrType="1" ImageType="3">
+					<Name>Image</Name>
+				</Image>
+				<Box Id="1" BoxType="9134">
+					<Name>ClearLink</Name>
+					<Comment><![CDATA[<INFO>
+169.254.0.152, ClearLink (ProdCode: 1, Rev: 2.93, Mac: 24:15:10:b0:30:37)
+</INFO>
+<EDS>
+C:\TwinCAT\3.1\Config\Io\EtherNetIP\clearlink_2.92.eds
+</EDS>
+]]></Comment>
+					<ImageId>263</ImageId>
+					<Vars VarGrpType="1">
+						<Name>Inputs</Name>
+						<Var>
+							<Name>State</Name>
+							<Comment><![CDATA[0x8000 = Remote Node has no connections
+0x4000 = Remote Node is not reachable
+0x2000 = TCP Client: initialization failed
+0x1000 = UDP Client: initialization failed
+0x0X00 = reserved
+0x0001 = 1st Connection disconnected
+0x0002 = 2nd Connection disconnected
+0x0004 = 3rd Connection disconnected
+   ...
+0x0080 = 8th Connection disconnected
+]]></Comment>
+							<Type>UINT</Type>
+						</Var>
+					</Vars>
+					<Vars VarGrpType="2">
+						<Name>Outputs</Name>
+						<Var>
+							<Name>Ctrl</Name>
+							<Type>UINT</Type>
+						</Var>
+					</Vars>
+					<EthernetIp NewSlavePara="01000000436c6561724c696e6b00000000000000000000000000000000000000000000002b000000a801000001000000025d00000c879a01000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000009800fea900000000000000000000800001001e000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" EdsFilePath="clearlink_2.92.eds"/>
+				</Box>
+				<Ethernet DeviceDesc="X001 (TwinCAT-Intel PCI Ethernet Adapter (Gigabit) #2)"/>
+				<EtherNetIPMasterDev m_EthIpMasterDevPar="010000004465766963652031202854433320454950205363616e6e6572290000000000000c0000006c0000008918000003010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000002010583d829150cfea90000ffff000000000000800001001e000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"/>
+			</Device>
+			<Device Id="2" DevType="112" AmsPort="28674" AmsNetId="5.131.216.41.3.1" RemoteName="Device 2 (EtherCAT Automation Protocol)">
+				<Name>Device 2 (EtherCAT Automation Protocol)</Name>
+				<AddressInfo>
+					<TcCom>
+						<ObjectId>#x03010011</ObjectId>
+					</TcCom>
+				</AddressInfo>
+				<Image Id="2" AddrType="1" ImageType="3">
+					<Name>Image</Name>
+				</Image>
+				<Box Id="2" BoxType="9051">
+					<Name>Box 2 (Publisher)</Name>
+					<ImageId>99</ImageId>
+					<Vars VarGrpType="1">
+						<Name>Inputs</Name>
+						<Var BoxStateVariable="true">
+							<Name>FrameState</Name>
+							<Comment><![CDATA[0x0001 = Not sent (frame skipped)
+0x0002 = Error (frame oversized)
+0x0004 = Subscriber missing (Unicast only)
+]]></Comment>
+							<Type>UINT</Type>
+						</Var>
+					</Vars>
+					<Vars VarGrpType="2">
+						<Name>Outputs</Name>
+						<Var BoxStateVariable="true">
+							<Name>FrameCtrl</Name>
+							<Comment><![CDATA[0x0001 = Disable sending
+0x0002 = Remove destination MAC from ARP cache
+]]></Comment>
+							<Type>UINT</Type>
+						</Var>
+					</Vars>
+					<Eap InOut="1" Mac="010105040000" ArpRetryInterval="1000">
+						<EapVar Id="1" VarInOut="1" NvId="1" NvLength="1">
+							<Name>test</Name>
+							<ImageId>97</ImageId>
+							<Vars VarGrpType="1">
+								<Name>Inputs</Name>
+								<Var BoxStateVariable="true">
+									<Name>VarState</Name>
+									<Comment><![CDATA[0x0001 = Not sent (variable skipped)
+]]></Comment>
+									<Type>UINT</Type>
+									<BitOffs>16</BitOffs>
+								</Var>
+							</Vars>
+							<Vars VarGrpType="2">
+								<Name>Outputs</Name>
+								<Var BoxStateVariable="true">
+									<Name>VarCtrl</Name>
+									<Comment><![CDATA[0x0001 = Disable publishing
+]]></Comment>
+									<Type>UINT</Type>
+									<BitOffs>16</BitOffs>
+								</Var>
+								<Var>
+									<Name>VarData</Name>
+									<Type>BYTE</Type>
+									<BitOffs>32</BitOffs>
+								</Var>
+							</Vars>
+						</EapVar>
+					</Eap>
+				</Box>
+				<Ethernet/>
+				<Eap EapDeviceGuid="{46818A85-6FC2-420E-B7FC-78114DB216BC}"/>
+			</Device>
+		</Io>
+	</Project>
+	<Mappings>
+		<OwnerA Name="TIPC^Untitled1^Untitled1 Instance">
+			<OwnerB Name="TIID^Device 2 (EtherCAT Automation Protocol)^Box 2 (Publisher)">
+				<Link VarA="PlcTask Outputs^MAIN.test" VarB="test^Outputs^VarData"/>
+			</OwnerB>
+		</OwnerA>
+	</Mappings>
+</TcSmProject>

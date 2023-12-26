@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Refactors>
+  <Renames>
+    <RenamedType>
+      <Type guid="fdbfe87f-1184-47dd-b08b-0750e1c8692f">ADSTCPUNIT</Type>
+      <From>AdsTcpUnit</From>
+      <To>AdsTcp_WinStd</To>
+    </RenamedType>
+  </Renames>
+</Refactors>

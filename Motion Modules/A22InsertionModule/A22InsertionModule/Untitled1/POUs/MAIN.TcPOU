@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="MAIN" Id="{baf0439a-1535-4c78-b2c4-6521dfd3030e}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	test : TeknicEIP;
+	
+	ready : BOOL;
+	
+	contUp : BOOL;
+	contDown : BOOL;
+	target : REAL := -1;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[test.bEnable := TRUE;
+
+IF NOT ready THEN
+	ready := test.homingSequence();
+	RETURN;
+END_IF
+
+test.stop();
+IF contUp THEN
+	test.moveContinuous(direction := MC_Positive_Direction);
+	contDown := FALSE;
+END_IF
+
+IF contDown THEN
+	test.moveContinuous(direction := MC_Negative_Direction);
+	contUp := FALSE;
+END_IF
+
+
+IF target >= 0 THEN
+	test.moveAbsolute(targetPos := target);
+	//target := 0;
+END_IF
+
+
+IF test.innerLimit THEN
+	contDown := FALSE;
+END_IF
+IF test.home THEN
+	contUp := FALSE;
+END_IF
+
+
+test();]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="7" Count="5" />
+      <LineId Id="54" Count="0" />
+      <LineId Id="13" Count="2" />
+      <LineId Id="50" Count="0" />
+      <LineId Id="52" Count="1" />
+      <LineId Id="18" Count="1" />
+      <LineId Id="51" Count="0" />
+      <LineId Id="46" Count="0" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="21" Count="14" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

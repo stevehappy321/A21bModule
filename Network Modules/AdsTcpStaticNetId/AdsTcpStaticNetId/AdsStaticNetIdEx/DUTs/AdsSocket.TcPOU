@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="AdsSocket" Id="{4b08c35a-5e88-4e7b-a45b-894d0e3f10ba}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK AdsSocket
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+	//descriptive string for the name of the running program, may or may not be used
+	PrgName : STRING;
+	
+	(*
+	AmsNetId should be in the following format for ALL Beckhoff PLCs in the network:
+		<area number> . <subarea number (0 for master PLC)> .131.216.1.1
+		panel PCs to be assigned 113.174 instead of 131.216
+			2.0.131.216.1.1 - Area 2, master controller
+			4.3.113.174.1.1 - Area 4, manual station 3 panel PC
+	*)
+	AmsNetId : T_AmsNetId;
+	
+	//for now, use ADS port 851 for communication
+	AmsPort : T_AmsPort;
+END_VAR
+VAR_OUTPUT
+	receivingData : AdsData;
+	sendingData : AdsData;
+	
+	readBusy : BOOL;
+	readError : BOOL;
+	readErrorId : UDINT;
+	
+	writeBusy : BOOL;
+	writeError : BOOL;
+	writeErrorId : UDINT;
+END_VAR
+VAR	
+	adsWriteSymbol : FB_WriteAdsSymByName;
+	adsReadSymbol : FB_ReadAdsSymByName;
+END_VAR
+VAR
+	targetSocket : STRING;
+	clearing : BOOL;
+END_VAR
+(*
+TCP-style ADS connection that only writes to a buffer in the recipient's AdsTcpUnit module
+*)]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//write into the recipient's allocated socket for this system
+targetSocket := CONCAT('Sockets.', LocalSocket.PrgName);
+
+//only toggles if data has contents, otherwise remains false
+adsWriteSymbol.bWrite := NOT BufferIsEmpty(sendingData.binaryData) AND NOT adsWriteSymbol.bWrite;
+
+blocks();
+
+IF NOT adsWriteSymbol.bBusy THEN
+	MEMSET(ADR(sendingData), 0, SIZEOF(sendingData));
+END_IF]]></ST>
+    </Implementation>
+    <Method Name="blocks" Id="{aafa1f89-5424-428c-92a9-eff1fd826f0b}">
+      <Declaration><![CDATA[METHOD PRIVATE blocks : BOOL
+VAR_INPUT
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[adsReadSymbol(
+	bRead:= , 
+	sNetId:= AmsNetId, 
+	nPort:= AmsPort, 
+	sVarName:= , 
+	nDestAddr:= , 
+	nLen:= , 
+	tTimeout:= , 
+	eComMode:= , 
+	bClearOnError:= , 
+	bBusy=> readBusy, 
+	bError=> readError, 
+	nErrorId=> readErrorId);
+	
+adsWriteSymbol(
+	bWrite:= , 
+	sNetId:= AmsNetId, 
+	nPort:= AmsPort, 
+	sVarName:= CONCAT(targetSocket, '.receivingData'), 
+	nSrcAddr:= ADR(sendingData), 
+	nLen:= SIZEOF(sendingData), 
+	tTimeout:= , 
+	eComMode:= eAdsComModeSecureCom, 
+	bBusy=> writeBusy, 
+	bError=> writeError, 
+	nErrorId=> writeErrorId);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="send" Id="{17359b84-8e84-4f55-9ea9-7b9b4062b4aa}">
+      <Declaration><![CDATA[METHOD send : BOOL
+VAR_INPUT
+	data : REFERENCE TO AdsData;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[sendingData := data;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="AdsSocket">
+      <LineId Id="377" Count="0" />
+      <LineId Id="427" Count="0" />
+      <LineId Id="384" Count="0" />
+      <LineId Id="315" Count="0" />
+      <LineId Id="326" Count="0" />
+      <LineId Id="234" Count="0" />
+      <LineId Id="305" Count="0" />
+      <LineId Id="321" Count="0" />
+      <LineId Id="304" Count="0" />
+      <LineId Id="322" Count="1" />
+    </LineIds>
+    <LineIds Name="AdsSocket.blocks">
+      <LineId Id="20" Count="12" />
+      <LineId Id="60" Count="0" />
+      <LineId Id="34" Count="10" />
+      <LineId Id="19" Count="0" />
+    </LineIds>
+    <LineIds Name="AdsSocket.send">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

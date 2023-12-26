@@ -1,0 +1,221 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="AdsTcpUnit" Id="{b856df85-9807-46f0-bd45-80629c76825c}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM AdsTcpUnit
+VAR_OUTPUT
+	bBusy : BOOL;
+	err : BOOL;
+	errid : UDINT;
+END_VAR
+VAR_OUTPUT
+	areaSockets : ARRAY[1..6] OF POINTER TO AdsSocket; //only used for finding a socket by name
+	subarea4Sockets : ARRAY[1..9] OF POINTER TO AdsSocket;
+END_VAR
+VAR	
+	socket : REFERENCE TO AdsSocket;
+	i : INT;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*
+this basic version of AdsTcp communication does not dynamically generate ADS messages into a queue to be polled cyclically
+instead, modules must wait for the requested socket to finish sending its previous data before sending the next
+*)
+
+areaSockets[1] := ADR(AREA_1);
+areaSockets[2] := ADR(AREA_2);
+areaSockets[3] := ADR(AREA_3);
+areaSockets[4] := ADR(AREA_4);
+areaSockets[5] := ADR(AREA_5);
+areaSockets[6] := ADR(AREA_6);
+
+subarea4Sockets[1] := ADR(SUBAREA_4_1);
+subarea4Sockets[2] := ADR(SUBAREA_4_2);
+subarea4Sockets[3] := ADR(SUBAREA_4_3);
+subarea4Sockets[4] := ADR(SUBAREA_4_4);
+subarea4Sockets[5] := ADR(SUBAREA_4_5);
+subarea4Sockets[6] := ADR(SUBAREA_4_6);
+subarea4Sockets[7] := ADR(SUBAREA_4_7);
+subarea4Sockets[8] := ADR(SUBAREA_4_8);
+subarea4Sockets[9] := ADR(SUBAREA_4_9);
+
+blocks();]]></ST>
+    </Implementation>
+    <Method Name="blocks" Id="{6b41de23-37b5-4015-b6bc-69f9f2aa1377}">
+      <Declaration><![CDATA[METHOD PRIVATE blocks : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[(*
+AREA_1(
+	PrgName=> , 
+	AmsNetId=> , 
+	AmsPort=> , 
+	receivingData=> , 
+	sendingData=> , 
+	readBusy=> , 
+	readError=> , 
+	readErrorId=> , 
+	writeBusy=> , 
+	writeError=> , 
+	writeErrorId=> );
+*)
+(*
+AREA_2(
+	PrgName=> , 
+	AmsNetId=> , 
+	AmsPort=> , 
+	receivingData=> , 
+	sendingData=> , 
+	readBusy=> , 
+	readError=> , 
+	readErrorId=> , 
+	writeBusy=> , 
+	writeError=> , 
+	writeErrorId=> );
+*)
+(*
+AREA_3(
+	PrgName=> , 
+	AmsNetId=> , 
+	AmsPort=> , 
+	receivingData=> , 
+	sendingData=> , 
+	readBusy=> , 
+	readError=> , 
+	readErrorId=> , 
+	writeBusy=> , 
+	writeError=> , 
+	writeErrorId=> );
+	
+AREA_4(
+	PrgName=> , 
+	AmsNetId=> , 
+	AmsPort=> , 
+	receivingData=> , 
+	sendingData=> , 
+	readBusy=> , 
+	readError=> , 
+	readErrorId=> , 
+	writeBusy=> , 
+	writeError=> , 
+	writeErrorId=> );
+	
+AREA_5(
+	PrgName=> , 
+	AmsNetId=> , 
+	AmsPort=> , 
+	receivingData=> , 
+	sendingData=> , 
+	readBusy=> , 
+	readError=> , 
+	readErrorId=> , 
+	writeBusy=> , 
+	writeError=> , 
+	writeErrorId=> );
+	
+AREA_6(
+	PrgName=> , 
+	AmsNetId=> , 
+	AmsPort=> , 
+	receivingData=> , 
+	sendingData=> , 
+	readBusy=> , 
+	readError=> , 
+	readErrorId=> , 
+	writeBusy=> , 
+	writeError=> , 
+	writeErrorId=> );
+*)
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="findSocket" Id="{9391686a-f9a5-427d-83ec-e84744570a4a}">
+      <Declaration><![CDATA[METHOD PRIVATE findSocket : REFERENCE TO AdsSocket
+VAR_INPUT
+	recipient : STRING;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FOR i:=1 TO numSockets BY 1 DO
+	IF areaSockets[i] <> 0 AND_THEN areaSockets[i]^.PrgName = recipient THEN
+		findSocket REF= areaSockets[i]^;
+		RETURN;
+	END_IF
+END_FOR
+
+FOR i:=1 TO numSubarea4Sockets BY 1 DO
+	IF subarea4Sockets[i] <> 0 AND_THEN subarea4Sockets[i]^.PrgName = recipient THEN
+		findSocket REF= areaSockets[i]^;
+		RETURN;
+	END_IF
+END_FOR]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="sendMessage" Id="{1b1f9d8d-3fba-4fa0-976b-18f6d2359815}">
+      <Declaration><![CDATA[METHOD sendMessage : BOOL
+VAR_INPUT
+	recipient : STRING;
+	data : REFERENCE TO AdsData;
+END_VAR
+VAR
+	//socket : REFERENCE TO AdsSocket;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[socket REF= findSocket(recipient := recipient);
+
+IF __ISVALIDREF(socket) AND_THEN NOT socket.writeBusy THEN
+	socket.send(data := data);
+	sendMessage := TRUE;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="AdsTcpUnit">
+      <LineId Id="3968" Count="0" />
+      <LineId Id="3970" Count="1" />
+      <LineId Id="3966" Count="1" />
+      <LineId Id="3884" Count="0" />
+      <LineId Id="3887" Count="0" />
+      <LineId Id="3885" Count="0" />
+      <LineId Id="3888" Count="2" />
+      <LineId Id="3957" Count="0" />
+      <LineId Id="3956" Count="0" />
+      <LineId Id="3958" Count="7" />
+      <LineId Id="3892" Count="0" />
+      <LineId Id="3891" Count="0" />
+    </LineIds>
+    <LineIds Name="AdsTcpUnit.blocks">
+      <LineId Id="129" Count="0" />
+      <LineId Id="55" Count="10" />
+      <LineId Id="34" Count="0" />
+      <LineId Id="66" Count="0" />
+      <LineId Id="133" Count="0" />
+      <LineId Id="67" Count="10" />
+      <LineId Id="35" Count="0" />
+      <LineId Id="134" Count="0" />
+      <LineId Id="89" Count="0" />
+      <LineId Id="78" Count="10" />
+      <LineId Id="36" Count="0" />
+      <LineId Id="125" Count="0" />
+      <LineId Id="90" Count="10" />
+      <LineId Id="37" Count="0" />
+      <LineId Id="124" Count="0" />
+      <LineId Id="101" Count="10" />
+      <LineId Id="38" Count="0" />
+      <LineId Id="123" Count="0" />
+      <LineId Id="112" Count="10" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="42" Count="0" />
+    </LineIds>
+    <LineIds Name="AdsTcpUnit.findSocket">
+      <LineId Id="30" Count="11" />
+      <LineId Id="22" Count="0" />
+    </LineIds>
+    <LineIds Name="AdsTcpUnit.sendMessage">
+      <LineId Id="22" Count="3" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="13" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

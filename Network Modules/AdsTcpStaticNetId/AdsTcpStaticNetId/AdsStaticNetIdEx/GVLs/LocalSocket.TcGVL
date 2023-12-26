@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <GVL Name="LocalSocket" Id="{6a887490-4345-4dc6-94a1-644232984bfb}">
+    <Declaration><![CDATA[//{attribute 'qualified_only'}
+VAR_GLOBAL CONSTANT
+	PrgName : STRING := TO_STRING(AreaNum.AREA_4);
+	AmsNetId : T_AmsNetId := '2.0.131.216.1.1';
+	AmsPort : T_AmsPort := 851;
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>
