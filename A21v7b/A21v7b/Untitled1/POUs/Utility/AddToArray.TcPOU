@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="AddToArray" Id="{e5ab1016-66e7-4d55-91ab-7f206e04401d}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION AddToArray : BOOL
+VAR_INPUT
+	arr : POINTER TO BYTE;
+	numEntries : LINT;
+	dataSize : UDINT;
+	
+	newEntry : ANY;
+END_VAR
+VAR
+	i : LINT;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//numEntries := (UPPER_BOUND(arr, 1) - LOWER_BOUND(arr, 1) + 1) / dataSize;
+
+FOR i:=0 TO numEntries-1 BY 1 DO
+	
+	IF ArrayIsEmpty(arr := ADR(arr[i]), arrSize := dataSize) THEN
+		AddToArray := MEMCPY(ADR(arr[i]), ADR(newEntry), dataSize) > 0;
+		RETURN;
+	END_IF
+	
+END_FOR]]></ST>
+    </Implementation>
+    <LineIds Name="AddToArray">
+      <LineId Id="29" Count="2" />
+      <LineId Id="36" Count="0" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="41" Count="1" />
+      <LineId Id="35" Count="0" />
+      <LineId Id="44" Count="0" />
+      <LineId Id="11" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

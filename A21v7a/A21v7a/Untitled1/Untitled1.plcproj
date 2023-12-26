@@ -123,7 +123,7 @@
       <SubType>Code</SubType>
       <LinkAlways>true</LinkAlways>
     </Compile>
-    <Compile Include="GVLs\Hardware_A21.TcGVL">
+    <Compile Include="GVLs\Hardware.TcGVL">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="GVLs\Misc.TcGVL">

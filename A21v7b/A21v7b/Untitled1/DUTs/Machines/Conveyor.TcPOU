@@ -1,0 +1,277 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="Conveyor" Id="{de162f93-5907-4a07-a0b5-f0d4a4560d6a}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Conveyor
+VAR
+	enable AT %Q* : BOOL := TRUE;
+	direction AT %Q* : BOOL; //FALSE = forward, TRUE = backward
+	pulse AT %Q* : BOOL;
+	reset AT %Q* : BOOL;
+	
+	sensorEntry AT %I* : BOOL;
+	sensorExit AT %I* : BOOL;
+
+	lifterEnable AT %Q* : BOOL := TRUE;
+	lifterDirection AT %Q* : BOOL; //FALSE = up, TRUE = down
+	lifterPulse AT %Q* : BOOL;
+	lifterReset AT %Q* : BOOL;
+END_VAR
+VAR_OUTPUT
+	operation : ConveyorMode;
+	request : ConveyorMode;
+	
+	error AT %I* : BOOL;
+	lifterError AT %I* : BOOL;
+	
+	position AT %I* : REAL;
+	velocity AT %I* : REAL;
+	
+	hasLifter : BOOL;
+	extended AT %I* : BOOL;
+	retracted AT %I* : BOOL;
+END_VAR
+VAR
+	lifterMode : (HOLD, UP, DOWN); 
+	lifterMode2 : (LIFTER_EXTEND, LIFTER_RETRACT);
+	
+	//pulses are assumed to be low-high-low
+	pulser : TP;
+	lifterPulser : TP;
+END_VAR
+VAR_STAT CONSTANT
+	pulseWidth : TIME := T#25MS;
+END_VAR
+(*
+this version of Conveyor is to be implemented as a linked list,
+	allowing it to control its own mode internally -
+	without the use of an external conveyor control module - 
+	eliminating the ability for other modules to modify its mode
+*)]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[lifterPulser(IN:= , PT:= pulseWidth, Q=> lifterPulse, ET=> );
+lifterPulser.IN := 
+	hasLifter AND
+	lifterEnable AND 
+	NOT lifterError AND 
+	NOT lifterReset AND 
+	( (lifterMode = LIFTER_EXTEND AND NOT extended) OR (lifterMode = LIFTER_RETRACT AND NOT retracted) ) AND
+	lifterPulser.Q; //self-ending pulse
+
+override();
+
+CASE lifterMode OF
+	HOLD:
+		lifterDirection := TRUE;
+		lifterPulse := FALSE;
+		
+	UP:
+		lifterDirection := FALSE;
+		lifterPulse := NOT lifterPulse;
+	
+	DOWN:
+		lifterDirection := TRUE;
+		lifterPulse := NOT lifterPulse;
+	
+END_CASE
+
+//conveyors do not move independently like motion drives, their operation is set by an additional conveyor control module
+traverseSequence();]]></ST>
+    </Implementation>
+    <Folder Name="Unused" Id="{03c8c1ea-42d3-40e0-8bef-9c20b035d889}" />
+    <Method Name="backward" Id="{86f9a8ba-67b5-4107-b253-01b957c1bf10}" FolderPath="Unused\">
+      <Declaration><![CDATA[METHOD backward : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="extend" Id="{8f868bfa-a538-4183-8601-28b224890cc0}">
+      <Declaration><![CDATA[METHOD extend : BOOL
+VAR_INPUT
+END_VAR
+VAR
+	noLifter : BOOL;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF hasLifter THEN
+	lifterMode := UP;
+	extend := TRUE;
+ELSE
+	noLifter := TRUE;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="forward" Id="{87d44885-25ee-41d2-af0e-9e2311376d2b}" FolderPath="Unused\">
+      <Declaration><![CDATA[METHOD forward : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="occupied" Id="{1a437e43-b177-4373-bb48-3c058bcf1a3f}">
+      <Declaration><![CDATA[METHOD occupied : BOOL]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[occupied := sensorExit OR sensorEntry;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="override" Id="{05075fa8-a935-45e7-a8b6-8b97623259a5}">
+      <Declaration><![CDATA[METHOD PRIVATE override : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF
+	(extended AND lifterMode = UP) OR
+	(retracted AND lifterMode = DOWN)
+THEN
+	lifterMode := HOLD;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="reset" Id="{d40da114-e5c3-466f-8119-1749f88356bf}">
+      <Declaration><![CDATA[METHOD reset : BOOL
+VAR_INPUT
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[position := 0;
+velocity := velocity; //no change
+
+extend();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="retract" Id="{e67cd767-48c0-4514-8169-49f3436776ec}">
+      <Declaration><![CDATA[METHOD retract : BOOL
+VAR_INPUT
+END_VAR
+VAR
+	noLifter : BOOL;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF hasLifter THEN
+	lifterMode := DOWN;
+	retract := TRUE;
+ELSE
+	noLifter := TRUE;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="setOperation" Id="{0ffca73b-6343-4082-96ff-fb3a381bc240}">
+      <Declaration><![CDATA[METHOD setOperation : BOOL
+VAR_INPUT
+	newOperation : ConveyorMode;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[operation := newOperation;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="setRequest" Id="{c2bcb45d-32a3-4c3d-ac25-48dd409d79ec}">
+      <Declaration><![CDATA[METHOD setRequest : BOOL
+VAR_INPUT
+	requestedMode : ConveyorMode;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[request := requestedMode;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="target" Id="{ea17b475-eaf3-4273-b8f8-a97119ee998d}">
+      <Declaration><![CDATA[METHOD target : BOOL
+VAR_INPUT
+	targetPosition : REAL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="traverseSequence" Id="{138b1f92-a97e-4cd3-aca3-2cafc2860218}">
+      <Declaration><![CDATA[METHOD PRIVATE traverseSequence : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[direction := (operation = ConveyorMode.BACKWARD);
+
+pulser(IN:= , PT:= pulseWidth, Q=> pulse, ET=> );
+pulser.IN := 
+	enable AND 
+	NOT error AND 
+	NOT reset AND 
+	(operation = ConveyorMode.FORWARD OR operation = ConveyorMode.BACKWARD)
+	AND pulser.Q; //ends pulse itself]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="Conveyor">
+      <LineId Id="172" Count="0" />
+      <LineId Id="178" Count="0" />
+      <LineId Id="195" Count="0" />
+      <LineId Id="179" Count="2" />
+      <LineId Id="350" Count="0" />
+      <LineId Id="281" Count="0" />
+      <LineId Id="243" Count="0" />
+      <LineId Id="268" Count="0" />
+      <LineId Id="265" Count="0" />
+      <LineId Id="242" Count="0" />
+      <LineId Id="244" Count="0" />
+      <LineId Id="246" Count="0" />
+      <LineId Id="272" Count="0" />
+      <LineId Id="247" Count="1" />
+      <LineId Id="261" Count="0" />
+      <LineId Id="260" Count="0" />
+      <LineId Id="250" Count="2" />
+      <LineId Id="262" Count="0" />
+      <LineId Id="253" Count="0" />
+      <LineId Id="245" Count="0" />
+      <LineId Id="353" Count="1" />
+      <LineId Id="352" Count="0" />
+    </LineIds>
+    <LineIds Name="Conveyor.backward">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="Conveyor.extend">
+      <LineId Id="5" Count="0" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="10" Count="0" />
+      <LineId Id="13" Count="1" />
+    </LineIds>
+    <LineIds Name="Conveyor.forward">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="Conveyor.occupied">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="Conveyor.override">
+      <LineId Id="6" Count="4" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="Conveyor.reset">
+      <LineId Id="5" Count="1" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="8" Count="0" />
+    </LineIds>
+    <LineIds Name="Conveyor.retract">
+      <LineId Id="5" Count="0" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="13" Count="0" />
+      <LineId Id="11" Count="1" />
+      <LineId Id="10" Count="0" />
+    </LineIds>
+    <LineIds Name="Conveyor.setOperation">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="Conveyor.setRequest">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="Conveyor.target">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="Conveyor.traverseSequence">
+      <LineId Id="9" Count="7" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

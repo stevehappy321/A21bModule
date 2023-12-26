@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Refactors>
+  <Renames>
+    <RenamedType>
+      <Type guid="64079123-6890-47af-a137-de9efb652062">TRAVERSESEQUENCE</Type>
+      <From>traverseSequence</From>
+      <To>sequence</To>
+    </RenamedType>
+  </Renames>
+</Refactors>
