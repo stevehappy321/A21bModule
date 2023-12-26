@@ -1,0 +1,142 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="ConveyorLSC" Id="{4f6cfb6d-6de1-4268-b14b-f837abcc174e}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ConveyorLSC EXTENDS ConveyorSC
+VAR_OUTPUT
+	lifterError AT %I* : BOOL;
+	
+	extended AT %I* : BOOL;
+	retracted AT %I* : BOOL;
+END_VAR
+VAR	
+	lifterEnable AT %Q* : BOOL := TRUE;
+	lifterDirection AT %Q* : BOOL; //FALSE = up, TRUE = down
+	lifterPulse AT %Q* : BOOL;
+	lifterReset AT %Q* : BOOL;
+END_VAR
+VAR	
+	lifterMode : (HOLD, LIFTER_EXTEND, LIFTER_RETRACT); 
+	lifterPulser : TP; //pulses are assumed to be low-high-low
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();
+
+lifterOverride();
+
+lifterSequence();]]></ST>
+    </Implementation>
+    <Folder Name="Private" Id="{2dd6dc1f-1fb9-40a8-bfe0-bcc4441b187c}" />
+    <Folder Name="Properties" Id="{662df990-c299-470b-a18e-00f0d61ccba1}" />
+    <Folder Name="Unused" Id="{bec3ed47-90ed-4528-8dd6-b850ab70f8f2}" />
+    <Method Name="backward" Id="{c19450f5-569e-456f-87af-46b285416a87}" FolderPath="Unused\">
+      <Declaration><![CDATA[METHOD backward : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="extend" Id="{134a21db-f191-4efc-8030-b5c51776b21e}">
+      <Declaration><![CDATA[METHOD extend : BOOL
+VAR_INPUT
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[lifterMode := LIFTER_EXTEND;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="forward" Id="{b50396ae-3747-4bf2-a6cd-af89c8af7dd2}" FolderPath="Unused\">
+      <Declaration><![CDATA[METHOD forward : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="lifterOverride" Id="{e01b1a57-c0ed-4e15-a5d5-b6d037837ced}" FolderPath="Private\">
+      <Declaration><![CDATA[METHOD PROTECTED lifterOverride : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF
+	(extended AND lifterMode = LIFTER_EXTEND) OR
+	(retracted AND lifterMode = LIFTER_RETRACT)
+THEN
+	lifterMode := HOLD;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="lifterSequence" Id="{3151b70e-86df-4eac-bfc8-17c901b97fc9}" FolderPath="Private\">
+      <Declaration><![CDATA[METHOD PROTECTED lifterSequence : BOOL
+VAR_INPUT
+END_VAR
+VAR
+	nextOp, prevOp : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[lifterPulser(IN:= , PT:= pulseWidth, Q=> , ET=> );
+lifterPulser.IN := 
+	lifterEnable AND 
+	NOT lifterError AND 
+	NOT lifterReset AND 
+	( (lifterMode = LIFTER_EXTEND AND NOT extended) OR (lifterMode = LIFTER_RETRACT AND NOT retracted) ) AND
+	lifterPulser.Q; //self-ending pulse
+
+lifterPulse := lifterPulser.Q AND lifterPulser.ET < pulseWidth/2;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="reset" Id="{ebbae814-1c37-427f-a836-796c3bf16516}">
+      <Declaration><![CDATA[METHOD reset : BOOL
+VAR_INPUT
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[position := 0;
+velocity := velocity; //no change
+
+extend();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="retract" Id="{e3aaa3fe-86c4-448a-a6b0-436a4b77fc00}">
+      <Declaration><![CDATA[METHOD retract : BOOL
+VAR_INPUT
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[lifterMode := LIFTER_RETRACT;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="ConveyorLSC">
+      <LineId Id="602" Count="0" />
+      <LineId Id="631" Count="0" />
+      <LineId Id="603" Count="0" />
+      <LineId Id="633" Count="0" />
+      <LineId Id="632" Count="0" />
+    </LineIds>
+    <LineIds Name="ConveyorLSC.backward">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="ConveyorLSC.extend">
+      <LineId Id="14" Count="0" />
+    </LineIds>
+    <LineIds Name="ConveyorLSC.forward">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="ConveyorLSC.lifterOverride">
+      <LineId Id="6" Count="4" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="ConveyorLSC.lifterSequence">
+      <LineId Id="28" Count="7" />
+      <LineId Id="27" Count="0" />
+    </LineIds>
+    <LineIds Name="ConveyorLSC.reset">
+      <LineId Id="5" Count="1" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="8" Count="0" />
+    </LineIds>
+    <LineIds Name="ConveyorLSC.retract">
+      <LineId Id="10" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

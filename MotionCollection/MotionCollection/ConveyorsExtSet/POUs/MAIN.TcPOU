@@ -1,0 +1,195 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="MAIN" Id="{23a0bcfc-4aed-486c-b1bb-aade331f391d}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	sc1 : ConveyorSC;
+	sc2 : ConveyorSC;
+	sc3 : ConveyorSC;
+	sc4 : ConveyorSC;
+	lsc5 : ConveyorLSC;
+	lsc6 : ConveyorLSC;
+	lsc7 : ConveyorLSC;
+	lsc8 : ConveyorLSC;
+	
+END_VAR
+VAR
+	arr : ARRAY[1..8] OF POINTER TO ConveyorSC;
+	i : INT;
+	j : INT;
+	
+	linkStart : INT := -1;
+	linkEnd : INT := -1;
+	chainMode : ConveyorMode;
+END_VAR
+(*
+in this module, conveyors are implemented as a linked list
+each conveyor's mode is determined by the actual mode (not requested mode) of its adjacent conveyors
+*)]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//double click on these for online write
+(*
+conveyor linking algorithm:
+	-find a chain where all conveyors are occupied
+	-find highest priority request between the chain
+	-set the actual mode all conveyors in the chain to that highest priority request
+*)
+
+call();
+
+sc1.trueMode;
+sc2.trueMode;
+sc3.trueMode;
+sc4.trueMode;
+lsc5.trueMode;
+lsc6.trueMode;
+lsc7.trueMode;
+lsc8.trueMode;
+
+sc1.requestedMode;
+sc2.requestedMode;
+sc3.requestedMode;
+sc4.requestedMode;
+lsc5.requestedMode;
+lsc6.requestedMode;
+lsc7.requestedMode;
+lsc8.requestedMode;
+
+
+linkStart := -1;
+linkEnd := -1;
+chainMode := 0;
+
+FOR i:=1 TO 8 BY 1 DO
+	
+	IF arr[i]^.IsOccupied THEN
+		IF linkStart = -1 THEN
+			linkStart := i;
+		END_IF
+		
+		chainMode := MAX(chainMode, arr[i]^.requestedMode);
+		linkEnd := i;
+	
+	ELSIF linkStart <> -1 AND linkEnd <> -1 THEN //set all conveyor operations to priorityInLink
+		
+		FOR j:=linkStart TO linkEnd BY 1 DO
+			arr[j]^.setMode(chainMode);
+		END_FOR
+		
+		linkStart := -1;
+		linkEnd := -1;
+		
+		chainMode := ConveyorMode.IDLE;
+		arr[i]^.setMode(ConveyorMode.IDLE);
+		
+		CONTINUE;
+	END_IF
+	
+END_FOR
+
+IF linkStart > -1 AND linkEnd > -1 THEN
+	FOR j:=linkStart TO linkEnd BY 1 DO
+		arr[j]^.setMode(chainMode);
+	END_FOR
+END_IF
+
+
+
+
+call();]]></ST>
+    </Implementation>
+    <Action Name="call" Id="{3b83954d-d89c-4f37-97af-9104f4d40ba3}">
+      <Implementation>
+        <ST><![CDATA[arr[1] := ADR(sc1);
+arr[2] := ADR(sc2);
+arr[3] := ADR(sc3);
+arr[4] := ADR(sc4);
+arr[5] := ADR(lsc5);
+arr[6] := ADR(lsc6);
+arr[7] := ADR(lsc7);
+arr[8] := ADR(lsc8);
+
+FOR i:=1 TO 8-1 BY 1 DO
+	
+	arr[i]^.join(arr[i+1]);
+	
+END_FOR
+
+
+sc1(error=> , position=> , velocity=> );
+sc2(error=> , position=> , velocity=> );
+sc3(error=> , position=> , velocity=> );
+sc4(error=> , position=> , velocity=> );
+
+lsc5(
+	error=> , 
+	position=> , 
+	velocity=> , 
+	lifterError=> , 
+	extended=> , 
+	retracted=> );
+	
+lsc6(
+	error=> , 
+	position=> , 
+	velocity=> , 
+	lifterError=> , 
+	extended=> , 
+	retracted=> );
+	
+lsc7(
+	error=> , 
+	position=> , 
+	velocity=> , 
+	lifterError=> , 
+	extended=> , 
+	retracted=> );
+	
+lsc8(
+	error=> , 
+	position=> , 
+	velocity=> , 
+	lifterError=> , 
+	extended=> , 
+	retracted=> );]]></ST>
+      </Implementation>
+    </Action>
+    <LineIds Name="MAIN">
+      <LineId Id="183" Count="14" />
+      <LineId Id="246" Count="2" />
+      <LineId Id="198" Count="6" />
+      <LineId Id="250" Count="1" />
+      <LineId Id="205" Count="1" />
+      <LineId Id="257" Count="0" />
+      <LineId Id="255" Count="0" />
+      <LineId Id="258" Count="0" />
+      <LineId Id="207" Count="18" />
+      <LineId Id="252" Count="0" />
+      <LineId Id="226" Count="0" />
+      <LineId Id="254" Count="0" />
+      <LineId Id="227" Count="14" />
+      <LineId Id="43" Count="0" />
+    </LineIds>
+    <LineIds Name="MAIN.call">
+      <LineId Id="18" Count="4" />
+      <LineId Id="30" Count="2" />
+      <LineId Id="23" Count="2" />
+      <LineId Id="28" Count="1" />
+      <LineId Id="15" Count="2" />
+      <LineId Id="1" Count="1" />
+      <LineId Id="4" Count="1" />
+      <LineId Id="14" Count="0" />
+      <LineId Id="8" Count="5" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="35" Count="5" />
+      <LineId Id="34" Count="0" />
+      <LineId Id="41" Count="0" />
+      <LineId Id="43" Count="5" />
+      <LineId Id="42" Count="0" />
+      <LineId Id="49" Count="0" />
+      <LineId Id="51" Count="5" />
+      <LineId Id="50" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

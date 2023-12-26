@@ -1,0 +1,117 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="MAIN" Id="{6818bc0a-1379-4ac1-9d15-719393e312a8}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	sc1 : ConveyorSC;
+	sc2 : ConveyorSC;
+	sc3 : ConveyorSC;
+	sc4 : ConveyorSC;
+	lsc : ConveyorLSC;
+END_VAR
+VAR
+	arr : ARRAY[1..5] OF POINTER TO ConveyorSC;
+	i : INT;
+END_VAR
+VAR_TEMP
+	scX AT %M* : ConveyorSC;
+END_VAR
+(*
+in this module, conveyors are implemented as a linked list
+each conveyor's mode is determined by the actual mode (not requested mode) of its adjacent conveyors
+*)]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//double click on these for online write
+(*
+conveyor linking algorithm:
+	-find a chain where all conveyors are occupied
+	-find highest priority request between the chain
+	-set the actual mode all conveyors in the chain to that highest priority request
+*)
+
+scX.resetChain();
+
+call();
+
+sc1.modeActual;
+sc2.modeActual;
+sc3.modeActual;
+sc4.modeActual;
+lsc.modeActual;
+
+sc1.modeRequest;
+sc2.modeRequest;
+sc3.modeRequest;
+sc4.modeRequest;
+lsc.modeRequest;
+
+sc1.chainRequest;
+sc2.chainRequest;
+sc3.chainRequest;
+sc4.chainRequest;
+lsc.chainRequest;
+
+call();]]></ST>
+    </Implementation>
+    <Action Name="call" Id="{65c838ae-a06c-4feb-a8e7-0a8b6dee4298}">
+      <Implementation>
+        <ST><![CDATA[arr[1] := ADR(sc1);
+arr[2] := ADR(sc2);
+arr[3] := ADR(sc3);
+arr[4] := ADR(sc4);
+arr[5] := ADR(lsc);
+
+FOR i:=1 TO 5 BY 1 DO
+	
+	IF i < 5 THEN
+		arr[i]^.join(arr[i+1]);
+	END_IF
+	
+END_FOR
+
+
+sc1(error=> , position=> , velocity=> );
+sc2(error=> , position=> , velocity=> );
+sc3(error=> , position=> , velocity=> );
+sc4(error=> , position=> , velocity=> );
+
+lsc(
+	error=> , 
+	position=> , 
+	velocity=> , 
+	lifterError=> , 
+	extended=> , 
+	retracted=> );]]></ST>
+      </Implementation>
+    </Action>
+    <LineIds Name="MAIN">
+      <LineId Id="71" Count="0" />
+      <LineId Id="73" Count="0" />
+      <LineId Id="77" Count="0" />
+      <LineId Id="79" Count="2" />
+      <LineId Id="76" Count="0" />
+      <LineId Id="98" Count="0" />
+      <LineId Id="97" Count="0" />
+      <LineId Id="100" Count="0" />
+      <LineId Id="99" Count="0" />
+      <LineId Id="72" Count="0" />
+      <LineId Id="41" Count="0" />
+      <LineId Id="45" Count="1" />
+      <LineId Id="48" Count="1" />
+      <LineId Id="66" Count="4" />
+      <LineId Id="65" Count="0" />
+      <LineId Id="83" Count="4" />
+      <LineId Id="82" Count="0" />
+      <LineId Id="42" Count="1" />
+    </LineIds>
+    <LineIds Name="MAIN.call">
+      <LineId Id="18" Count="11" />
+      <LineId Id="15" Count="2" />
+      <LineId Id="1" Count="1" />
+      <LineId Id="4" Count="1" />
+      <LineId Id="14" Count="0" />
+      <LineId Id="8" Count="5" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

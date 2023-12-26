@@ -1,0 +1,209 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="ConveyorSC" Id="{860d94bc-eccd-41d5-99ab-6eff761fea1e}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ConveyorSC
+VAR_OUTPUT
+	//operation : ConveyorMode;
+	
+	error AT %I* : BOOL;
+	position AT %I* : REAL;
+	velocity AT %I* : REAL;
+END_VAR
+VAR
+	enable AT %Q* : BOOL := TRUE;
+	direction AT %Q* : BOOL; //FALSE = forward, TRUE = backward
+	pulse AT %Q* : BOOL;
+	reset AT %Q* : BOOL;
+	
+	sensorEntry AT %I* : BOOL := TRUE;
+	sensorExit AT %I* : BOOL;
+END_VAR
+VAR
+	nextConveyor : POINTER TO ConveyorSC;
+	prevConveyor : POINTER TO ConveyorSC;
+	
+	modeActual : (IDLE, FORWARD, BACKWARD, STOP);
+	modeRequest : (IDLE, FORWARD, BACKWARD, STOP);
+	
+	pulser : TP; //pulses are assumed to be low-high-low
+END_VAR
+VAR_STAT
+	chainRequest : (IDLE, FORWARD, BACKWARD, STOP);
+	chainingActive : BOOL; //1st runthrough
+	chainingSet : BOOL; //2nd runthrough
+END_VAR
+VAR_STAT CONSTANT
+	pulseWidth : TIME := T#50MS;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[override();
+
+sequence();]]></ST>
+    </Implementation>
+    <Folder Name="Private" Id="{1ece495e-bdcc-4502-a200-3f9c921872ce}" />
+    <Folder Name="Properties" Id="{a232f22b-9224-4f1d-a749-173222abc541}" />
+    <Folder Name="Unused" Id="{54c4b87f-27c9-43c3-88a4-4690df509a73}" />
+    <Method Name="backward" Id="{68c61c83-5cc5-4351-8ae1-c9fd5871add9}" FolderPath="Unused\">
+      <Declaration><![CDATA[METHOD backward : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="calculateChains" Id="{8af2a1c6-e9d2-4563-8b97-019e5bbfd0c9}" FolderPath="Private\">
+      <Declaration><![CDATA[METHOD PROTECTED calculateChains : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF IsOccupied THEN //chain calculation not started, and this conveyor can start a chain
+	chainRequest := MAX(chainRequest, modeRequest);
+ELSE
+	chainRequest := IDLE;
+END_IF
+
+modeActual := chainRequest;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="forward" Id="{bb5a5b6b-58ec-4b84-83e1-5306f144be0a}" FolderPath="Unused\">
+      <Declaration><![CDATA[METHOD forward : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="IsOccupied" Id="{b654cb6e-3eb6-4615-b963-e01922160291}" FolderPath="Properties\">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
+PROPERTY IsOccupied : BOOL]]></Declaration>
+      <Get Name="Get" Id="{fae71c9d-fa89-4510-b5a4-5f3a8d5bd641}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IsOccupied := sensorExit OR sensorEntry;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="join" Id="{4a1ffc9b-791a-4361-acf4-9a8749188615}">
+      <Declaration><![CDATA[METHOD join : BOOL
+VAR_INPUT
+	conveyor : POINTER TO ConveyorSC;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[nextConveyor := conveyor;
+conveyor^.prevConveyor := THIS;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="override" Id="{cb73f434-8629-4f8a-a7be-6a43c7bd04bc}" FolderPath="Private\">
+      <Declaration><![CDATA[METHOD PROTECTED override : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[(*
+IF
+	(extended AND lifterMode = UP) OR
+	(retracted AND lifterMode = DOWN)
+THEN
+	lifterMode := HOLD;
+END_IF
+*)]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="reset" Id="{fc1c874d-d1ec-4894-bc7f-b003bf23e601}">
+      <Declaration><![CDATA[METHOD reset : BOOL
+VAR_INPUT
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[position := 0;
+velocity := velocity; //no change]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="resetChain" Id="{f7b73ab0-351e-4e8c-99d7-b0f3f8acb003}">
+      <Declaration><![CDATA[METHOD resetChain : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[chainRequest := 0;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="sequence" Id="{3852c593-4a74-4095-9f31-2f16a2071246}" FolderPath="Private\">
+      <Declaration><![CDATA[METHOD PROTECTED sequence : BOOL
+VAR_INPUT
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[calculateChains();
+
+direction := (modeActual = BACKWARD); //set direction bit
+
+pulser(IN:= , PT:= pulseWidth, Q=> pulse, ET=> );
+pulser.IN := 
+	enable AND 
+	NOT error AND 
+	NOT reset AND 
+	(modeActual = FORWARD OR modeActual = BACKWARD)
+	AND pulser.Q; //ends pulse itself]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="target" Id="{140af314-e43a-4751-b875-e59fd73378df}">
+      <Declaration><![CDATA[METHOD target : BOOL
+VAR_INPUT
+	targetPosition : REAL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="ConveyorSC">
+      <LineId Id="422" Count="0" />
+      <LineId Id="438" Count="0" />
+      <LineId Id="352" Count="0" />
+    </LineIds>
+    <LineIds Name="ConveyorSC.backward">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="ConveyorSC.calculateChains">
+      <LineId Id="6" Count="0" />
+      <LineId Id="9" Count="1" />
+      <LineId Id="33" Count="1" />
+      <LineId Id="37" Count="1" />
+    </LineIds>
+    <LineIds Name="ConveyorSC.forward">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="ConveyorSC.IsOccupied.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="ConveyorSC.join">
+      <LineId Id="5" Count="0" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+    <LineIds Name="ConveyorSC.override">
+      <LineId Id="14" Count="0" />
+      <LineId Id="6" Count="4" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="15" Count="0" />
+    </LineIds>
+    <LineIds Name="ConveyorSC.reset">
+      <LineId Id="5" Count="1" />
+    </LineIds>
+    <LineIds Name="ConveyorSC.resetChain">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="ConveyorSC.sequence">
+      <LineId Id="136" Count="0" />
+      <LineId Id="113" Count="8" />
+      <LineId Id="45" Count="0" />
+    </LineIds>
+    <LineIds Name="ConveyorSC.target">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
