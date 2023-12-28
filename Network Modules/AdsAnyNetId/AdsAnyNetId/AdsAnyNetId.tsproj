@@ -9,9 +9,9 @@
 			</Tasks>
 		</System>
 		<Plc>
-			<Project GUID="{C6C629C6-D1BC-4A19-B660-7BDD02AC5F41}" Name="AdsStaticNetIdEx" PrjFilePath="AdsStaticNetIdEx\AdsStaticNetIdEx.plcproj" TmcFilePath="AdsStaticNetIdEx\AdsStaticNetIdEx.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="AdsStaticNetIdEx\AdsStaticNetIdEx.tmc" TmcHash="{8CD185A5-A8B3-7A68-217E-8CC455AC282F}">
-					<Name>AdsStaticNetIdEx Instance</Name>
+			<Project GUID="{C6C629C6-D1BC-4A19-B660-7BDD02AC5F41}" Name="AdsAnyNetIdEx" PrjFilePath="AdsAnyNetIdEx\AdsAnyNetIdEx.plcproj" TmcFilePath="AdsAnyNetIdEx\AdsAnyNetIdEx.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="AdsStaticNetIdEx\AdsStaticNetIdEx.tmc" TmcHash="{7300BE29-C68C-B1E7-B5F5-7382B2611C65}">
+					<Name>AdsAnyNetIdEx Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Contexts>
 						<Context>
