@@ -1,0 +1,145 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <FileVersion>1.0.0.0</FileVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{fdabb4cf-23a0-4fe1-947d-776d27d981c4}</ProjectGuid>
+    <SubObjectsSortedByName>True</SubObjectsSortedByName>
+    <DownloadApplicationInfo>true</DownloadApplicationInfo>
+    <WriteProductVersion>true</WriteProductVersion>
+    <GenerateTpy>false</GenerateTpy>
+    <Name>Untitled1</Name>
+    <ProgramVersion>3.1.4023.0</ProgramVersion>
+    <Application>{ae6c9be7-c215-40e0-8d93-70294b05be49}</Application>
+    <TypeSystem>{8be7dab3-344e-40eb-8968-81a6e376fce7}</TypeSystem>
+    <Implicit_Task_Info>{544790b4-4ad5-42c7-8e80-05c342410004}</Implicit_Task_Info>
+    <Implicit_KindOfTask>{036ba258-643b-4186-9c89-f9946e6c14c3}</Implicit_KindOfTask>
+    <Implicit_Jitter_Distribution>{fc0cfeb4-23cc-4e58-9226-2d212dc9ba39}</Implicit_Jitter_Distribution>
+    <LibraryReferences>{3684b080-b6cf-442b-9f22-e09413388b5a}</LibraryReferences>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="DUTs\Motion Package\Drives\AirPiston.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Motion Package\Drives\ClearLinkMC.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Motion Package\Drives\ServoNC.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Motion Package\Drives\CenteredServoNC.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Motion Package\Drives\SimplePiston.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Motion Package\Homing.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Motion Package\Insertion.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Motion Package\Prototypes\FBA_Drive.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Motion Package\Prototypes\FBA_TrifectaDrive.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Motion Package\Prototypes\I_ContinuousDrive.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Motion Package\Prototypes\I_Drive.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Motion Package\Prototypes\I_EncodedDrive.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Motion Package\Prototypes\I_PositionalDrive.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Motion Package\SuctionPad.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Robots\KukaRobot.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Robots\RobotA26.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Robots\TaskA26.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\SectionEnum.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\Watchdog.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PlcTask.TcTTO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\DataIsEmpty.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\MAIN.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\SpacerRecollectionUnit.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DUTs" />
+    <Folder Include="DUTs\Motion Package" />
+    <Folder Include="DUTs\Motion Package\Drives" />
+    <Folder Include="DUTs\Motion Package\Prototypes" />
+    <Folder Include="DUTs\Robots" />
+    <Folder Include="GVLs" />
+    <Folder Include="VISUs" />
+    <Folder Include="POUs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PlaceholderReference Include="Tc2_MC2">
+      <DefaultResolution>Tc2_MC2, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_MC2</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_Standard">
+      <DefaultResolution>Tc2_Standard, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_Standard</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_System">
+      <DefaultResolution>Tc2_System, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_System</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_Utilities">
+      <DefaultResolution>Tc2_Utilities, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_Utilities</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc3_Module">
+      <DefaultResolution>Tc3_Module, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc3_Module</Namespace>
+    </PlaceholderReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Untitled1.tmc">
+      <SubType>Content</SubType>
+    </None>
+  </ItemGroup>
+  <ProjectExtensions>
+    <PlcProjectOptions>
+      <XmlArchive>
+  <Data>
+    <o xml:space="preserve" t="OptionKey">
+      <v n="Name">"&lt;ProjectRoot&gt;"</v>
+      <d n="SubKeys" t="Hashtable" />
+      <d n="Values" t="Hashtable" />
+    </o>
+  </Data>
+  <TypeList>
+    <Type n="Hashtable">System.Collections.Hashtable</Type>
+    <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
+    <Type n="String">System.String</Type>
+  </TypeList>
+</XmlArchive>
+    </PlcProjectOptions>
+  </ProjectExtensions>
+</Project>
