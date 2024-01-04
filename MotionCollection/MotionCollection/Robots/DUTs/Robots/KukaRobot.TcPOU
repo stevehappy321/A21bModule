@@ -1,0 +1,252 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="KukaRobot" Id="{60b8c04d-38ba-483d-baa2-feca47e063a5}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK KukaRobot
+VAR_OUTPUT
+	(*
+	forceStop AT %Q* : BOOL;
+	resetSignal AT %Q* : BOOL;
+	*)
+	
+	reservation : INT := 0;
+	
+	error : BOOL;
+	errorID : DINT;
+	
+	outputs AT %Q* : ARRAY[1..20] OF WORD;
+	inputs AT %I* : ARRAY[1..20] OF WORD;
+END_VAR
+VAR
+	heartbeat : Watchdog;
+	
+	offline AT %I* : BOOL;
+	toggleBit AT %I* : BOOL;
+	
+	hmiReservation : STRING;
+END_VAR
+(*
+generic KUKA robot with 20 WORD outputs and 20 WORD inputs, connected to Beckhoff IPC via EL6692 or EL6695 EtherCAT bridge
+includes minimal diagnostics to detect if robot is offline
+robots should always be reserved before sending a task
+*)]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[heartbeat(
+	enable:= NOT offline,
+	toggleBit:= toggleBit,
+	timeoutWidth:= T#200MS,
+	timeout=> );
+
+error := //add any addition conditions with OR
+	offline OR
+	heartbeat.timeout; ]]></ST>
+    </Implementation>
+    <Folder Name="Properties" Id="{8ffe1e39-61c1-4398-8ddf-38564de07f51}" />
+    <Property Name="Busy" Id="{152763dc-c4e3-4017-bc80-d712b47856e1}" FolderPath="Properties\">
+      <Declaration><![CDATA[//{attribute 'monitoring' := 'variable'}
+{attribute 'monitoring' := 'call'}
+PROPERTY Busy : BOOL]]></Declaration>
+      <Get Name="Get" Id="{7a14ab38-ad73-468e-a307-13933f79a0c1}">
+        <Declaration><![CDATA[
+VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="clearCommand" Id="{24ee99e9-db60-47bb-8bfa-bceffbdd3e3c}">
+      <Declaration><![CDATA[METHOD clearCommand : BOOL
+VAR_INPUT
+	reserveID : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF reservation = reserveID THEN
+	MEMSET(ADR(outputs), 0, SIZEOF(outputs));
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="Done" Id="{08daa405-24a1-4c74-b41d-88b33003f753}" FolderPath="Properties\">
+      <Declaration><![CDATA[//{attribute 'monitoring' := 'variable'}
+{attribute 'monitoring' := 'call'}
+PROPERTY Done : BOOL]]></Declaration>
+      <Get Name="Get" Id="{4d1fb0e6-4d99-44c5-bc16-89b50d9e21bd}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="Ready" Id="{9650ecd7-d852-4b27-ba50-624c1407563d}" FolderPath="Properties\">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
+PROPERTY Ready : BOOL]]></Declaration>
+      <Get Name="Get" Id="{efd257b8-0901-4188-afa5-ec7a19fa1b9e}">
+        <Declaration><![CDATA[
+VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="release" Id="{9cb9c870-9a0a-4e25-9e69-66c536dd5de8}">
+      <Declaration><![CDATA[METHOD release : BOOL
+VAR_INPUT
+	reserveID : SectionEnum;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF reservation = reserveID THEN
+	reservation := SectionEnum.NULL_SECTION;
+	release := TRUE;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="reserve" Id="{105269a9-e981-4b0d-a0fb-dab94fd22a02}">
+      <Declaration><![CDATA[METHOD reserve : BOOL
+VAR_INPUT
+	reserveID : INT;
+END_VAR
+(*
+this method exists because chipboard and wood bunk operations use the same robot
+both sections need to check if the robot is open to commands before use
+*)]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF Reserved AND reservation = reserveID THEN
+	reserve := TRUE;
+
+ELSIF NOT Reserved THEN
+	reservation := reserveID;
+	reserve := TRUE;
+
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="Reserved" Id="{e6648a14-0c6c-4acd-ab38-8227ede6160b}" FolderPath="Properties\">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
+PROPERTY Reserved : BOOL]]></Declaration>
+      <Get Name="Get" Id="{9ba9db71-1fc5-478e-9511-6f7e0a894756}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Reserved := reservation <> SectionEnum.NULL_SECTION;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="reset" Id="{e89fe8c1-79a5-4653-863f-2064d194b5df}">
+      <Declaration><![CDATA[METHOD reset : BOOL]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//resetSignal := TRUE;
+//done := FALSE;
+
+MEMSET(ADR(outputs), 0, SIZEOF(outputs));
+(*
+IF ready AND completedTask = 0 THEN
+	resetSignal := FALSE;
+	reset := TRUE;
+END_IF
+*)]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="resume" Id="{6e4c2487-3770-49c6-bd78-e95a5e370aa9}">
+      <Declaration><![CDATA[METHOD resume : BOOL]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//forceStop := FALSE;
+
+resume := NOT error AND errorID = 0;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="setGroup" Id="{1af94f2c-ccd7-455d-a302-323d49e91687}">
+      <Declaration><![CDATA[METHOD setGroup : BOOL
+VAR_INPUT
+	reserveID : INT;
+	group : INT;
+	value : INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[{warning disable C0195}
+IF reservation = reserveID THEN
+	outputs[group] := value;
+	setGroup := TRUE;
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="stop" Id="{9d09e203-8c3b-40f7-893c-e33c2349a4ff}">
+      <Declaration><![CDATA[METHOD stop : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//forceStop := TRUE;
+stop := TRUE;
+
+//MEMSET(ADR(outputs), 0, SIZEOF(outputs));]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="KukaRobot">
+      <LineId Id="251" Count="3" />
+      <LineId Id="310" Count="3" />
+      <LineId Id="255" Count="0" />
+    </LineIds>
+    <LineIds Name="KukaRobot.Busy.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="KukaRobot.clearCommand">
+      <LineId Id="10" Count="2" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="KukaRobot.Done.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="KukaRobot.Ready.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="KukaRobot.release">
+      <LineId Id="22" Count="2" />
+      <LineId Id="12" Count="0" />
+    </LineIds>
+    <LineIds Name="KukaRobot.reserve">
+      <LineId Id="145" Count="6" />
+      <LineId Id="97" Count="0" />
+    </LineIds>
+    <LineIds Name="KukaRobot.Reserved.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="KukaRobot.reset">
+      <LineId Id="14" Count="0" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="34" Count="0" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="19" Count="0" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="18" Count="0" />
+      <LineId Id="16" Count="1" />
+      <LineId Id="35" Count="0" />
+    </LineIds>
+    <LineIds Name="KukaRobot.resume">
+      <LineId Id="5" Count="0" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="6" Count="0" />
+    </LineIds>
+    <LineIds Name="KukaRobot.setGroup">
+      <LineId Id="23" Count="0" />
+      <LineId Id="18" Count="1" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="KukaRobot.stop">
+      <LineId Id="13" Count="0" />
+      <LineId Id="6" Count="0" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="14" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

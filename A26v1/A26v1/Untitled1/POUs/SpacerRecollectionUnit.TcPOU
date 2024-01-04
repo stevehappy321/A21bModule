@@ -7,7 +7,7 @@ VAR_IN_OUT
 	robotSlider : ServoNC;
 END_VAR
 VAR_INPUT
-	conveyorOccupied_A24_LRC_C01 : BOOL;
+	conveyorOccupied_A24_LRC_C01 : BOOL; //odd number conveyors move the conveyor down the cell
 	conveyorOccupied_A24_LRC_C03 : BOOL;
 	conveyorOccupied_A24_LRC_C05 : BOOL;
 	conveyorOccupied_A24_LRC_C07 : BOOL;
@@ -43,6 +43,7 @@ busy := step > 0;
 done := done;
 error := error;
 
+//cell conveyors must be vacant to start removing spacers
 IF 
 	conveyorOccupied_A24_LRC_C01 OR
 	conveyorOccupied_A24_LRC_C03 OR
@@ -52,9 +53,10 @@ IF
 	conveyorOccupied_A24_LRC_C11 OR
 	conveyorOccupied_A24_LRC_C13
 THEN
+	robot.abort := TRUE;
 	robot.clearCommand();
 	
-ELSE
+ELSE 
 	//remove spacers from transfer conveyors in ascending order
 	process();
 	
@@ -136,12 +138,15 @@ END_CASE]]></ST>
     <LineIds Name="SpacerRecollectionUnit">
       <LineId Id="103" Count="2" />
       <LineId Id="101" Count="0" />
+      <LineId Id="206" Count="0" />
       <LineId Id="169" Count="0" />
       <LineId Id="9" Count="0" />
       <LineId Id="30" Count="3" />
       <LineId Id="39" Count="1" />
       <LineId Id="34" Count="0" />
-      <LineId Id="41" Count="1" />
+      <LineId Id="41" Count="0" />
+      <LineId Id="205" Count="0" />
+      <LineId Id="42" Count="0" />
       <LineId Id="93" Count="0" />
       <LineId Id="44" Count="0" />
       <LineId Id="94" Count="0" />

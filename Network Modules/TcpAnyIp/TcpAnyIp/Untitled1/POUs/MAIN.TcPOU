@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="MAIN" Id="{d141702d-d2aa-4ec2-97d6-7b1e6012e522}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	visionPC : TcpSingleServerEx;
+END_VAR
+VAR
+	sMessage : STRING := 'from AREA_4';
+	newRecipient : STRING;
+	
+	newData : TcpData;
+	retrievedData : TcpData;
+	
+	sendOnce : BOOL;
+	sendFastNum : BOOL;
+	
+	i : INT := 0;
+	
+	fbLocalSystemTime : FB_LocalSystemTime;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[visionPC(
+	ServerNetId:= '', 
+	ServerAdr:= , 
+	ServerPort:= 8016, 
+	busy=> , 
+	error=> , 
+	errorId=> , 
+	bytesReceived=> , 
+	receiveStruct=> , 
+	connected=> );
+
+IF sendOnce OR sendFastNum THEN
+	MEMSET(ADR(newData), 0, SIZEOF(newData));
+	
+	sMessage := TO_STRING(i);
+	
+	MEMCPY(ADR(newData), ADR(sMessage), MIN( SIZEOF(newData), SIZEOF(sMessage) ));
+	
+	IF
+		visionPC.queue(data := newData)
+	THEN
+		i := i + 1;
+		sendOnce := FALSE;
+	END_IF	
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="7" Count="8" />
+      <LineId Id="2" Count="0" />
+      <LineId Id="19" Count="5" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="52" Count="0" />
+      <LineId Id="31" Count="5" />
+      <LineId Id="17" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

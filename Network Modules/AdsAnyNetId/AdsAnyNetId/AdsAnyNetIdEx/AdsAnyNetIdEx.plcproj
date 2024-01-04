@@ -38,10 +38,6 @@
     <Compile Include="DUTs\EventsEnum.TcTLEO">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="GVLs\LocalSocket.TcGVL">
-      <SubType>Code</SubType>
-      <LinkAlways>true</LinkAlways>
-    </Compile>
     <Compile Include="GVLs\Sockets.TcGVL">
       <SubType>Code</SubType>
       <LinkAlways>true</LinkAlways>

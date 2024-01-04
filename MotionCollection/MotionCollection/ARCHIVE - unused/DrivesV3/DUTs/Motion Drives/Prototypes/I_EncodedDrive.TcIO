@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <Itf Name="I_EncodedDrive" Id="{b65119fa-ff56-441e-a101-af660bf1d388}">
+    <Declaration><![CDATA[INTERFACE I_EncodedDrive EXTENDS I_PositionalDrive, I_ContinuousDrive
+//this drive can perform absolute/relative targeting and continuous motion
+//only used if a drive with both encoded and continuous behavior is needed]]></Declaration>
+  </Itf>
+</TcPlcObject>

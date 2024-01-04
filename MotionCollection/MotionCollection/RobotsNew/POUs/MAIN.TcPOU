@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="MAIN" Id="{37b3c0c4-919e-468c-8bd2-8b4a0f7831ab}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR_OUTPUT
+	localTime : TIMESTRUCT;
+END_VAR
+VAR
+	r21 : RobotA21;
+	r22 : RobotA22;
+	r26 : RobotA26;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

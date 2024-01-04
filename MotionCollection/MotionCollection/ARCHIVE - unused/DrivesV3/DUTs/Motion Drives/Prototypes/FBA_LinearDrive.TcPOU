@@ -1,0 +1,153 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="FBA_LinearDrive" Id="{28ca8c55-b5b0-4a95-a168-92bd1175b33b}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ABSTRACT FBA_LinearDrive EXTENDS FBA_Drive IMPLEMENTS I_Drive
+VAR //constructor
+	limitSensorDefaultState : BOOL;
+	//when a traverse sensor is opposite of this value, the respective property becomes TRUE
+	//all sensors for a drive should be of the same type - do not mix & match PNP and NPN sensors on the same drive
+END_VAR
+VAR
+	innerLimit AT %I* : BOOL; //replacable with homeLimit
+	home AT %I* : BOOL;
+	//not all drives have a rear limit, drives that do must extend from FBA_TrifectaDrive
+END_VAR
+(*
+this abstract FB only specifies the minimum data for any linear drive
+*)]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Folder Name="Abstract" Id="{46a21656-1c7e-4e4d-9274-a73fc186196d}" />
+    <Folder Name="Complete" Id="{3959c361-1588-4f03-b5bd-b35b087de330}" />
+    <Property Name="Active" Id="{0e87bd74-90ff-4ece-9be0-92ccdcac8a00}" FolderPath="Abstract\">
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY ABSTRACT Active : BOOL]]></Declaration>
+      <Get Name="Get" Id="{67f5fc33-ad26-4607-a6e5-26d59ccae2cd}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="AtHome" Id="{c0c0a52d-7fc7-4e79-a36b-c4021dd98c4f}" FolderPath="Complete\">
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY AtHome : BOOL]]></Declaration>
+      <Get Name="Get" Id="{c60694d8-f986-4e0c-8848-672f1a891b27}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[AtHome := home <> limitSensorDefaultState;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="AtInnerLimit" Id="{efe6da1e-075e-40ad-8a45-9e29ca151d48}" FolderPath="Complete\">
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY AtInnerLimit : BOOL]]></Declaration>
+      <Get Name="Get" Id="{969cd7c8-9116-4754-af8a-6c1feed5fc72}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[AtInnerLimit := innerLimit <> limitSensorDefaultState;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="Error" Id="{3cd95bbb-cf41-44a2-96ba-80969ad66f8c}" FolderPath="Abstract\">
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY ABSTRACT Error : BOOL]]></Declaration>
+      <Get Name="Get" Id="{b744ddff-9103-4ba3-821d-da2ab3b91663}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="HomeSet" Id="{01a1c2fc-cb59-4c90-a9c5-9a1a1402d58d}" FolderPath="Complete\">
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY HomeSet : BOOL]]></Declaration>
+      <Get Name="Get" Id="{277391a3-bd85-424d-b508-17df5f612cc1}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[HomeSet := homingComplete;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="homingSequence" Id="{adcb6b5b-593f-4b99-9482-edc51b9c621e}" FolderPath="Abstract\">
+      <Declaration><![CDATA[{attribute 'TcRpcEnable'}
+METHOD ABSTRACT homingSequence : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="reset" Id="{d00550da-fdff-482c-bbd3-58e885306e93}" FolderPath="Abstract\">
+      <Declaration><![CDATA[{attribute 'TcRpcEnable'}
+METHOD ABSTRACT reset : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="stop" Id="{c942abc9-383b-49da-8b2c-d03bb3bca3c3}" FolderPath="Abstract\">
+      <Declaration><![CDATA[{attribute 'TcRpcEnable'}
+METHOD ABSTRACT stop : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="toHome" Id="{b90387a8-e71c-41a0-94a9-8ef037d4bcda}" FolderPath="Abstract\">
+      <Declaration><![CDATA[METHOD ABSTRACT toHome : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="FBA_LinearDrive">
+      <LineId Id="30" Count="0" />
+    </LineIds>
+    <LineIds Name="FBA_LinearDrive.Active.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FBA_LinearDrive.AtHome.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FBA_LinearDrive.AtInnerLimit.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FBA_LinearDrive.Error.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FBA_LinearDrive.HomeSet.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FBA_LinearDrive.homingSequence">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="FBA_LinearDrive.reset">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="FBA_LinearDrive.stop">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="FBA_LinearDrive.toHome">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

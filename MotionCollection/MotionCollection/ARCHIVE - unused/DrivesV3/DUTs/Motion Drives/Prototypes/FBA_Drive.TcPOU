@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="FBA_Drive" Id="{938fda8f-4bda-4461-9aaf-e26223e0f939}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ABSTRACT FBA_Drive
+VAR_INPUT
+	bEnable : BOOL;
+END_VAR
+VAR
+	homingComplete : BOOL;
+	step : Homing;
+END_VAR
+(*
+this abstract FB only specifies the minimum data for any drive
+*)]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <LineIds Name="FBA_Drive">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

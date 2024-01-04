@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <Itf Name="I_Area2Robot" Id="{81769b72-e253-4c65-bc45-fd00894d820b}">
+    <Declaration><![CDATA[INTERFACE I_Area2Robot
+]]></Declaration>
+    <Folder Name="Properties" Id="{48ccb73b-0acd-4bff-b234-48ccbf283e2d}" />
+    <Property Name="Busy" Id="{4c468d72-c4ac-4a81-a1cb-e703e9390365}" FolderPath="Properties\">
+      <Declaration><![CDATA[//{attribute 'monitoring' := 'variable'}
+{attribute 'monitoring' := 'call'}
+PROPERTY Busy : BOOL]]></Declaration>
+      <Get Name="Get" Id="{3a934247-7cc8-490d-9719-9702872fe1ac}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Method Name="clearCommand" Id="{383c1c5a-b200-4238-8619-fb67560d9a76}">
+      <Declaration><![CDATA[METHOD clearCommand : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Property Name="Done" Id="{129a1422-6b89-43b1-a482-13337fd43d30}" FolderPath="Properties\">
+      <Declaration><![CDATA[//{attribute 'monitoring' := 'variable'}
+{attribute 'monitoring' := 'call'}
+PROPERTY Done : BOOL]]></Declaration>
+      <Get Name="Get" Id="{647a1ab6-cf6c-45fb-8853-b2ad79ffcea5}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Property Name="Ready" Id="{338c913a-eef0-4be2-b7c0-4bc891ba978d}" FolderPath="Properties\">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
+PROPERTY Ready : BOOL]]></Declaration>
+      <Get Name="Get" Id="{8806150f-43fd-4064-8b9b-f2e383fe3af6}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Method Name="release" Id="{f4f4d439-0be9-4890-bec6-ec93c43ed77c}">
+      <Declaration><![CDATA[METHOD release : BOOL
+VAR_INPUT
+	sectionReservation : SectionEnum;
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="reserve" Id="{06446207-c0c4-403e-a233-848eb7b14014}">
+      <Declaration><![CDATA[METHOD reserve : BOOL
+VAR_INPUT
+	reserveRequest : SectionEnum;
+END_VAR
+(*
+this method exists because chipboard and wood bunk operations use the same robot
+both sections need to check if the robot is open to commands before use
+*)]]></Declaration>
+    </Method>
+    <Property Name="Reserved" Id="{c231ade8-8ccf-4d42-bdf8-b42b42aa80f0}" FolderPath="Properties\">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'call'}
+PROPERTY Reserved : BOOL]]></Declaration>
+      <Get Name="Get" Id="{38f84467-ee49-41c3-8b98-c46381301cd8}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Method Name="reset" Id="{2d52e7f4-06eb-4793-a855-2ba59843e286}">
+      <Declaration><![CDATA[METHOD reset : BOOL]]></Declaration>
+    </Method>
+    <Method Name="stop" Id="{5bdcbd02-0470-4035-ac1a-b4a6b831f0d8}">
+      <Declaration><![CDATA[METHOD stop : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+  </Itf>
+</TcPlcObject>

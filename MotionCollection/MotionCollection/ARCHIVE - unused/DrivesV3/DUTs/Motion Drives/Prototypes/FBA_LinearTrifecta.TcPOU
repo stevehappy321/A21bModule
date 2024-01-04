@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="FBA_LinearTrifecta" Id="{983d112e-9036-4684-9de5-17676cefe2c2}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ABSTRACT FBA_LinearTrifecta EXTENDS FBA_LinearDrive
+VAR
+	outerLimit AT %I* : BOOL;
+END_VAR
+(*
+this abstract FB adds a rear limit sensor to FBA_Drive
+*)]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Property Name="AtOuterLimit" Id="{dac0e275-c238-4d97-9eb5-b53ff5d109b5}">
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY AtOuterLimit : BOOL]]></Declaration>
+      <Get Name="Get" Id="{8e2cf29f-baab-4478-a786-49db2b481578}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[AtOuterLimit := outerLimit <> limitSensorDefaultState;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <LineIds Name="FBA_LinearTrifecta">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="FBA_LinearTrifecta.AtOuterLimit.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

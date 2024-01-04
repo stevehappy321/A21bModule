@@ -1,0 +1,264 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="MAIN" Id="{23a0bcfc-4aed-486c-b1bb-aade331f391d}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	sc1 : ConveyorSC;
+	sc2 : ConveyorSC;
+	sc3 : ConveyorSC;
+	sc4 : ConveyorSC;
+	lsc5 : ConveyorLSC;
+	lsc6 : ConveyorLSC;
+	lsc7 : ConveyorLSC;
+	lsc8 : ConveyorLSC;
+	
+END_VAR
+VAR
+	cellConveyors : ARRAY[1..8] OF POINTER TO ConveyorSC;
+	
+END_VAR
+(*
+in this module, conveyors are implemented as a linked list
+each conveyor's mode is determined by the actual mode (not requested mode) of its adjacent conveyors
+*)]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//double click on these for online write
+(*
+conveyor linking algorithm:
+	-find a chain where all conveyors are occupied
+	-find highest priority request between the chain
+	-set the actual mode all conveyors in the chain to that highest priority request
+*)
+
+call();
+
+sc1.trueMode;
+sc2.trueMode;
+sc3.trueMode;
+sc4.trueMode;
+lsc5.trueMode;
+lsc6.trueMode;
+lsc7.trueMode;
+lsc8.trueMode;
+
+sc1.requestedMode;
+sc2.requestedMode;
+sc3.requestedMode;
+sc4.requestedMode;
+lsc5.requestedMode;
+lsc6.requestedMode;
+lsc7.requestedMode;
+lsc8.requestedMode;
+
+slowLink();
+//fastLink();
+
+
+
+
+
+call();]]></ST>
+    </Implementation>
+    <Method Name="call" Id="{c6def675-1f1f-4119-8489-5fbf37d13dd0}">
+      <Declaration><![CDATA[METHOD call : BOOL
+VAR_INPUT
+END_VAR
+VAR
+	i : INT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[cellConveyors[1] := ADR(sc1);
+cellConveyors[2] := ADR(sc2);
+cellConveyors[3] := ADR(sc3);
+cellConveyors[4] := ADR(sc4);
+cellConveyors[5] := ADR(lsc5);
+cellConveyors[6] := ADR(lsc6);
+cellConveyors[7] := ADR(lsc7);
+cellConveyors[8] := ADR(lsc8);
+
+FOR i:=1 TO 8-1 BY 1 DO
+	
+	cellConveyors[i]^.join(cellConveyors[i+1]);
+	
+END_FOR
+
+
+sc1(error=> , position=> , velocity=> );
+sc2(error=> , position=> , velocity=> );
+sc3(error=> , position=> , velocity=> );
+sc4(error=> , position=> , velocity=> );
+
+lsc5(
+	error=> , 
+	position=> , 
+	velocity=> , 
+	lifterError=> , 
+	extended=> , 
+	retracted=> );
+	
+lsc6(
+	error=> , 
+	position=> , 
+	velocity=> , 
+	lifterError=> , 
+	extended=> , 
+	retracted=> );
+	
+lsc7(
+	error=> , 
+	position=> , 
+	velocity=> , 
+	lifterError=> , 
+	extended=> , 
+	retracted=> );
+	
+lsc8(
+	error=> , 
+	position=> , 
+	velocity=> , 
+	lifterError=> , 
+	extended=> , 
+	retracted=> );]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="fastLink" Id="{29c95081-e09b-4b5e-84af-5dc88534c0ad}">
+      <Declaration><![CDATA[METHOD fastLink : BOOL
+VAR
+	i : INT;
+	j : INT;
+	
+	linkStart : INT := -1;
+	linkEnd : INT := -1;
+	
+	priorityInLink : ConveyorMode;
+END_VAR
+VAR
+	numLinks : INT;
+	
+	startLinks : ARRAY[0..numCellConveyors-1] OF INT := [numCellConveyors(-1)];
+	endLinks : ARRAY[0..numCellConveyors-1] OF INT := [numCellConveyors(-1)];
+	chainPriority : ARRAY[0..numCellConveyors] OF ConveyorMode := [numCellConveyors(ConveyorMode.IDLE)];
+	
+	iLinkSetter : INT;
+END_VAR
+VAR CONSTANT
+	numCellConveyors : INT := 8;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FOR i:=1 TO numCellConveyors BY 1 DO
+	
+	IF cellConveyors[i]^.IsOccupied THEN
+		
+		IF linkStart = -1 THEN
+			startLinks[numLinks] := i;
+		END_IF
+		
+		chainPriority[numLinks] := MAX(priorityInLink, cellConveyors[i]^.requestedMode);
+		endLinks[numLinks] := i;
+		
+	ELSIF linkStart <> -1 AND linkEnd <> -1 THEN //set the link end index and increment number of links
+		
+		endLinks[numLinks] := i-1;
+		numLinks := numLinks + 1;
+		
+	END_IF
+	
+END_FOR
+
+//final link
+IF startLinks[numLinks] > -1 AND endLinks[numLinks] > -1 THEN
+	endLinks[numLinks] := i;
+	numLinks := numLinks + 1;
+END_IF
+
+//set the true modes to all conveyors
+FOR i:=1 TO numCellConveyors BY 1 DO
+	
+	IF iLinkSetter < numLinks AND InRange(v1:= startLinks[iLinkSetter], v2:= endLinks[iLinkSetter], value:= i, inclusive:= TRUE) THEN
+		
+		cellConveyors[i]^.setMode(mode:= chainPriority[iLinkSetter]);
+		IF i = endLinks[iLinkSetter] THEN
+			iLinkSetter := iLinkSetter + 1;
+		END_IF
+		
+	END_IF
+	
+END_FOR]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="slowLink" Id="{fb583bdb-88a2-4c47-9d78-5240b97f3408}">
+      <Declaration><![CDATA[METHOD slowLink : BOOL
+VAR_INPUT
+END_VAR
+VAR
+	i : INT;
+	j : INT;
+	
+	linkStart : INT := -1;
+	linkEnd : INT := -1;
+	chainMode : ConveyorMode;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[linkStart := -1;
+linkEnd := -1;
+chainMode := 0;
+
+FOR i:=1 TO 8 BY 1 DO
+	
+	IF cellConveyors[i]^.IsOccupied THEN
+		IF linkStart = -1 THEN
+			linkStart := i;
+		END_IF
+		
+		chainMode := MAX(chainMode, cellConveyors[i]^.requestedMode);
+		linkEnd := i;
+	
+	ELSIF linkStart <> -1 AND linkEnd <> -1 THEN //set all conveyor operations to priorityInLink
+		
+		FOR j:=linkStart TO linkEnd BY 1 DO
+			cellConveyors[j]^.setMode(chainMode);
+		END_FOR
+		
+		linkStart := -1;
+		linkEnd := -1;
+		
+		chainMode := ConveyorMode.IDLE;
+		cellConveyors[i]^.setMode(ConveyorMode.IDLE);
+		
+		CONTINUE;
+	END_IF
+	
+END_FOR
+
+IF linkStart > -1 AND linkEnd > -1 THEN
+	FOR j:=linkStart TO linkEnd BY 1 DO
+		cellConveyors[j]^.setMode(chainMode);
+	END_FOR
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="MAIN">
+      <LineId Id="183" Count="14" />
+      <LineId Id="246" Count="2" />
+      <LineId Id="198" Count="6" />
+      <LineId Id="250" Count="1" />
+      <LineId Id="318" Count="1" />
+      <LineId Id="206" Count="0" />
+      <LineId Id="237" Count="4" />
+      <LineId Id="43" Count="0" />
+    </LineIds>
+    <LineIds Name="MAIN.call">
+      <LineId Id="6" Count="50" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="MAIN.fastLink">
+      <LineId Id="319" Count="26" />
+      <LineId Id="348" Count="10" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="MAIN.slowLink">
+      <LineId Id="6" Count="34" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

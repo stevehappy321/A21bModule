@@ -1,0 +1,238 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="LinearAirPiston" Id="{ea9ea4a8-9bd0-4aac-8729-215db794efc8}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK LinearAirPiston EXTENDS FBA_LinearDrive IMPLEMENTS I_ContinuousDrive
+VAR_OUTPUT
+	valveExtend AT %Q* : BOOL;
+	valveRetract AT %Q* : BOOL;
+END_VAR
+VAR //constructor
+	useBrake : BOOL; //optional - set to FALSE if retraction brake pulse is not required
+END_VAR
+VAR
+	mode : (HOLD, IN, OUT, BRAKE);
+	brakePulse : TP; //generates the retraction pulse
+END_VAR
+VAR_STAT CONSTANT
+	brakeWidth : TIME := T#650MS;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF NOT bEnable THEN
+	stop();
+	RETURN;
+END_IF
+
+brakePulse(IN:= , PT:= brakeWidth, Q=> , ET=> ); //reversal to act as brake
+brakePulse.IN := brakePulse.IN AND brakePulse.Q; //automatically turn off pulse
+
+override(); //alters the mode to prevent exceeding limits
+
+CASE mode OF
+	HOLD:
+		valveExtend := FALSE;
+		valveRetract := FALSE;
+		
+	IN:
+		valveExtend := TRUE;
+		valveRetract := FALSE;
+		
+	OUT:
+		valveExtend := FALSE;
+		valveRetract := TRUE;
+		
+	BRAKE: //coasts past inner limit, then slides back
+		valveExtend := FALSE;
+		valveRetract := TRUE;
+		
+		IF AtHome THEN
+			mode := HOLD;
+		END_IF
+		
+END_CASE
+
+valveRetract := valveRetract OR brakePulse.Q; //from mode or brake]]></ST>
+    </Implementation>
+    <Folder Name="Properties" Id="{616f7cec-1758-4567-8127-9e455222179c}" />
+    <Property Name="Active" Id="{9985c2d4-ce92-456b-b4e7-9c2fd90e68e8}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY Active : BOOL]]></Declaration>
+      <Get Name="Get" Id="{095a9587-5e45-40e8-a15a-d6948d991489}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Active :=
+	mode <> HOLD AND
+	valveExtend OR valveRetract;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="Error" Id="{522fd846-cbd4-448c-8770-97a3e7d3df6d}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY Error : BOOL]]></Declaration>
+      <Get Name="Get" Id="{59840cec-1546-4bf9-a759-bd664db5109e}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="extend" Id="{e9a501fb-9529-4239-9e0f-83d80e3dc941}">
+      <Declaration><![CDATA[METHOD extend : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF mode <> BRAKE THEN
+	mode := IN;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="homingSequence" Id="{57fa858b-45e3-4637-b59f-c1c4bbfb6b2b}">
+      <Declaration><![CDATA[METHOD homingSequence : BOOL]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE step OF
+	Homing.IDLE:
+		step := Homing.START;
+		
+	Homing.START:
+		IF AtHome THEN //if reached home
+			step := Homing.DONE;
+		ELSE
+			mode := OUT;
+		END_IF
+		
+	Homing.DONE:
+		mode := HOLD;
+		homingComplete := TRUE;
+		homingSequence := TRUE;		
+	
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="moveContinuous" Id="{cfb7b9aa-60cb-42ea-a5af-830950587cfb}">
+      <Declaration><![CDATA[{attribute 'TcRpcEnable'}
+METHOD moveContinuous : BOOL
+VAR_INPUT
+	direction : MC_Direction;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF direction = MC_Positive_Direction THEN
+	retract();
+ELSIF direction = MC_Negative_Direction THEN
+	extend();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="override" Id="{d3c99d87-36a4-4e39-a71a-a10755bbf9cb}">
+      <Declaration><![CDATA[METHOD PRIVATE override : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF brakePulse.Q THEN
+	mode := HOLD;
+END_IF
+
+IF AtHome AND (valveRetract OR mode = OUT) THEN
+	mode := HOLD;
+	
+ELSIF AtInnerLimit AND (valveExtend OR mode = IN) THEN	
+	brakePulse.IN := useBrake;
+	mode := HOLD;
+END_IF
+
+
+IF NOT bEnable THEN
+	stop();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="reset" Id="{3c17fce8-1812-4eaa-bbae-9d3fdf532a6f}">
+      <Declaration><![CDATA[METHOD reset : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[stop();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="retract" Id="{9ed6cc68-2779-428d-9011-4112f399b208}">
+      <Declaration><![CDATA[METHOD retract : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF mode <> BRAKE THEN
+	mode := OUT;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="stop" Id="{11cb8fed-f0a9-40fe-851a-66d0200aa188}">
+      <Declaration><![CDATA[METHOD stop : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[valveExtend := FALSE;
+valveRetract := FALSE;
+mode := HOLD;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="toHome" Id="{76a5a2ee-683e-47c0-b28a-fe4b6c1ac981}">
+      <Declaration><![CDATA[METHOD toHome : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[mode := OUT;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="LinearAirPiston">
+      <LineId Id="682" Count="32" />
+      <LineId Id="394" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearAirPiston.Active.Get">
+      <LineId Id="2" Count="0" />
+      <LineId Id="5" Count="1" />
+    </LineIds>
+    <LineIds Name="LinearAirPiston.Error.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearAirPiston.extend">
+      <LineId Id="16" Count="0" />
+      <LineId Id="20" Count="1" />
+    </LineIds>
+    <LineIds Name="LinearAirPiston.homingSequence">
+      <LineId Id="380" Count="4" />
+      <LineId Id="387" Count="2" />
+      <LineId Id="397" Count="1" />
+      <LineId Id="390" Count="3" />
+      <LineId Id="395" Count="1" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearAirPiston.moveContinuous">
+      <LineId Id="5" Count="1" />
+      <LineId Id="8" Count="1" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearAirPiston.override">
+      <LineId Id="42" Count="14" />
+      <LineId Id="19" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearAirPiston.reset">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearAirPiston.retract">
+      <LineId Id="13" Count="1" />
+      <LineId Id="12" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearAirPiston.stop">
+      <LineId Id="5" Count="0" />
+      <LineId Id="9" Count="1" />
+    </LineIds>
+    <LineIds Name="LinearAirPiston.toHome">
+      <LineId Id="7" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

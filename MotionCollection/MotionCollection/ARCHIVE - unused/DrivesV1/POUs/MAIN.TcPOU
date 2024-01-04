@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="MAIN" Id="{1f7dada0-818a-472e-8545-00d4ea5b2d4c}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	xInsertion : Insertion;
+	
+	xServoNC : ServoNC;
+	xClearLinkMC : ClearLinkMC;
+	xAirPiston : AirPiston;
+	xSimplePiston : SimplePiston;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*
+this solution contains the package for various motion devices and the inheritance hierarchy, and any additional types
+the Insertion Package folder under DUTs + WithinTolerance() can be copied to any project/module as needed
+
+I_Drive contains the minimum behavior for any drive
+FBA_Drive implements I_Drive with the minimum declaration
+	FBA_TrifectaDrive extends it by adding an outer limit sensor for drives requiring 3 sensors
+	
+all Insertion-capable drives extend FBA_Drive or FBA_TrifectaDrive and implement I_ContinuousDrive, I_PositionalDrive, or I_EncodedDrive
+*)]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="13" Count="0" />
+      <LineId Id="2" Count="0" />
+      <LineId Id="14" Count="0" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="17" Count="3" />
+      <LineId Id="11" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

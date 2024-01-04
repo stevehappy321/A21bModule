@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <Itf Name="I_PositionalDrive" Id="{f9d4119c-20af-408e-b876-accff9769e94}">
+    <Declaration><![CDATA[INTERFACE I_PositionalDrive EXTENDS I_Drive
+]]></Declaration>
+    <Folder Name="Properties" Id="{4173356d-02fd-4e56-a233-640f55308bbc}" />
+    <Property Name="CurrentPosition" Id="{ce57afd1-e834-4cc7-b799-91338164a037}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY CurrentPosition : LREAL]]></Declaration>
+      <Get Name="Get" Id="{6974c1b0-aa00-4740-b559-12de4f8fdc63}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+      <Set Name="Set" Id="{fbd82ec2-448d-4c1b-a654-4e1b758861ed}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Set>
+    </Property>
+    <Method Name="moveAbsolute" Id="{0a181452-16cc-409a-82dd-aa7a07fa58e1}">
+      <Declaration><![CDATA[METHOD ABSTRACT moveAbsolute : BOOL
+VAR_INPUT
+	newTarget : LREAL; 
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="moveRelative" Id="{575c5f5d-4e77-4b6b-a3fc-4b2f847a2189}">
+      <Declaration><![CDATA[METHOD ABSTRACT moveRelative : BOOL
+VAR_INPUT
+	distance : LREAL;
+END_VAR]]></Declaration>
+    </Method>
+    <Property Name="TargetPosition" Id="{4b3ab9d6-36b1-468c-9995-d7ae76ced79b}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY TargetPosition : LREAL]]></Declaration>
+      <Get Name="Get" Id="{156c8ad0-75c8-47a6-8665-71fa10284e46}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+      <Set Name="Set" Id="{4fcd7c39-cf3b-41c3-bc9a-cf474bb1cd90}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+      </Set>
+    </Property>
+  </Itf>
+</TcPlcObject>

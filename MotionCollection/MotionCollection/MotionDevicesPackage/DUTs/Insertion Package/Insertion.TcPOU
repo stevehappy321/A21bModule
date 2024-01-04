@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="Insertion" Id="{6fdcc75d-47a9-4376-9535-f29e878efaa0}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Insertion //2d insertion that combines a slider (alignment) and screw (push)
+VAR_INPUT //interface references to existing drives
+	slider : I_PositionalDrive;
+	screw : I_ContinuousDrive;
+END_VAR
+VAR_OUTPUT
+	contact AT %I* : BOOL;
+	
+	active : BOOL;
+	error : BOOL;
+	home : BOOL;
+	
+	homingComplete : BOOL;
+	
+	sliderPos : LREAL;
+END_VAR
+(*
+this FB encapsulates 2 drives into a generic insertion machine
+both drives should be declared externally in Hardware GVL as a concrete FB
+Insertion instance should be declared and called in module scope, with the drives from Hardware GVL passed in by Interface reference
+*)]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[homingComplete := slider.HomeSet AND screw.HomeSet;
+
+active := slider.Active OR screw.Active;
+error := slider.Error OR screw.Error;
+home := slider.AtHome AND screw.AtHome;
+
+sliderPos := slider.CurrentPosition;]]></ST>
+    </Implementation>
+    <Method Name="align" Id="{faf6e411-d4af-46d2-abcb-b838ea5bab67}">
+      <Declaration><![CDATA[METHOD align : BOOL
+VAR_INPUT
+	targetPos : REAL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[slider.moveAbsolute(newTarget := targetPos);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="homingSequence" Id="{ae553247-1fea-44b9-ac9e-aa5f16aca2a6}">
+      <Declaration><![CDATA[METHOD homingSequence : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT slider.homeSet THEN
+	slider.homingSequence();
+END_IF
+
+IF NOT screw.homeSet THEN
+	screw.homingSequence();
+END_IF
+
+homingSequence := homingComplete;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="press" Id="{895db015-c226-409d-96e6-d5426910ae2e}">
+      <Declaration><![CDATA[METHOD press : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT contact THEN
+	screw.moveContinuous(direction := MC_Negative_Direction);
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="release" Id="{28bb9e09-a97d-4476-bfa3-854e18353f00}">
+      <Declaration><![CDATA[METHOD release : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[screw.moveContinuous(direction := MC_Positive_Direction);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="reset" Id="{f2128670-f949-44ac-887e-ee1dc72ef25c}">
+      <Declaration><![CDATA[METHOD reset : BOOL
+VAR_INPUT
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[slider.reset();
+screw.reset();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="stop" Id="{04918701-13bc-4373-bbdc-5e7250be0092}">
+      <Declaration><![CDATA[METHOD stop : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[screw.stop();
+slider.stop();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="toHome" Id="{c72f4a28-e930-41f5-bda1-2377534a9b28}">
+      <Declaration><![CDATA[METHOD toHome : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[slider.toHome();
+screw.toHome();
+
+toHome := slider.AtHome AND screw.AtHome;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="Insertion">
+      <LineId Id="314" Count="5" />
+      <LineId Id="137" Count="0" />
+    </LineIds>
+    <LineIds Name="Insertion.align">
+      <LineId Id="36" Count="0" />
+    </LineIds>
+    <LineIds Name="Insertion.homingSequence">
+      <LineId Id="24" Count="0" />
+      <LineId Id="9" Count="1" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="11" Count="0" />
+      <LineId Id="13" Count="1" />
+      <LineId Id="16" Count="0" />
+      <LineId Id="15" Count="0" />
+    </LineIds>
+    <LineIds Name="Insertion.press">
+      <LineId Id="9" Count="2" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="Insertion.release">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="Insertion.reset">
+      <LineId Id="5" Count="1" />
+    </LineIds>
+    <LineIds Name="Insertion.stop">
+      <LineId Id="5" Count="1" />
+    </LineIds>
+    <LineIds Name="Insertion.toHome">
+      <LineId Id="5" Count="1" />
+      <LineId Id="8" Count="0" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

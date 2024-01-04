@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="Watchdog" Id="{e3876bfe-14c0-43ce-aaa5-e702539e8ded}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Watchdog
+VAR_INPUT
+	enable : BOOL := TRUE; //watchdog can be disabled if needed
+	
+	toggleBit : BOOL;
+	timeoutWidth : TIME := T#3S;
+END_VAR
+VAR_OUTPUT
+	timeout : BOOL;
+	prevMsgTimestamp : TIMESTRUCT;
+END_VAR
+VAR	
+	timer : TON;
+	memoryBit : BOOL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[timer(
+	IN:= enable AND (memoryBit = toggleBit), 
+	PT:= timeoutWidth, 
+	Q=> timeout, 
+	ET=> );
+	
+IF enable AND memoryBit <> toggleBit THEN
+	prevMsgTimestamp := MAIN.localTime;
+END_IF
+
+memoryBit := toggleBit;]]></ST>
+    </Implementation>
+    <LineIds Name="Watchdog">
+      <LineId Id="150" Count="8" />
+      <LineId Id="167" Count="0" />
+      <LineId Id="166" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
