@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="MAIN" Id="{77976c2a-e039-4357-8e79-62df7b617506}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	servo : ServoNC;
+	linearServo : LinearEncodedDrive_3Sensor;
+	
+	clmc : ClearLinkMC;
+	linearCLMC : LinearEncodedDrive_3Sensor;
+	
+	airPiston : AirPiston;
+	linearAirPiston : LinearContinuousDrive_2Sensor;
+	
+	insertion : Insertion2D;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*
+as of 2024-01-04, all drives for this project require 3 sensors
+if the physical drive does not use 3 drives, attempt to bind it to an unused input
+*)
+linearServo(
+	bEnable:= TRUE, 
+	sensorDefaultState:= TRUE, 
+	ready=> , 
+	drive:= servo, 
+	homeAt0:= TRUE, 
+	allowDualSideTraverse:= TRUE, 
+	position=> , 
+	velocity=> );
+	
+linearAirPiston(
+	bEnable:= TRUE, 
+	sensorDefaultState:= FALSE, 
+	ready=> , 
+	drive:= airPiston, 
+	direction=> );
+
+insertion(
+	slider:= linearServo, 
+	screw:= linearAirPiston, 
+	contact=> , 
+	active=> , 
+	error=> , 
+	home=> , 
+	homingComplete=> , 
+	sliderPos=> );]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="297" Count="28" />
+      <LineId Id="55" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
