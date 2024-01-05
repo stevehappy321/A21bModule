@@ -1,0 +1,134 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="FBA_LinearDrive" Id="{6e18b76e-a910-410f-9bdc-e9944499ac6c}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ABSTRACT FBA_LinearDrive IMPLEMENTS I_LinearDrive
+VAR_INPUT
+	bEnable : BOOL;
+	sensorDefaultState : BOOL;
+END_VAR
+VAR_OUTPUT	
+	ready : BOOL;
+END_VAR
+VAR
+	direction : MC_Direction;
+	
+	step : Homing;
+	homingComplete : BOOL;
+	
+	home AT %I* : BOOL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Folder Name="Abstract" Id="{5b852458-7492-4207-8a3a-423e79cadb10}" />
+    <Folder Name="Properties" Id="{020ecba9-69b8-4211-9cef-e7d5a290d286}" />
+    <Property Name="Active" Id="{13443598-2d95-43e0-9ad5-d28301452e86}" FolderPath="Abstract\">
+      <Declaration><![CDATA[PROPERTY ABSTRACT Active : BOOL]]></Declaration>
+      <Get Name="Get" Id="{0ab7de27-bc4c-45c1-90b5-180d1941a751}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="AtHome" Id="{8ff14c6f-db84-4593-a15a-ceabfefdb83b}" FolderPath="Properties\">
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY AtHome : BOOL]]></Declaration>
+      <Get Name="Get" Id="{b616309b-65d0-4abe-919a-19c39dbec209}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[AtHome := home <> sensorDefaultState;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="Error" Id="{6abbeb83-adc3-4eaf-aa72-9f30d95d101f}" FolderPath="Abstract\">
+      <Declaration><![CDATA[PROPERTY ABSTRACT Error : BOOL]]></Declaration>
+      <Get Name="Get" Id="{72228712-55ba-4ec3-aad4-a86a30100290}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="HomeSet" Id="{a698b452-7d02-48c3-95ad-c49887df96f3}" FolderPath="Properties\">
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY HomeSet : BOOL]]></Declaration>
+      <Get Name="Get" Id="{19f25ff9-f621-402b-9154-b013de85f2a1}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[HomeSet := homingComplete;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="homingSequence" Id="{960b0ee1-804c-4505-b278-f1901847cba6}" FolderPath="Abstract\">
+      <Declaration><![CDATA[METHOD ABSTRACT homingSequence : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="reset" Id="{fa731df6-6b1e-4d97-8750-1bb688b2ee7a}" FolderPath="Abstract\">
+      <Declaration><![CDATA[METHOD ABSTRACT reset : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="stop" Id="{ef1daccc-48c1-47ec-a753-b7db2650175f}" FolderPath="Abstract\">
+      <Declaration><![CDATA[METHOD ABSTRACT stop : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="toHome" Id="{a50dcacf-df9c-4f3e-8e4d-8625f542db41}" FolderPath="Abstract\">
+      <Declaration><![CDATA[METHOD ABSTRACT toHome : BOOL
+VAR_INPUT
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="FBA_LinearDrive">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="FBA_LinearDrive.Active.Get">
+      <LineId Id="11" Count="0" />
+    </LineIds>
+    <LineIds Name="FBA_LinearDrive.AtHome.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FBA_LinearDrive.Error.Get">
+      <LineId Id="13" Count="0" />
+    </LineIds>
+    <LineIds Name="FBA_LinearDrive.HomeSet.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="FBA_LinearDrive.homingSequence">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="FBA_LinearDrive.reset">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="FBA_LinearDrive.stop">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="FBA_LinearDrive.toHome">
+      <LineId Id="12" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,192 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="LinearServoNC" Id="{ca6375cb-1a16-4775-bbd3-f77de2f39f3e}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK LinearServoNC EXTENDS ServoNC IMPLEMENTS I_LinearEncodedDrive
+VAR_INPUT
+	sensorDefaultState : BOOL;
+	
+	homeAt0 : BOOL;
+	allowDualSideTraverse : BOOL; //allows motion between home to retractLimit
+END_VAR
+VAR
+	homePosition : LREAL;
+	extendLimitPosition : LREAL;
+	
+	homingComplete : BOOL;
+	
+	home AT %I* : BOOL;
+	extendLimit AT %I* : BOOL;
+	retractLimit AT %I* : BOOL;
+	
+	step : Homing;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Folder Name="Properties" Id="{1c09a678-5067-478d-9089-fff161c6d496}" />
+    <Property Name="AtExtendLimit" Id="{e51070bb-9c2c-4abf-8149-efdabd42d235}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY AtExtendLimit : BOOL]]></Declaration>
+      <Get Name="Get" Id="{9444760d-d911-45e6-83b5-1c5cf5f5a8d3}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[AtExtendLimit := extendLimit <> sensorDefaultState;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="AtHome" Id="{a999cbbf-fb5f-4fdc-9608-5c52bb6de6f3}" FolderPath="Properties\">
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY AtHome : BOOL]]></Declaration>
+      <Get Name="Get" Id="{fc664c1d-24de-4de6-a350-8223397b54bf}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[AtHome := home <> sensorDefaultState;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="AtRetractLimit" Id="{745d1c76-1804-4a97-aebb-dacd772e9d8b}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY AtRetractLimit : BOOL]]></Declaration>
+      <Get Name="Get" Id="{6f946ff4-0e20-4a60-9ec4-bf27e7a31a18}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[AtRetractLimit := retractLimit <> sensorDefaultState;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="HomeSet" Id="{abb6f94c-3735-4a24-8612-4a6fdb76b3aa}" FolderPath="Properties\">
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY HomeSet : BOOL]]></Declaration>
+      <Get Name="Get" Id="{ab64dd72-aea0-4867-9bde-6be2cda4d7f4}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[HomeSet := homingComplete;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="homingSequence" Id="{ede81edf-0797-42a0-9d24-d66a2d477cdf}">
+      <Declaration><![CDATA[METHOD homingSequence : BOOL
+(*
+homing sequence is different for linear motion devices with limit sensors
+*)]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE step OF
+	Homing.IDLE:
+		reset();
+		IF bEnable THEN
+			step := Homing.RETRY;
+		END_IF
+		
+	Homing.START:
+		IF AtHome THEN
+			step := Homing.STOP;
+			
+		ELSIF AtRetractLimit THEN
+			step := Homing.RETRY;
+			
+		ELSE
+			moveContinuous(newDirection:= MC_Positive_Direction);
+		END_IF
+		
+	Homing.RETRY:
+		IF AtExtendLimit THEN
+			step := Homing.START;
+		ELSE
+			moveContinuous(newDirection:= MC_Positive_Direction);
+		END_IF
+		
+	Homing.STOP:
+		IF stop() THEN
+			step := Homing.SET;
+		END_IF
+		
+	Homing.SET:
+		IF CurrentPosition = 0 THEN
+			step := Homing.DONE;
+		ELSE
+			setPosition(newPosition := 0);
+		END_IF
+		
+	Homing.DONE:
+		homingComplete := TRUE;
+		step := Homing.IDLE;
+		
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="override" Id="{afa3921e-e05c-4dfb-b71d-9a40ed77ae34}">
+      <Declaration><![CDATA[METHOD PROTECTED override : BOOL
+VAR_INPUT
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF
+	(AtRetractLimit AND velocity > 0) OR
+	(NOT allowDualSideTraverse AND AtHome AND velocity > 0) OR
+	(AtExtendLimit AND velocity < 0)
+THEN
+	stop();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="toHome" Id="{062630e5-4fda-487e-b35c-caa87684c14b}">
+      <Declaration><![CDATA[METHOD toHome : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[moveAbsolute(newTarget := 0);]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="LinearServoNC">
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearServoNC.AtExtendLimit.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearServoNC.AtHome.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearServoNC.AtRetractLimit.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearServoNC.HomeSet.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearServoNC.homingSequence">
+      <LineId Id="439" Count="7" />
+      <LineId Id="493" Count="1" />
+      <LineId Id="511" Count="0" />
+      <LineId Id="495" Count="0" />
+      <LineId Id="509" Count="0" />
+      <LineId Id="502" Count="0" />
+      <LineId Id="498" Count="0" />
+      <LineId Id="505" Count="1" />
+      <LineId Id="459" Count="3" />
+      <LineId Id="464" Count="1" />
+      <LineId Id="467" Count="3" />
+      <LineId Id="512" Count="0" />
+      <LineId Id="475" Count="2" />
+      <LineId Id="536" Count="0" />
+      <LineId Id="542" Count="1" />
+      <LineId Id="547" Count="1" />
+      <LineId Id="486" Count="4" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearServoNC.override">
+      <LineId Id="565" Count="0" />
+      <LineId Id="571" Count="0" />
+      <LineId Id="566" Count="1" />
+      <LineId Id="569" Count="1" />
+      <LineId Id="563" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearServoNC.toHome">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

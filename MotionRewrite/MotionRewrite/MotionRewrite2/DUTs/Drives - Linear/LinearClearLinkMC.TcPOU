@@ -1,0 +1,307 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="LinearClearLinkMC" Id="{5cc69c24-a209-4ab4-827d-c3e832f18950}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK LinearClearLinkMC EXTENDS ClearLinkMC IMPLEMENTS I_LinearEncodedDrive
+VAR_INPUT
+	sensorDefaultState : BOOL;
+	
+	homeAt0 : BOOL;
+	allowDualSideTraverse : BOOL; //allows motion between home to retractLimit
+END_VAR
+VAR
+	homePosition : LREAL;
+	extendLimitPosition : LREAL;
+	
+	homingComplete : BOOL;
+	
+	home AT %I* : BOOL;
+	extendLimit AT %I* : BOOL;
+	retractLimit AT %I* : BOOL;
+	
+	step : Homing;
+	calculation : (IDLE, EXTEND, RETRACT, CALCULATE, DONE);
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();
+
+override();]]></ST>
+    </Implementation>
+    <Folder Name="Properties" Id="{a6689965-902c-4b2d-ac26-047bdef01e0c}" />
+    <Property Name="AtExtendLimit" Id="{1528a7d1-692e-4f26-bcbc-f2c7935a77e0}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY AtExtendLimit : BOOL]]></Declaration>
+      <Get Name="Get" Id="{2d6acb00-d05a-4c9d-a7b4-a149a10d1124}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[AtExtendLimit := extendLimit <> sensorDefaultState;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="AtHome" Id="{cb359e28-f20d-4484-88d5-619a8ee99eab}" FolderPath="Properties\">
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY AtHome : BOOL]]></Declaration>
+      <Get Name="Get" Id="{03fbf48a-50db-4cd1-8ca7-a632d42ea4ab}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[AtHome := home <> sensorDefaultState;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="AtRetractLimit" Id="{aa495962-2e05-40e3-899e-34a650de2699}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY AtRetractLimit : BOOL]]></Declaration>
+      <Get Name="Get" Id="{1264418a-2081-4312-8107-daa030ae7f6e}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[AtRetractLimit := retractLimit <> sensorDefaultState;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="calculatePositions" Id="{369fe372-e2d6-4f6c-8b9b-fc3030578aef}">
+      <Declaration><![CDATA[METHOD PRIVATE calculatePositions : BOOL
+(*
+THIS METHOD IS ONLY TO BE CALLED IF homeAt0 IS FALSE
+
+not all drives have their home sensor at the 0 position
+the purpose of this method is to calculate the home position, under the assumption that the extend limit sensor is 0
+
+implementation:
+	start from home
+	reach the extend limit and set position to 0
+	return to the home sensor and set the home position to the current position
+*)]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE calculation OF
+	IDLE:
+		calculation := EXTEND;
+		
+	EXTEND:		
+		IF AtExtendLimit THEN
+			
+			IF homeAt0 THEN
+				extendLimitPosition := CurrentPosition;
+				calculation := RETRACT;
+			
+			ELSIF setPosition(newPosition := 0) THEN
+				extendLimitPosition := 0;
+				calculation := RETRACT;
+			END_IF
+		
+		ELSE
+			moveContinuous(newDirection := MC_Negative_Direction);
+		END_IF
+		
+	RETRACT:
+		IF AtHome THEN
+			
+			IF homeAt0 THEN
+				homePosition := 0;
+				calculation := DONE;
+			
+			ELSE
+				homePosition := CurrentPosition;
+				calculation := DONE;
+			END_IF
+		
+		ELSE
+			moveContinuous(newDirection := MC_Positive_Direction);
+		END_IF
+		
+	DONE:
+		calculation := 0;
+		calculatePositions := TRUE;
+		
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="HomeSet" Id="{098f2bde-4f8f-4326-9f57-7c66a1399c38}" FolderPath="Properties\">
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY HomeSet : BOOL]]></Declaration>
+      <Get Name="Get" Id="{2b110dac-1b0f-41fe-a281-30a78b23ffd3}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[HomeSet := homingComplete;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="homingSequence" Id="{0c6df03b-769b-4994-9517-30de0da8b72a}">
+      <Declaration><![CDATA[METHOD homingSequence : BOOL
+(*
+homing sequence is different for linear motion devices with limit sensors
+*)]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE step OF
+	Homing.IDLE:
+		reset();
+		IF bEnable THEN
+			step := Homing.RETRY;
+		END_IF
+		
+	Homing.START:
+		IF AtHome THEN
+			step := Homing.STOP;
+			
+		ELSIF AtRetractLimit THEN
+			step := Homing.RETRY;
+			
+		ELSE
+			moveContinuous(newDirection:= MC_Positive_Direction);
+		END_IF
+		
+	Homing.RETRY:
+		IF AtExtendLimit THEN
+			step := Homing.START;
+		ELSE
+			moveContinuous(newDirection:= MC_Positive_Direction);
+		END_IF
+		
+	Homing.STOP:
+		IF stop() THEN
+			step := Homing.SET;
+		END_IF
+		
+	Homing.SET:
+		IF calculatePositions() THEN
+			step := Homing.DONE;
+		END_IF
+		
+	Homing.DONE:
+		homingComplete := TRUE;
+		step := Homing.IDLE;
+		
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="override" Id="{0cbf85b0-6808-407c-97a7-52f87e0e0715}">
+      <Declaration><![CDATA[METHOD PROTECTED override : BOOL
+VAR_INPUT
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF AtHome AND NOT Active THEN
+	IF homingDirectionOut THEN //homing is outwards
+		position := maxPosition;
+		pulsePosition := pulseCounter;
+	ELSE
+		position := minPosition;
+		pulsePosition := 0;
+	END_IF
+	
+
+ELSIF AtExtendLimit AND NOT Active THEN
+	IF homingDirectionOut THEN //homing is outwards
+		position := minPosition;
+		pulsePosition := 0;
+	ELSE
+		position := maxPosition;
+		pulsePosition := pulseCounter;
+	END_IF
+END_IF
+
+IF
+	(AtRetractLimit AND NOT A) OR
+	(NOT allowDualSideTraverse AND AtHome AND A) OR
+	(AtExtendLimit AND A)
+THEN
+	stop();
+END_IF
+(*
+CASE mode OF		
+	HOLD:
+		//
+	
+	TARGET:
+		IF
+			(AtHome AND TargetPosition > CurrentPosition) OR
+			(AtExtendLimit AND TargetPosition > CurrentPosition) OR
+			(AtRetractLimit AND TargetPosition < CurrentPosition)
+		THEN
+			mode := HOLD;
+		END_IF
+		
+	CONTINUOUS:
+		IF
+			(AtHome AND A) OR
+			(AtExtendLimit AND A) OR
+			(AtRetractLimit AND NOT A)
+		THEN
+			mode := HOLD;
+		END_IF
+		
+	RESET_ERR:
+		//
+		
+END_CASE
+*)]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="toHome" Id="{de81265a-c215-460e-ab0a-8d476e0a3bcb}">
+      <Declaration><![CDATA[METHOD toHome : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[moveAbsolute(newTarget := homePosition);]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="LinearClearLinkMC">
+      <LineId Id="9" Count="0" />
+      <LineId Id="11" Count="0" />
+      <LineId Id="10" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearClearLinkMC.AtExtendLimit.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearClearLinkMC.AtHome.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearClearLinkMC.AtRetractLimit.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearClearLinkMC.calculatePositions">
+      <LineId Id="174" Count="39" />
+      <LineId Id="12" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearClearLinkMC.HomeSet.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearClearLinkMC.homingSequence">
+      <LineId Id="439" Count="7" />
+      <LineId Id="493" Count="1" />
+      <LineId Id="511" Count="0" />
+      <LineId Id="495" Count="0" />
+      <LineId Id="509" Count="0" />
+      <LineId Id="502" Count="0" />
+      <LineId Id="498" Count="0" />
+      <LineId Id="505" Count="1" />
+      <LineId Id="459" Count="3" />
+      <LineId Id="464" Count="1" />
+      <LineId Id="467" Count="3" />
+      <LineId Id="512" Count="0" />
+      <LineId Id="475" Count="2" />
+      <LineId Id="536" Count="0" />
+      <LineId Id="542" Count="1" />
+      <LineId Id="486" Count="4" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearClearLinkMC.override">
+      <LineId Id="496" Count="18" />
+      <LineId Id="564" Count="1" />
+      <LineId Id="572" Count="0" />
+      <LineId Id="566" Count="1" />
+      <LineId Id="569" Count="1" />
+      <LineId Id="563" Count="0" />
+      <LineId Id="515" Count="25" />
+      <LineId Id="142" Count="0" />
+      <LineId Id="571" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearClearLinkMC.toHome">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

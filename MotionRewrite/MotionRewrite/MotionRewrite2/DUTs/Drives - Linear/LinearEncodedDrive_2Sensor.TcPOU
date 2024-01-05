@@ -1,0 +1,334 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="LinearEncodedDrive_2Sensor" Id="{ea755292-a6fa-40fb-95b3-d2022412252e}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK LinearEncodedDrive_2Sensor EXTENDS FBA_LinearDrive IMPLEMENTS I_LinearEncodedDrive
+VAR_INPUT
+	drive : I_EncodedDrive;
+	homeAt0 : BOOL;
+	allowDualSideTraverse : BOOL; //allows motion between home to retractLimit
+END_VAR
+VAR_OUTPUT
+	position : LREAL;
+	velocity : LREAL;
+END_VAR
+VAR
+	extendLimit AT %I* : BOOL;
+	
+	homePosition : LREAL;
+	limitPosition : LREAL;
+	
+	calculation : (IDLE, EXTEND, RETRACT, CALCULATE, DONE);
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[override();
+
+ready := bEnable AND NOT Active AND HomeSet;]]></ST>
+    </Implementation>
+    <Folder Name="Private" Id="{bfc7cd59-5502-47fd-8544-14e13c563425}" />
+    <Folder Name="Properties" Id="{ff0eed49-c4d6-41b0-8ac6-a32f57b20cde}" />
+    <Property Name="Active" Id="{993a7499-3e99-4a61-a571-dbc8581f0947}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY Active : BOOL]]></Declaration>
+      <Get Name="Get" Id="{f21af389-90c7-4e8d-b120-7f22799905d1}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Active := drive.Active;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="AtExtendLimit" Id="{fe778b76-883e-4188-a04d-8701f0eca7e6}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY AtExtendLimit : BOOL]]></Declaration>
+      <Get Name="Get" Id="{7bee755f-b6d6-411d-b0be-faf7dcedd78f}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[AtExtendLimit := extendLimit <> sensorDefaultState;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="calculatePositions" Id="{8e9a4957-77b2-4650-b732-3feddb14152d}" FolderPath="Private\">
+      <Declaration><![CDATA[METHOD PRIVATE calculatePositions : BOOL
+(*
+THIS METHOD IS ONLY TO BE CALLED IF homeAt0 IS FALSE
+
+not all drives have their home sensor at the 0 position
+the purpose of this method is to calculate the home position, under the assumption that the extend limit sensor is 0
+
+implementation:
+	start from home
+	reach the extend limit and set position to 0
+	return to the home sensor and set the home position to the current position
+*)]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE calculation OF
+	IDLE:
+		calculation := EXTEND;
+		
+	EXTEND:		
+		IF AtExtendLimit THEN
+			
+			IF homeAt0 THEN
+				limitPosition := CurrentPosition;
+				calculation := RETRACT;
+			
+			ELSIF setPosition(newPosition := 0) THEN
+				limitPosition := 0;
+				calculation := RETRACT;
+			END_IF
+		
+		ELSE
+			moveContinuous(newDirection := MC_Negative_Direction);
+		END_IF
+		
+	RETRACT:
+		IF AtHome THEN
+			
+			IF homeAt0 THEN
+				homePosition := 0;
+				calculation := DONE;
+			
+			ELSE
+				homePosition := CurrentPosition;
+				calculation := DONE;
+			END_IF
+		
+		ELSE
+			moveContinuous(newDirection := MC_Positive_Direction);
+		END_IF
+		
+	DONE:
+		calculation := 0;
+		calculatePositions := TRUE;
+		
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="CurrentPosition" Id="{7344bb65-2007-42da-8ff2-a75a72e296d3}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY CurrentPosition : LREAL]]></Declaration>
+      <Get Name="Get" Id="{8831212a-20e7-4b61-b9de-36b727b8517c}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[CurrentPosition := position;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="Error" Id="{7fc7efd9-8fb9-4ad0-9f65-9a958bbe9f07}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY Error : BOOL]]></Declaration>
+      <Get Name="Get" Id="{efc4bddd-2c07-4931-8b06-f1b3426f80fb}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[error := drive.Error;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="homingSequence" Id="{4914aeeb-6ed4-4799-a1d6-e837b861aed8}">
+      <Declaration><![CDATA[METHOD homingSequence : BOOL
+(*
+homing sequence is different for linear motion devices with limit sensors
+*)]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE step OF
+	Homing.IDLE:
+		reset();
+		IF bEnable THEN
+			step := Homing.START;
+		END_IF
+		
+	Homing.START:
+		IF AtHome THEN
+			step := Homing.STOP;
+			
+		ELSIF AtExtendLimit THEN
+			step := Homing.RETRY;
+			
+		ELSE
+			moveContinuous(newDirection:= MC_Positive_Direction);
+		END_IF
+		
+	Homing.STOP:
+		IF stop() THEN
+			step := Homing.DONE;
+		END_IF
+		
+	Homing.DONE:
+		homingComplete := TRUE;
+		step := Homing.IDLE;
+		
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="moveAbsolute" Id="{9339825a-8382-4c50-a751-1d5eb11f832f}">
+      <Declaration><![CDATA[METHOD moveAbsolute : BOOL
+VAR_INPUT
+	newTarget : LREAL;
+END_VAR
+(*
+VAR_OUTPUT
+	fault : BOOL;
+END_VAR
+*)]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[drive.moveAbsolute(newTarget:= newTarget);
+
+moveAbsolute := drive.CurrentPosition = newTarget;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="moveContinuous" Id="{68aef34c-193f-4e9a-963e-14046567652d}">
+      <Declaration><![CDATA[METHOD moveContinuous : BOOL
+VAR_INPUT
+	//direction : BOOL; //direction (F = inwards, T = outwards)
+	newDirection : MC_Direction;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[drive.moveContinuous(newDirection:= newDirection);
+
+direction := newDirection;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="moveRelative" Id="{ca5fd88d-32bf-4504-8bfc-dcab3a8bfbdc}">
+      <Declaration><![CDATA[METHOD moveRelative : BOOL
+VAR_INPUT
+	distance : LREAL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[drive.moveRelative(distance:= distance);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="override" Id="{8022caf1-84f1-4c12-ade6-e7ee7f76acc0}" FolderPath="Private\">
+      <Declaration><![CDATA[METHOD PRIVATE override : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[(*
+-at home and attempting to traverse outward
+-at outer limit and attempting to traverse outward
+-at inner limit and attempting to traverse inwards
+*)
+(*
+inward = negative direction, negative velocity
+outward = positive direction, positive velocity
+*)
+
+IF error THEN
+	stop();
+	reset();
+	
+ELSIF
+	(AtHome AND (TargetPosition > CurrentPosition OR direction = MC_Positive_Direction)) OR
+	(AtExtendLimit AND (TargetPosition > CurrentPosition OR direction = MC_Negative_Direction))
+THEN
+	stop();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="reset" Id="{6026a925-dabb-4f0d-9e88-d1a726f1fa26}">
+      <Declaration><![CDATA[METHOD reset : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[reset := drive.reset();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="setPosition" Id="{f13371d3-7758-4db3-b5a5-29c26ee15ed8}">
+      <Declaration><![CDATA[METHOD setPosition : BOOL
+VAR_INPUT
+	newPosition : LREAL;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[setPosition := drive.setPosition(newPosition:= newPosition);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="stop" Id="{24f8286d-4ff2-47ae-9dc2-f29b77cc5343}">
+      <Declaration><![CDATA[METHOD stop : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[drive.stop();]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="TargetPosition" Id="{33284570-1461-4a26-9c94-56fc787b3062}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY TargetPosition : LREAL]]></Declaration>
+      <Get Name="Get" Id="{bb632e3d-8930-4610-a5b6-ceea0d55df8c}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="toHome" Id="{dece4276-d8cf-4da8-add9-72f56d89c784}">
+      <Declaration><![CDATA[METHOD toHome : BOOL
+VAR_INPUT
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[moveAbsolute(newTarget := homePosition);]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="LinearEncodedDrive_2Sensor">
+      <LineId Id="493" Count="0" />
+      <LineId Id="505" Count="0" />
+      <LineId Id="165" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearEncodedDrive_2Sensor.Active.Get">
+      <LineId Id="11" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearEncodedDrive_2Sensor.AtExtendLimit.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearEncodedDrive_2Sensor.calculatePositions">
+      <LineId Id="174" Count="39" />
+      <LineId Id="12" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearEncodedDrive_2Sensor.CurrentPosition.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearEncodedDrive_2Sensor.Error.Get">
+      <LineId Id="13" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearEncodedDrive_2Sensor.homingSequence">
+      <LineId Id="547" Count="26" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearEncodedDrive_2Sensor.moveAbsolute">
+      <LineId Id="89" Count="2" />
+    </LineIds>
+    <LineIds Name="LinearEncodedDrive_2Sensor.moveContinuous">
+      <LineId Id="25" Count="0" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="30" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearEncodedDrive_2Sensor.moveRelative">
+      <LineId Id="14" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearEncodedDrive_2Sensor.override">
+      <LineId Id="77" Count="16" />
+      <LineId Id="95" Count="2" />
+    </LineIds>
+    <LineIds Name="LinearEncodedDrive_2Sensor.reset">
+      <LineId Id="18" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearEncodedDrive_2Sensor.setPosition">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearEncodedDrive_2Sensor.stop">
+      <LineId Id="13" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearEncodedDrive_2Sensor.TargetPosition.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearEncodedDrive_2Sensor.toHome">
+      <LineId Id="6" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

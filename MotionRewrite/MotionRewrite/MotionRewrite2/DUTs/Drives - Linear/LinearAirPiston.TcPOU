@@ -1,0 +1,134 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="LinearAirPiston" Id="{3cef2aa2-5619-40e9-a961-d9bddd8851a4}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK LinearAirPiston EXTENDS AirPiston IMPLEMENTS I_LinearContinuousDrive
+VAR_INPUT
+	sensorDefaultState : BOOL;
+END_VAR
+VAR
+	homingComplete : BOOL;
+	
+	home AT %I* : BOOL;
+	extendLimit AT %I* : BOOL;
+	
+	step : Homing;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();
+
+override();]]></ST>
+    </Implementation>
+    <Folder Name="Properties" Id="{cd6ecf69-0a0b-4417-a89f-1a96b349c02e}" />
+    <Property Name="AtExtendLimit" Id="{1f931d61-2087-4e1f-b43e-e22deeef294a}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY AtExtendLimit : BOOL]]></Declaration>
+      <Get Name="Get" Id="{29e861d5-7e9e-4f52-8d8c-5175648613b8}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[AtExtendLimit := extendLimit <> sensorDefaultState;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="AtHome" Id="{7bd78f61-fc51-4fc6-be1e-257cd072f0a4}" FolderPath="Properties\">
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY AtHome : BOOL]]></Declaration>
+      <Get Name="Get" Id="{13482ca2-7a67-4c1d-b5b9-a9c44f4b97ef}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[AtHome := home <> sensorDefaultState;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="HomeSet" Id="{a58908be-c4d2-4f47-ac47-0ce758f783fe}" FolderPath="Properties\">
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY HomeSet : BOOL]]></Declaration>
+      <Get Name="Get" Id="{c9b261b1-c9ef-428e-817c-3b1579a88dcd}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[HomeSet := homingComplete;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="homingSequence" Id="{bd498af7-ec09-4bac-b5ee-2364ab0e9ed8}">
+      <Declaration><![CDATA[METHOD homingSequence : BOOL
+(*
+homing sequence is different for linear motion devices with limit sensors
+*)]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE step OF
+	Homing.IDLE:
+		reset();
+		IF bEnable THEN
+			step := Homing.START;
+		END_IF
+		
+	Homing.START:
+		IF AtHome THEN
+			step := Homing.STOP;
+			
+		ELSIF AtExtendLimit THEN
+			step := Homing.RETRY;
+			
+		ELSE
+			moveContinuous(newDirection:= MC_Positive_Direction);
+		END_IF
+		
+	Homing.STOP:
+		IF stop() THEN
+			step := Homing.DONE;
+		END_IF
+		
+	Homing.DONE:
+		homingComplete := TRUE;
+		step := Homing.IDLE;
+		
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="override" Id="{0ca8edcb-acdf-4fec-90f5-556f8d6a55b7}">
+      <Declaration><![CDATA[METHOD PROTECTED override : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF
+	(AtHome AND valveRetract) OR
+	(AtExtendLimit AND valveExtend)
+THEN
+	stop();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="LinearAirPiston">
+      <LineId Id="9" Count="0" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="22" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearAirPiston.AtExtendLimit.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearAirPiston.AtHome.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearAirPiston.HomeSet.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearAirPiston.homingSequence">
+      <LineId Id="516" Count="26" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearAirPiston.override">
+      <LineId Id="6" Count="0" />
+      <LineId Id="9" Count="1" />
+      <LineId Id="12" Count="0" />
+      <LineId Id="14" Count="0" />
+      <LineId Id="13" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

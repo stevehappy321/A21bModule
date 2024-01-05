@@ -1,0 +1,409 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="ClearLinkMC" Id="{3501a970-79a7-4eea-8bb9-34f86d7e07b9}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ClearLinkMC IMPLEMENTS I_EncodedDrive
+VAR_INPUT
+	bEnable : BOOL;
+END_VAR
+VAR_OUTPUT
+	pulse AT %Q* : INT;
+	brakeRelease AT %Q* : BOOL := TRUE;
+	enable : BOOL;
+	A : BOOL;
+	B : BOOL;
+	clear : BOOL;
+END_VAR
+VAR	
+	hlfb AT %I* : REAL := -9999; //high level feedback, if -9999 then servo is idle
+	
+	outputRegister AT %Q* : INT;
+	pulseRequest : INT;
+	
+	homingDelay : TON;
+	resetPulse : TP;
+	
+	mode : (HOLD, TARGET, CONTINUOUS, RESET_ERR);
+	calculation : (IDLE, DOWN, UP, CALCULATE, DONE);
+	maxPosition : LREAL;
+	
+	position, targetPos : LREAL;
+	
+	pulsePosition : INT;
+	pulseCounter : INT;
+	rotationsPerPulse : INT; //revolutions per pulse
+	displacementPerPulse : LREAL; //displacement per pulse
+END_VAR
+VAR_STAT CONSTANT
+	resetWidth : TIME := T#500MS;
+	delayWidth : TIME := T#500MS;
+END_VAR
+VAR //constructor
+	homingDirectionOut : BOOL; 			//homing direction - see <A>
+	minPosition : LREAL;
+	displacementPerRotation : LREAL; 	//displacement per revolution	
+	unitsPerPulse : INT := 800; 		//800 Teknic units per rotation - default setting is 800 units (1 rotation) per pulse
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//M-connector output register
+outputRegister.0 := enable AND bEnable; 	//enable
+outputRegister.1 := A; 						//direction bit - T = outwards, F = inwards
+outputRegister.2 := B; 						//homing bit - after startup, set to TRUE to begin homing, then set to FALSE to finish homing
+outputRegister.3 := clear; 					//reset bit
+
+rotationsPerPulse := unitsPerPulse/800; //Teknic constant - 800 units per rotation
+displacementPerPulse := displacementPerRotation * rotationsPerPulse;
+
+resetPulse(IN:= , PT:= resetWidth, Q=> clear, ET=> ); //reset pulse
+
+IF NOT enable THEN
+	stop();
+END_IF
+
+override();
+
+CASE mode OF		
+	HOLD: //hold current position, no motion
+		pulse := 0;
+		pulseRequest := 0;
+	
+	TARGET:	//target a given position
+		
+		IF WithinTolerance(position, targetPos, displacementPerPulse) THEN
+			pulseRequest := 0;
+			pulse := 0;
+			mode := HOLD;
+			
+		ELSIF NOT Active THEN
+			A :=  position < targetPos;
+			(*
+			2 options to traverse to a target position:
+				a)  send all pulses at once - continuous motion but may exceed limits, check for bounds before setting
+				b)  1 pulse at a time - choppy but safer
+			*)
+			targetPos := MAX(targetPos, minPosition); //if below minPosition, set to minPosition
+			targetPos := MIN(targetPos, maxPosition); //if above maxPosition, set to maxPosition
+			
+			pulseRequest := TO_INT(ABS(position - targetPos)/displacementPerPulse);
+			//pulseRequest := 1;
+		END_IF
+		
+	CONTINUOUS: //single pulses in the direction specified by moveContinuous()
+		pulseRequest := 1;
+		
+	RESET_ERR: //reset pulse, servo may need to be rehomed aftewards
+		pulse := 0;
+		pulseRequest := 0;
+		resetPulse.IN := TRUE;
+		
+		IF resetPulse.Q THEN
+			resetPulse.IN := FALSE;
+			mode := HOLD;
+		END_IF
+		
+END_CASE
+
+sequence();]]></ST>
+    </Implementation>
+    <Folder Name="Private" Id="{ccb0e58e-8d37-453c-958f-fb2aba6dd5fc}" />
+    <Folder Name="Properties" Id="{fb69bdb8-bc89-452e-bda9-5fdd5a99ef2e}" />
+    <Property Name="Active" Id="{9519aa99-371e-4c69-8118-9962cff89296}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY Active : BOOL]]></Declaration>
+      <Get Name="Get" Id="{0de28cf8-22fe-4c08-ac71-e9ec9b65592a}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Active := hlfb <> -9999;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="CurrentPosition" Id="{20b41831-b0f4-4559-a997-1cbabf7658ad}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY CurrentPosition : LREAL]]></Declaration>
+      <Get Name="Get" Id="{527ec472-5784-4b25-ba1f-589f9fcaa90f}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[CurrentPosition := position;
+
+//CurrentPosition := pulsePosition * displacementPerPulse;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{f48e5e4c-4757-4fd3-8fb0-802f8896f5ad}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[position := CurrentPosition;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="Error" Id="{04487395-ca55-431f-919e-3a22238f7115}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY Error : BOOL]]></Declaration>
+      <Get Name="Get" Id="{143ddac4-9769-4582-875b-491f565af6a5}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="moveAbsolute" Id="{e7eb50ad-a039-44ea-b289-110dddaf19dd}">
+      <Declaration><![CDATA[{attribute 'TcRpcEnable'}
+METHOD moveAbsolute : BOOL
+VAR_INPUT
+	newTarget : LREAL;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF target >= maxPosition AND target <= minPosition THEN
+	A :=  position < targetPos;
+	targetPos := newTarget;
+	mode := TARGET;
+	
+	moveAbsolute := TRUE;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="moveContinuous" Id="{e6d86176-3ff6-407c-b1cf-4f8890b419c9}">
+      <Declaration><![CDATA[{attribute 'TcRpcEnable'}
+METHOD moveContinuous : BOOL
+VAR_INPUT
+	newDirection : MC_Direction;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF newDirection = MC_Negative_Direction THEN
+	A := FALSE;
+ELSIF newDirection = MC_Positive_Direction THEN
+	A := TRUE;
+END_IF
+
+mode := CONTINUOUS;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="moveRelative" Id="{b5f20c5e-cb3a-4f2d-b9a7-84f605acff3f}">
+      <Declaration><![CDATA[{attribute 'TcRpcEnable'}
+METHOD moveRelative : BOOL
+VAR_INPUT
+	distance : LREAL;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[targetPos := targetPos + distance;
+
+mode := TARGET;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="override" Id="{de30e2e0-dd4c-4794-9bf2-f9db0d803596}" FolderPath="Private\">
+      <Declaration><![CDATA[METHOD PRIVATE override : BOOL
+VAR_INPUT
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF error THEN
+	stop();
+	reset();
+END_IF
+
+(*
+IF AtHome AND NOT Active THEN
+	IF homingDirectionOut THEN //homing is outwards
+		position := maxPosition;
+		pulsePosition := pulseCounter;
+	ELSE
+		position := minPosition;
+		pulsePosition := 0;
+	END_IF
+	
+
+ELSIF AtInnerLimit AND NOT Active THEN
+	IF homingDirectionOut THEN //homing is outwards
+		position := minPosition;
+		pulsePosition := 0;
+	ELSE
+		position := maxPosition;
+		pulsePosition := pulseCounter;
+	END_IF
+END_IF
+
+CASE mode OF		
+	HOLD:
+		//
+	
+	TARGET:
+		IF
+			(AtHome AND TargetPosition > CurrentPosition) OR
+			(AtInnerLimit AND TargetPosition > CurrentPosition) OR
+			(AtOuterLimit AND TargetPosition < CurrentPosition)
+		THEN
+			mode := HOLD;
+		END_IF
+		
+	CONTINUOUS:
+		IF
+			(AtHome AND A) OR
+			(AtInnerLimit AND A) OR
+			(AtOuterLimit AND NOT A)
+		THEN
+			mode := HOLD;
+		END_IF
+		
+	RESET_ERR:
+		//
+		
+END_CASE
+*)]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="reset" Id="{d30841a7-31df-4fdb-8117-195359a0c017}">
+      <Declaration><![CDATA[METHOD reset : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[mode := RESET_ERR;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="sequence" Id="{589bd40c-943c-4849-8e09-eaf0aeeb6459}" FolderPath="Private\">
+      <Declaration><![CDATA[METHOD PRIVATE sequence : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF Active THEN //servo is active
+	IF A THEN //positive direction
+		position := position + (displacementPerPulse * pulse);
+		pulsePosition := pulsePosition + pulse;
+		
+		pulseCounter := pulseCounter + pulse;
+	ELSE //negative direction
+		position := position - (displacementPerPulse * pulse);
+		pulsePosition := pulsePosition - pulse;
+		
+		pulseCounter := pulseCounter - pulse;
+	END_IF
+	pulse := 0; //pulses already received, can be set to 0 so position change is not compounded
+
+ELSIF pulse = 0 THEN //servo is not active
+	pulse := pulseRequest;
+END_IF
+
+pulseRequest := 0; //remove this if not working as intended]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="setPosition" Id="{5fb7833e-4e1c-4512-bf88-33a2d51535d7}">
+      <Declaration><![CDATA[METHOD setPosition : BOOL
+VAR_INPUT
+	newPosition : LREAL;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[position := newPosition;
+
+setPosition := position = newPosition;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="stop" Id="{d98fd54a-8c45-4df9-87f8-8bad1af43b83}">
+      <Declaration><![CDATA[METHOD stop : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[mode := HOLD;]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="TargetPosition" Id="{ed09f3ed-d8b1-4f29-80bf-034c790d4781}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY TargetPosition : LREAL]]></Declaration>
+      <Get Name="Get" Id="{f72a0a4c-7d3b-4eea-80dc-d1951f586716}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{1c8d6d03-adf6-4cd7-9e7f-6864ba985148}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[targetPos := TargetPosition;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <LineIds Name="ClearLinkMC">
+      <LineId Id="3402" Count="11" />
+      <LineId Id="3416" Count="45" />
+      <LineId Id="1839" Count="0" />
+    </LineIds>
+    <LineIds Name="ClearLinkMC.Active.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="ClearLinkMC.CurrentPosition.Get">
+      <LineId Id="2" Count="0" />
+      <LineId Id="6" Count="0" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="ClearLinkMC.CurrentPosition.Set">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="ClearLinkMC.Error.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="ClearLinkMC.moveAbsolute">
+      <LineId Id="35" Count="0" />
+      <LineId Id="47" Count="0" />
+      <LineId Id="40" Count="0" />
+      <LineId Id="42" Count="0" />
+      <LineId Id="52" Count="0" />
+      <LineId Id="45" Count="0" />
+      <LineId Id="44" Count="0" />
+    </LineIds>
+    <LineIds Name="ClearLinkMC.moveContinuous">
+      <LineId Id="36" Count="5" />
+      <LineId Id="15" Count="0" />
+    </LineIds>
+    <LineIds Name="ClearLinkMC.moveRelative">
+      <LineId Id="6" Count="1" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="ClearLinkMC.override">
+      <LineId Id="558" Count="2" />
+      <LineId Id="556" Count="1" />
+      <LineId Id="553" Count="0" />
+      <LineId Id="496" Count="44" />
+      <LineId Id="142" Count="0" />
+      <LineId Id="555" Count="0" />
+    </LineIds>
+    <LineIds Name="ClearLinkMC.reset">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="ClearLinkMC.sequence">
+      <LineId Id="110" Count="2" />
+      <LineId Id="142" Count="0" />
+      <LineId Id="146" Count="0" />
+      <LineId Id="143" Count="0" />
+      <LineId Id="113" Count="1" />
+      <LineId Id="141" Count="0" />
+      <LineId Id="145" Count="0" />
+      <LineId Id="144" Count="0" />
+      <LineId Id="115" Count="1" />
+      <LineId Id="136" Count="0" />
+      <LineId Id="121" Count="1" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="151" Count="0" />
+      <LineId Id="150" Count="0" />
+    </LineIds>
+    <LineIds Name="ClearLinkMC.setPosition">
+      <LineId Id="5" Count="0" />
+      <LineId Id="10" Count="0" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+    <LineIds Name="ClearLinkMC.stop">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="ClearLinkMC.TargetPosition.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="ClearLinkMC.TargetPosition.Set">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

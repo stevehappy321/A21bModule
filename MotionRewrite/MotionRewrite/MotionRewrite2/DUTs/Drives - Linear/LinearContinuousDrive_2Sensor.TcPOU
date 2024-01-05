@@ -1,0 +1,194 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="LinearContinuousDrive_2Sensor" Id="{2d9188cd-ad30-4956-8d5f-b88d3102c3fe}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK LinearContinuousDrive_2Sensor EXTENDS FBA_LinearDrive IMPLEMENTS I_LinearContinuousDrive
+VAR_INPUT
+	drive : I_ContinuousDrive;
+END_VAR
+VAR
+	extendLimit AT %I* : BOOL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[override();
+
+ready := bEnable AND NOT Active AND HomeSet;]]></ST>
+    </Implementation>
+    <Folder Name="Private" Id="{3ba3509b-0d40-4ea4-811a-947a630516e4}" />
+    <Folder Name="Properties" Id="{7dd186fb-ba85-4c59-a970-19a54fcfadc2}" />
+    <Property Name="Active" Id="{088c139b-6a0c-4f65-8518-00f9c8339a6d}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY Active : BOOL]]></Declaration>
+      <Get Name="Get" Id="{335bcb3e-d6ec-4644-aa30-191dfa882793}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Active := drive.Active;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="AtExtendLimit" Id="{8f1e0ffe-cd76-400b-89c9-ab58ba076ac4}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY AtExtendLimit : BOOL]]></Declaration>
+      <Get Name="Get" Id="{152a49a6-c78f-4963-b6d1-a7f0a31eada4}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[AtExtendLimit := extendLimit <> sensorDefaultState;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="Error" Id="{5b1c6a70-d5d5-4300-b867-3ef3d15fb7ac}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY Error : BOOL]]></Declaration>
+      <Get Name="Get" Id="{ee9054dc-d07d-462c-a839-fe09eb0253e9}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[error := drive.Error;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="homingSequence" Id="{bfcd0096-7833-4bef-97f6-250bc428dc2f}">
+      <Declaration><![CDATA[METHOD homingSequence : BOOL
+(*
+homing sequence is different for linear motion devices with limit sensors
+*)]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE step OF
+	Homing.IDLE:
+		reset();
+		IF bEnable THEN
+			step := Homing.START;
+		END_IF
+		
+	Homing.START:
+		IF AtHome THEN
+			step := Homing.STOP;
+			
+		ELSIF AtExtendLimit THEN
+			step := Homing.RETRY;
+			
+		ELSE
+			moveContinuous(newDirection:= MC_Positive_Direction);
+		END_IF
+		
+	Homing.STOP:
+		IF stop() THEN
+			step := Homing.DONE;
+		END_IF
+		
+	Homing.DONE:
+		homingComplete := TRUE;
+		step := Homing.IDLE;
+		
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="moveContinuous" Id="{af100d6f-af7e-4519-9823-440dfe81e2d5}">
+      <Declaration><![CDATA[METHOD moveContinuous : BOOL
+VAR_INPUT
+	newDirection : MC_Direction;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[drive.moveContinuous(newDirection:= newDirection);
+
+direction := newDirection;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="override" Id="{0e3ca204-a9dd-467c-8642-994a01b39513}" FolderPath="Private\">
+      <Declaration><![CDATA[METHOD PRIVATE override : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[(*
+-at home and attempting to traverse outward
+-at outer limit and attempting to traverse outward
+-at inner limit and attempting to traverse inwards
+*)
+(*
+inward = negative direction, negative velocity
+outward = positive direction, positive velocity
+*)
+
+IF error THEN
+	stop();
+	reset();
+	
+ELSIF
+	(AtExtendLimit AND direction = MC_Negative_Direction) OR
+	(AtHome AND direction = MC_Positive_Direction)
+THEN
+	stop();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="reset" Id="{d507b5af-49fc-4f61-bfe7-b2cbe9255b70}">
+      <Declaration><![CDATA[METHOD reset : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[reset := drive.reset();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="stop" Id="{cd4bebce-eaf2-4b90-8156-811ca27572dd}">
+      <Declaration><![CDATA[METHOD stop : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[stop := drive.stop();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="toHome" Id="{1bee4eb9-8f8f-4283-b2d6-695b63df7300}">
+      <Declaration><![CDATA[METHOD toHome : BOOL
+VAR_INPUT
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF AtHome THEN
+	toHome := TRUE;
+ELSE
+	moveContinuous(newDirection := MC_Negative_Direction);
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="LinearContinuousDrive_2Sensor">
+      <LineId Id="633" Count="0" />
+      <LineId Id="636" Count="1" />
+    </LineIds>
+    <LineIds Name="LinearContinuousDrive_2Sensor.Active.Get">
+      <LineId Id="11" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearContinuousDrive_2Sensor.AtExtendLimit.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearContinuousDrive_2Sensor.Error.Get">
+      <LineId Id="13" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearContinuousDrive_2Sensor.homingSequence">
+      <LineId Id="516" Count="26" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearContinuousDrive_2Sensor.moveContinuous">
+      <LineId Id="25" Count="0" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="30" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearContinuousDrive_2Sensor.override">
+      <LineId Id="77" Count="14" />
+      <LineId Id="93" Count="4" />
+    </LineIds>
+    <LineIds Name="LinearContinuousDrive_2Sensor.reset">
+      <LineId Id="18" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearContinuousDrive_2Sensor.stop">
+      <LineId Id="13" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearContinuousDrive_2Sensor.toHome">
+      <LineId Id="6" Count="0" />
+      <LineId Id="13" Count="0" />
+      <LineId Id="10" Count="2" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

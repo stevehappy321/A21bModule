@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <Itf Name="I_LinearEncodedDrive" Id="{7174a65f-c6cc-446f-9555-70fb88afef07}">
+    <Declaration><![CDATA[INTERFACE I_LinearEncodedDrive EXTENDS I_LinearContinuousDrive, I_EncodedDrive
+]]></Declaration>
+  </Itf>
+</TcPlcObject>

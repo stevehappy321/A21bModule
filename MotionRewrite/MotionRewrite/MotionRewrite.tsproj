@@ -970,12 +970,15 @@ External Setpoint Generation:
 				<Task Id="3" Priority="33" CycleTime="100000" AmsPort="350" AdtTasks="true">
 					<Name>PlcTask</Name>
 				</Task>
+				<Task Id="4" Priority="20" CycleTime="100000" AmsPort="351" AdtTasks="true">
+					<Name>PlcTask1</Name>
+				</Task>
 			</Tasks>
 		</System>
 		<Plc>
-			<Project GUID="{5177C97A-F76D-4C2B-B1FB-BF3E03C5FE13}" Name="MotionHierarchyRewrite" PrjFilePath="MotionHierarchyRewrite\MotionHierarchyRewrite.plcproj" TmcFilePath="MotionHierarchyRewrite\MotionHierarchyRewrite.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="MotionHierarchyRewrite\MotionHierarchyRewrite.tmc" TmcHash="{4FCD16E5-757C-E675-9F9A-1A222C7E09A6}">
-					<Name>MotionHierarchyRewrite Instance</Name>
+			<Project Disabled="true" GUID="{5177C97A-F76D-4C2B-B1FB-BF3E03C5FE13}" Name="MotionRewrite1" PrjFilePath="MotionRewrite1\MotionRewrite1.plcproj" TmcFilePath="MotionRewrite1\MotionRewrite1.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="MotionHierarchyRewrite\MotionHierarchyRewrite.tmc" TmcHash="{E55DACF3-D780-E3C8-A3DD-8B104807CB0B}">
+					<Name>MotionRewrite1 Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
 						<Name>PlcTask Inputs</Name>
@@ -1065,6 +1068,101 @@ External Setpoint Generation:
 					</Contexts>
 					<TaskPouOids>
 						<TaskPouOid Prio="33" OTCID="#x08502001"/>
+					</TaskPouOids>
+				</Instance>
+			</Project>
+			<Project GUID="{4D49098D-273C-424A-87A3-9149C1C2A458}" Name="MotionRewrite2" PrjFilePath="MotionRewrite2\MotionRewrite2.plcproj" TmcFilePath="MotionRewrite2\MotionRewrite2.tmc" ReloadTmc="true" AmsPort="852" FileArchiveSettings="#x000e" SymbolicMapping="true">
+				<Instance Id="#x08502040" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{0F568B93-6433-D1EC-2B4C-9CC2A9EB1EC1}">
+					<Name>MotionRewrite2 Instance</Name>
+					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
+					<Vars VarGrpType="1">
+						<Name>PlcTask Inputs</Name>
+						<Var>
+							<Name>MAIN.linearNC.axis.NcToPlc</Name>
+							<Type GUID="{10036166-C9D3-404B-BDD3-323034AAA7F4}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.linearNC.home</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.linearNC.extendLimit</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.linearNC.retractLimit</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.linearCLMC.hlfb</Name>
+							<Comment><![CDATA[high level feedback, if -9999 then servo is idle]]></Comment>
+							<Type>REAL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.linearCLMC.home</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.linearCLMC.extendLimit</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.linearCLMC.retractLimit</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.linearAP.home</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.linearAP.extendLimit</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.insertion.contact</Name>
+							<Type>BOOL</Type>
+						</Var>
+					</Vars>
+					<Vars VarGrpType="2" AreaNo="1">
+						<Name>PlcTask Outputs</Name>
+						<Var>
+							<Name>MAIN.linearNC.axis.PlcToNc</Name>
+							<Type GUID="{63A84524-72E3-41C8-BEAB-4CCE44690A13}" Namespace="MC">PLCTONC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.linearCLMC.pulse</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.linearCLMC.brakeRelease</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.linearCLMC.outputRegister</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.linearAP.valveExtend</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>MAIN.linearAP.valveRetract</Name>
+							<Type>BOOL</Type>
+						</Var>
+					</Vars>
+					<Contexts>
+						<Context>
+							<Id NeedCalleeCall="true">0</Id>
+							<Name>PlcTask</Name>
+							<ManualConfig>
+								<OTCID>#x02010040</OTCID>
+							</ManualConfig>
+							<Priority>20</Priority>
+							<CycleTime>10000000</CycleTime>
+						</Context>
+					</Contexts>
+					<TaskPouOids>
+						<TaskPouOid Prio="20" OTCID="#x08502041"/>
 					</TaskPouOids>
 				</Instance>
 			</Project>

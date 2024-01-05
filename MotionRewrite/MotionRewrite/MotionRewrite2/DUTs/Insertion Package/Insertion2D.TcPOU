@@ -1,0 +1,175 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="Insertion2D" Id="{fd3338dd-9255-4680-9ae4-db8063fef1d5}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Insertion2D
+VAR_INPUT
+	slider : I_LinearEncodedDrive;
+	screw : I_LinearContinuousDrive;
+END_VAR
+VAR_OUTPUT
+	contact AT %I* : BOOL;
+	
+	active : BOOL;
+	error : BOOL;
+	home : BOOL;
+	
+	homingComplete : BOOL;
+	
+	sliderPos : LREAL;
+END_VAR
+(*
+this FB encapsulates 2 linear drives (1 encoded slider, 1 continuous screw) into a generic insertion machine
+both drives should be declared and called externally as a concrete FB
+*)]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[homingComplete := slider.HomeSet AND screw.HomeSet;
+
+active := slider.Active OR screw.Active;
+error := slider.Error OR screw.Error;
+home := slider.AtHome AND screw.AtHome;
+
+sliderPos := slider.CurrentPosition;]]></ST>
+    </Implementation>
+    <Method Name="align" Id="{47a93987-1e63-457b-976d-e3beb6a85a58}">
+      <Declaration><![CDATA[METHOD align : BOOL
+VAR_INPUT
+	targetPos : REAL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[{warning disable C0371}
+slider.moveAbsolute(newTarget := targetPos);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="homingSequence" Id="{a490d2f3-e9c5-442b-9291-a1ccc0f2ac16}">
+      <Declaration><![CDATA[METHOD homingSequence : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[{warning disable C0371}
+IF NOT slider.homeSet THEN
+	slider.homingSequence();
+END_IF
+
+IF NOT screw.homeSet THEN
+	screw.homingSequence();
+END_IF
+
+homingSequence := homingComplete;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="press" Id="{a04032fe-cf9f-475c-8ef3-620016e2c35d}">
+      <Declaration><![CDATA[METHOD press : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[{warning disable C0371}
+IF NOT contact THEN
+	screw.moveContinuous(newDirection := MC_Negative_Direction);
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="release" Id="{4fcd5174-6951-4a0e-a154-3a5ff87fdd59}">
+      <Declaration><![CDATA[METHOD release : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[{warning disable C0371}
+screw.moveContinuous(newDirection := MC_Positive_Direction);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="reset" Id="{2a5e1a57-ae80-40dc-b7af-1829d7712c98}">
+      <Declaration><![CDATA[METHOD reset : BOOL
+VAR_INPUT
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[{warning disable C0371}
+slider.reset();
+screw.reset();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="stop" Id="{880cadeb-51df-4dbe-b47b-f6f226727247}">
+      <Declaration><![CDATA[METHOD stop : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[{warning disable C0371}
+screw.stop();
+slider.stop();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="toHome" Id="{0588376b-b19c-46ad-8507-63727c94039a}">
+      <Declaration><![CDATA[METHOD toHome : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[{warning disable C0371}
+slider.toHome();
+screw.toHome();
+
+toHome := slider.AtHome AND screw.AtHome;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="traverse" Id="{1776946c-feed-460c-83a0-f2c05c981663}">
+      <Declaration><![CDATA[METHOD traverse : BOOL
+VAR_INPUT
+	direction : MC_Direction;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[{warning disable C0371}
+slider.moveContinuous(newDirection:= direction);]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="Insertion2D">
+      <LineId Id="314" Count="5" />
+      <LineId Id="137" Count="0" />
+    </LineIds>
+    <LineIds Name="Insertion2D.align">
+      <LineId Id="41" Count="0" />
+      <LineId Id="36" Count="0" />
+    </LineIds>
+    <LineIds Name="Insertion2D.homingSequence">
+      <LineId Id="28" Count="0" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="9" Count="1" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="11" Count="0" />
+      <LineId Id="13" Count="1" />
+      <LineId Id="16" Count="0" />
+      <LineId Id="15" Count="0" />
+    </LineIds>
+    <LineIds Name="Insertion2D.press">
+      <LineId Id="16" Count="3" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="Insertion2D.release">
+      <LineId Id="9" Count="0" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="Insertion2D.reset">
+      <LineId Id="9" Count="0" />
+      <LineId Id="5" Count="1" />
+    </LineIds>
+    <LineIds Name="Insertion2D.stop">
+      <LineId Id="10" Count="0" />
+      <LineId Id="5" Count="1" />
+    </LineIds>
+    <LineIds Name="Insertion2D.toHome">
+      <LineId Id="12" Count="0" />
+      <LineId Id="5" Count="1" />
+      <LineId Id="8" Count="0" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+    <LineIds Name="Insertion2D.traverse">
+      <LineId Id="13" Count="0" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

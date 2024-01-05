@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <Itf Name="I_LinearDrive" Id="{5de96b94-292d-466c-b578-4a59d3d49d3e}">
+    <Declaration><![CDATA[INTERFACE I_LinearDrive EXTENDS I_Drive
+]]></Declaration>
+    <Property Name="AtHome" Id="{02e0ea02-9ef6-49be-96cc-76eb527fd724}">
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY AtHome : BOOL]]></Declaration>
+      <Get Name="Get" Id="{426cb164-5327-41c5-9468-31545729bac1}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Property Name="HomeSet" Id="{de35e24c-c52f-494a-a4e0-97a9c626e3b7}">
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY HomeSet : BOOL]]></Declaration>
+      <Get Name="Get" Id="{b96a860e-a293-49cc-ae54-1bf75e93fa20}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Method Name="homingSequence" Id="{32bc7dae-a9cd-4699-b94e-c6fc22643c52}">
+      <Declaration><![CDATA[METHOD homingSequence : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="toHome" Id="{d087b628-9fa2-4cc9-8120-262adf273af5}">
+      <Declaration><![CDATA[METHOD toHome : BOOL
+VAR_INPUT
+END_VAR]]></Declaration>
+    </Method>
+  </Itf>
+</TcPlcObject>

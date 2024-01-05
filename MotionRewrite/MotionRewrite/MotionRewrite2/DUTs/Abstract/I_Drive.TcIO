@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <Itf Name="I_Drive" Id="{2c083758-60a9-42e5-a9a1-167bf3458c3a}">
+    <Declaration><![CDATA[INTERFACE I_Drive
+]]></Declaration>
+    <Property Name="Active" Id="{e3ee71e9-61f6-4f82-8a9c-581168957511}">
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY Active : BOOL]]></Declaration>
+      <Get Name="Get" Id="{4055766e-8def-4c11-a4aa-41a5f78c487a}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Property Name="Error" Id="{44982ee4-6b3b-43ac-b3a6-0ca396eb993d}">
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY Error : BOOL]]></Declaration>
+      <Get Name="Get" Id="{c76cc53d-1c48-418b-a9be-3cb0b16d9e08}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Method Name="reset" Id="{bcb8f5dc-bcb0-4e14-825d-9286830c3b35}">
+      <Declaration><![CDATA[METHOD reset : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+    <Method Name="stop" Id="{71ff8128-8f23-47f2-97f3-4bd7159ef989}">
+      <Declaration><![CDATA[METHOD ABSTRACT stop : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+    </Method>
+  </Itf>
+</TcPlcObject>

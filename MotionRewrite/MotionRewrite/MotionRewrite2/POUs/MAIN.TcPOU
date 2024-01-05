@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="MAIN" Id="{2da2c240-123a-4dc5-8fca-5f9b4ed2e0c6}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	linearNC : LinearServoNC;
+	linearCLMC : LinearClearLinkMC;
+	linearAP : LinearAirPiston;
+	
+	insertion : Insertion2D;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[linearNC(
+	bEnable:= TRUE, 
+	ready=> , 
+	position=> , 
+	velocity=> , 
+	sensorDefaultState:= TRUE, 
+	homeAt0:= TRUE, 
+	allowDualSideTraverse:= TRUE);
+	
+linearCLMC(
+	bEnable:= TRUE, 
+	pulse=> , 
+	brakeRelease=> , 
+	enable=> , 
+	A=> , 
+	B=> , 
+	clear=> , 
+	sensorDefaultState:= TRUE, 
+	homeAt0:= FALSE, 
+	allowDualSideTraverse:= FALSE);
+	
+linearAP(bEnable:= TRUE, valveExtend=> , valveRetract=> , sensorDefaultState:= FALSE);
+
+insertion(
+	slider:= linearCLMC, 
+	screw:= linearNC, 
+	contact=> , 
+	active=> , 
+	error=> , 
+	home=> , 
+	homingComplete=> , 
+	sliderPos=> );]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="342" Count="5" />
+      <LineId Id="373" Count="0" />
+      <LineId Id="340" Count="0" />
+      <LineId Id="349" Count="0" />
+      <LineId Id="351" Count="9" />
+      <LineId Id="350" Count="0" />
+      <LineId Id="361" Count="1" />
+      <LineId Id="364" Count="8" />
+      <LineId Id="363" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <Itf Name="I_ContinuousDrive" Id="{4acf1163-0cbe-46a9-aeb5-90a0386ec34b}">
+    <Declaration><![CDATA[INTERFACE I_ContinuousDrive EXTENDS I_Drive]]></Declaration>
+    <Method Name="moveContinuous" Id="{35e50634-4dba-44f0-827b-1ffa86f3aaca}">
+      <Declaration><![CDATA[METHOD ABSTRACT moveContinuous : BOOL
+VAR_INPUT
+	newDirection : MC_Direction;
+END_VAR]]></Declaration>
+    </Method>
+  </Itf>
+</TcPlcObject>

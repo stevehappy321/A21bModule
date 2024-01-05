@@ -1,0 +1,292 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="LinearServoNC" Id="{6a71c24b-e121-4635-9ee8-54e86420da1c}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK LinearServoNC EXTENDS FBA_TrifectaDrive IMPLEMENTS I_EncodedDrive
+VAR_INPUT
+	bEnable : BOOL;
+END_VAR
+VAR_OUTPUT	
+	ready : BOOL;
+	position : LREAL;
+	velocity : LREAL;
+END_VAR
+VAR
+	servo : ServoNC;
+	home AT %I* : BOOL;
+	extendLimit AT %I* : BOOL;
+	retractLimit AT %I* : BOOL;
+END_VAR
+VAR_STAT CONSTANT
+	targetingVelocity : INT := 500;
+	continuousVelocity : INT := 100;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[override();
+
+servo(bEnable:= bEnable, ready=> , position=> , velocity=> );
+
+ready := bEnable AND NOT Active AND HomeSet;
+
+]]></ST>
+    </Implementation>
+    <Folder Name="Private" Id="{6469a0cb-b276-4ed0-9c96-660d2cb3cb01}" />
+    <Folder Name="Properties" Id="{2c72d08d-a3d9-44fe-a49e-fde63c7b6d42}" />
+    <Property Name="Active" Id="{42c3c90f-8aef-4b8a-a8da-29af834cfb45}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY Active : BOOL]]></Declaration>
+      <Get Name="Get" Id="{bc64cf50-6f57-4b35-b0c3-c8dc52548241}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Active := servo.Active;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="CurrentPosition" Id="{84239ffc-cf90-4509-971e-2670c4b7c146}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY CurrentPosition : LREAL]]></Declaration>
+      <Get Name="Get" Id="{d9683bb0-3645-4356-878c-5a2e47a29b8a}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[CurrentPosition := position;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="Error" Id="{a4e2a042-d51c-4124-afa7-310d6c9b2ccb}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY Error : BOOL]]></Declaration>
+      <Get Name="Get" Id="{1a2c45b2-9a87-4add-a5f6-66c0f5c16aa9}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[error := servo.Error;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="homingSequence" Id="{42a6228d-3424-4599-956f-2e24eab209bc}">
+      <Declaration><![CDATA[METHOD homingSequence : BOOL
+(*
+homing sequence is different for linear motion devices with limit sensors
+*)]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE step OF
+	Homing.IDLE:
+		reset();
+		IF bEnable THEN
+			step := Homing.START;
+		END_IF
+		
+	Homing.START:
+		IF AtHome THEN
+			stop();
+			
+		ELSIF AtInnerLimit THEN
+			step := Homing.RETRY;
+			
+		ELSE
+			moveContinuous(direction:= MC_Positive_Direction);
+		END_IF
+		
+	Homing.RETRY:
+		IF AtOuterLimit THEN
+			moveContinuous(direction:= MC_Positive_Direction);
+		ELSE
+			moveContinuous(direction:= MC_Negative_Direction);
+		END_IF
+		
+	Homing.STOP:
+		IF velocity = 0 THEN
+			step := Homing.SET;
+		ELSE
+			stop();
+		END_IF
+		
+	Homing.SET:
+		IF position = 0 THEN
+			step := Homing.DONE;
+		ELSE
+			setPosition(newPosition:= 0);
+		END_IF
+		
+	Homing.DONE:
+		homingComplete := TRUE;
+		step := Homing.IDLE;
+		
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="moveAbsolute" Id="{8b6b09ff-4944-4076-87ac-211681c4fd5c}">
+      <Declaration><![CDATA[METHOD moveAbsolute : BOOL
+VAR_INPUT
+	newTarget : LREAL;
+END_VAR
+(*
+VAR_OUTPUT
+	fault : BOOL;
+END_VAR
+*)]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[servo.moveAbsolute(newTarget:= newTarget);
+
+moveAbsolute := servo.CurrentPosition = newTarget;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="moveContinuous" Id="{1b42a1d1-5780-4556-a8a9-8bdd18b8065f}">
+      <Declaration><![CDATA[METHOD moveContinuous : BOOL
+VAR_INPUT
+	//direction : BOOL; //direction (F = inwards, T = outwards)
+	direction : MC_Direction;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[servo.moveContinuous(direction:= direction);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="moveRelative" Id="{fefd542d-684b-455c-8676-f10bc0192545}">
+      <Declaration><![CDATA[METHOD moveRelative : BOOL
+VAR_INPUT
+	distance : LREAL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[servo.moveRelative(distance:= distance);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="override" Id="{7f0c1445-2dad-41af-a5d4-699b45d88d4c}" FolderPath="Private\">
+      <Declaration><![CDATA[METHOD PRIVATE override : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[(*
+-at home and attempting to traverse outward
+-at outer limit and attempting to traverse outward
+-at inner limit and attempting to traverse inwards
+*)
+(*
+inward = negative direction, negative velocity
+outward = positive direction, positive velocity
+*)
+
+IF error THEN
+	stop();
+	reset();
+	
+ELSIF
+	(NOT enableDualSideTraverse AND AtHome AND (TargetPosition > CurrentPosition OR velocity > 0)) OR
+	(AtInnerLimit AND (TargetPosition > CurrentPosition OR velocity > 0)) OR
+	(AtOuterLimit AND (TargetPosition < CurrentPosition OR velocity < 0))
+THEN
+	stop();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="reset" Id="{19da08b7-85d2-4185-8ac0-74ccd63de424}">
+      <Declaration><![CDATA[METHOD reset : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[reset := servo.reset();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="setPosition" Id="{5ee3c031-8bdb-416b-9e14-f1453cfee97e}">
+      <Declaration><![CDATA[METHOD setPosition : BOOL
+VAR_INPUT
+	newPosition : LREAL;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[servo.setPosition(newPosition:= newPosition);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="stop" Id="{272d864d-02a5-46e4-8492-3b483738d97a}">
+      <Declaration><![CDATA[METHOD stop : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[servo.stop();]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="TargetPosition" Id="{b1b94a76-ff8e-442c-9aae-50c9bffe232c}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY TargetPosition : LREAL]]></Declaration>
+      <Get Name="Get" Id="{9c471c4d-ee95-46be-80e3-d7bc7c3a9200}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="toHome" Id="{6ef6dea7-91dd-4001-b34e-5cd42de9cb8c}">
+      <Declaration><![CDATA[METHOD toHome : BOOL
+VAR_INPUT
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[servo.toHome();]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="LinearServoNC">
+      <LineId Id="493" Count="1" />
+      <LineId Id="504" Count="1" />
+      <LineId Id="165" Count="0" />
+      <LineId Id="564" Count="0" />
+      <LineId Id="563" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearServoNC.Active.Get">
+      <LineId Id="11" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearServoNC.CurrentPosition.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearServoNC.Error.Get">
+      <LineId Id="13" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearServoNC.homingSequence">
+      <LineId Id="439" Count="7" />
+      <LineId Id="493" Count="1" />
+      <LineId Id="511" Count="0" />
+      <LineId Id="495" Count="0" />
+      <LineId Id="509" Count="0" />
+      <LineId Id="502" Count="0" />
+      <LineId Id="498" Count="0" />
+      <LineId Id="505" Count="1" />
+      <LineId Id="459" Count="3" />
+      <LineId Id="464" Count="1" />
+      <LineId Id="467" Count="3" />
+      <LineId Id="512" Count="0" />
+      <LineId Id="473" Count="5" />
+      <LineId Id="481" Count="2" />
+      <LineId Id="485" Count="5" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearServoNC.moveAbsolute">
+      <LineId Id="89" Count="2" />
+    </LineIds>
+    <LineIds Name="LinearServoNC.moveContinuous">
+      <LineId Id="25" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearServoNC.moveRelative">
+      <LineId Id="14" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearServoNC.override">
+      <LineId Id="77" Count="20" />
+    </LineIds>
+    <LineIds Name="LinearServoNC.reset">
+      <LineId Id="18" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearServoNC.setPosition">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearServoNC.stop">
+      <LineId Id="13" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearServoNC.TargetPosition.Get">
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="LinearServoNC.toHome">
+      <LineId Id="6" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
