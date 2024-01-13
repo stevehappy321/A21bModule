@@ -19,8 +19,7 @@ VAR_OUTPUT
 	
 	timeout : BOOL;
 	
-	overheadOccupied AT %I* : BOOL;
-	overheadMaterial : STRING;
+	overheadTray : MaterialSlot;
 END_VAR
 VAR
 	holdPost : TON;
@@ -121,7 +120,7 @@ PROPERTY Overhead : STRING]]></Declaration>
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[Overhead := overheadMaterial;]]></ST>
+          <ST><![CDATA[Overhead := overheadTray.material;]]></ST>
         </Implementation>
       </Get>
       <Set Name="Set" Id="{2f82440b-2742-491e-909e-980b12f71fec}">
@@ -129,7 +128,7 @@ END_VAR
 END_VAR
 ]]></Declaration>
         <Implementation>
-          <ST><![CDATA[overheadMaterial := Overhead;]]></ST>
+          <ST><![CDATA[overheadTray.material := Overhead;]]></ST>
         </Implementation>
       </Set>
     </Property>

@@ -95,8 +95,8 @@ CASE step OF
 		END_IF
 		
 		CASE surfaceID OF
-			Surface.TOP_LEFT, Surface.TOP_RIGHT:			robot.setGroup(group := 1, value := A22.LOAD_CORNER_GUARD_UPPER);
-			Surface.BOTTOM_LEFT, SURFACE.BOTTOM_RIGHT:		robot.setGroup(group := 1, value := A22.LOAD_CORNER_GUARD_LOWER);
+			Surface.TOP_LEFT, Surface.TOP_RIGHT:			robot.setGroup(group := 1, value := TaskA22.LOAD_CORNER_GUARD_UPPER);
+			Surface.BOTTOM_LEFT, SURFACE.BOTTOM_RIGHT:		robot.setGroup(group := 1, value := TaskA22.LOAD_CORNER_GUARD_LOWER);
 		END_CASE
 		robot.setGroup(group := 2, value := column); 
 			
@@ -128,7 +128,7 @@ CASE step OF
 		robot.clearCommand();
 		
 		IF //check insertion quality
-			SuctionQualityPtrArr(
+			SuctionQualityPtr(
 				suctions := suctions, 
 				numPads := numPads, 
 				insertionMaterial := loadedMaterials[surfaceID], 
@@ -157,8 +157,8 @@ CASE step OF
 		END_IF
 		
 		CASE surfaceID OF
-			Surface.TOP_LEFT, Surface.TOP_RIGHT:			robot.setGroup(group := 1, value := A22.REMOVE_CORNER_GUARD_UPPER);
-			Surface.BOTTOM_LEFT, SURFACE.BOTTOM_RIGHT:		robot.setGroup(group := 1, value := A22.REMOVE_CORNER_GUARD_LOWER);
+			Surface.TOP_LEFT, Surface.TOP_RIGHT:			robot.setGroup(group := 1, value := TaskA22.REMOVE_CORNER_GUARD_UPPER);
+			Surface.BOTTOM_LEFT, SURFACE.BOTTOM_RIGHT:		robot.setGroup(group := 1, value := TaskA22.REMOVE_CORNER_GUARD_LOWER);
 		END_CASE
 		
 	RECOVERY_LOAD:	

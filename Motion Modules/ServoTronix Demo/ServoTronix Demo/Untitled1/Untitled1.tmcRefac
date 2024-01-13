@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Refactors>
+  <Renames>
+    <RenamedType>
+      <Type guid="f939ae28-30bd-4997-8b95-af50702e8d64">SERVOECAT</Type>
+      <From>ServoECAT</From>
+      <To>ServoNC</To>
+    </RenamedType>
+  </Renames>
+</Refactors>

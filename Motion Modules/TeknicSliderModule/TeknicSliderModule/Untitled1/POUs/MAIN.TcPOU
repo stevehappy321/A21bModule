@@ -1,0 +1,178 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="MAIN" Id="{13d21215-9747-4cee-a40e-9344284ff151}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	m0 : DriverSequence();
+	m1 : DriverSequence();
+	
+	enable : BOOL := TRUE;
+	
+	ready : BOOL;
+	contUp : BOOL;
+	contDown : BOOL;
+	target : REAL := -1;
+	
+	auto : BOOL := TRUE;
+	
+	step : INT;
+	timer : TON;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF m0.ready AND m1.ready AND auto THEN
+	autoSequence();
+END_IF
+
+m0(
+	enable:= enable,
+	contUp:= contUp, 
+	contDown:= contDown, 
+	target:= target,
+	ready=> );
+
+m1(
+	enable:= enable,
+	contUp:= contUp, 
+	contDown:= contDown, 
+	target:= target,
+	ready=> );
+	
+(*
+this module contains 2 ClearLink MC Motors
+motors can be controlled manually or with an automatic demo routine
+motors must be enabled and homed before use
+
+contUp - continuous positive direction
+contDown - continuous negative direction
+
+target - target a specified position >= 0
+*)]]></ST>
+    </Implementation>
+    <Method Name="autoSequence" Id="{4f1817ea-dc64-469d-b2fa-6c14eaa3d76c}">
+      <Declaration><![CDATA[METHOD autoSequence : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[timer(IN:= , PT:= , Q=> , ET=> );
+
+CASE step OF
+	0: //+continuous for 5s
+		timer.IN := TRUE;
+		timer.PT := T#5S;
+		
+		contUp := TRUE;
+		
+		IF timer.Q THEN
+			timer.IN := FALSE;
+			contUp := FALSE;
+			step := 10;
+		END_IF
+		
+	10: //target
+		IF m0.position = 150 AND NOT m0.busy AND m1.position = 150 AND NOT m1.busy THEN
+			target := -1;
+			step := 20;
+			RETURN;
+		END_IF
+		
+		target := 150;
+		
+		IF m0.busy AND m1.busy THEN
+			//step := 11;
+		END_IF
+		
+	11:
+		//
+	
+	20: //-continuous 2s
+		timer.IN := TRUE;
+		timer.PT := T#2S;
+		
+		contDown := TRUE;
+		
+		IF timer.Q THEN
+			timer.IN := FALSE;
+			contDown := FALSE;
+			step := 30;
+		END_IF
+	
+	
+	30: //target 0
+		target := 0;
+		
+		IF m0.busy AND m1.busy THEN
+			step := 31;
+		END_IF
+		
+	31:
+		IF m0.position = 0 AND NOT m0.busy AND m1.position = 0 AND NOT m1.busy THEN
+			target := -1;
+			step := 40;
+			RETURN;
+		END_IF
+		
+	40:
+		timer.IN := TRUE;
+		timer.PT := T#1S;
+		
+		IF timer.Q THEN
+			timer.IN := FALSE;
+			step := 0;
+		END_IF
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="MAIN">
+      <LineId Id="177" Count="2" />
+      <LineId Id="169" Count="0" />
+      <LineId Id="180" Count="11" />
+      <LineId Id="128" Count="0" />
+      <LineId Id="208" Count="1" />
+      <LineId Id="211" Count="0" />
+      <LineId Id="213" Count="0" />
+      <LineId Id="221" Count="0" />
+      <LineId Id="216" Count="0" />
+      <LineId Id="215" Count="0" />
+      <LineId Id="217" Count="0" />
+      <LineId Id="219" Count="0" />
+      <LineId Id="218" Count="0" />
+      <LineId Id="210" Count="0" />
+    </LineIds>
+    <LineIds Name="MAIN.autoSequence">
+      <LineId Id="16" Count="1" />
+      <LineId Id="5" Count="1" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="19" Count="0" />
+      <LineId Id="24" Count="1" />
+      <LineId Id="20" Count="1" />
+      <LineId Id="51" Count="0" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="22" Count="1" />
+      <LineId Id="50" Count="0" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="102" Count="3" />
+      <LineId Id="101" Count="0" />
+      <LineId Id="106" Count="0" />
+      <LineId Id="67" Count="0" />
+      <LineId Id="75" Count="3" />
+      <LineId Id="72" Count="2" />
+      <LineId Id="10" Count="1" />
+      <LineId Id="34" Count="5" />
+      <LineId Id="52" Count="0" />
+      <LineId Id="40" Count="1" />
+      <LineId Id="32" Count="1" />
+      <LineId Id="12" Count="1" />
+      <LineId Id="86" Count="3" />
+      <LineId Id="69" Count="0" />
+      <LineId Id="83" Count="1" />
+      <LineId Id="90" Count="3" />
+      <LineId Id="85" Count="0" />
+      <LineId Id="47" Count="2" />
+      <LineId Id="53" Count="3" />
+      <LineId Id="58" Count="0" />
+      <LineId Id="57" Count="0" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

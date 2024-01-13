@@ -2,22 +2,45 @@
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
   <POU Name="FB_System" Id="{3df11356-d723-40c5-bd16-325ffd1c8434}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_System
-VAR_INPUT
-END_VAR
-VAR_OUTPUT
-END_VAR
 VAR
 	plcStart : PLC_Start;
 	plcStop : PLC_Stop;
 	plcReset : PLC_Reset;
+	
+	tcRestart : TC_Restart;
+	tcConfig : TC_Config;
 END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[]]></ST>
     </Implementation>
-    <Method Name="resetRuntime" Id="{4a428e1a-7da5-40b0-b115-7e45ad1d899a}">
+    <Method Name="configTC" Id="{10f65ef4-9bbd-4708-becc-480ebe0fe5f3}">
       <Declaration><![CDATA[{attribute 'TcRpcEnable'}
-METHOD resetRuntime : BOOL
+METHOD configTC : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[tcConfig(
+	NETID:= , 
+	SET:= TRUE, 
+	TMOUT:= , 
+	BUSY=> , 
+	ERR=> , 
+	ERRID=> );
+	
+tcConfig(
+	NETID:= , 
+	SET:= FALSE, 
+	TMOUT:= , 
+	BUSY=> , 
+	ERR=> , 
+	ERRID=> );]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="resetPLC" Id="{4a428e1a-7da5-40b0-b115-7e45ad1d899a}">
+      <Declaration><![CDATA[{attribute 'TcRpcEnable'}
+METHOD resetPLC : BOOL
 VAR_INPUT
 END_VAR
 ]]></Declaration>
@@ -41,9 +64,30 @@ plcReset(
 	ERRID=> );]]></ST>
       </Implementation>
     </Method>
-    <Method Name="startRuntime" Id="{f1e1dfb1-a05a-46a8-95e0-a372db58dbfb}">
+    <Method Name="restartTC" Id="{f0606f07-75fa-4988-a608-8d72982073d8}">
       <Declaration><![CDATA[{attribute 'TcRpcEnable'}
-METHOD startRuntime : BOOL]]></Declaration>
+METHOD restartTC : BOOL]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[tcRestart(
+	NETID:= , 
+	RESTART:= TRUE, 
+	TMOUT:= , 
+	BUSY=> , 
+	ERR=> , 
+	ERRID=> );
+	
+tcRestart(
+	NETID:= , 
+	RESTART:= FALSE, 
+	TMOUT:= , 
+	BUSY=> , 
+	ERR=> , 
+	ERRID=> );]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="startPLC" Id="{f1e1dfb1-a05a-46a8-95e0-a372db58dbfb}">
+      <Declaration><![CDATA[{attribute 'TcRpcEnable'}
+METHOD startPLC : BOOL]]></Declaration>
       <Implementation>
         <ST><![CDATA[plcStart(
 	NETID:= '', 
@@ -64,9 +108,9 @@ plcStart(
 	ERRID=> );]]></ST>
       </Implementation>
     </Method>
-    <Method Name="stopRuntime" Id="{d85e402a-5466-4cae-a47b-6151c6e3078c}">
+    <Method Name="stopPLC" Id="{d85e402a-5466-4cae-a47b-6151c6e3078c}">
       <Declaration><![CDATA[{attribute 'TcRpcEnable'}
-METHOD stopRuntime : BOOL]]></Declaration>
+METHOD stopPLC : BOOL]]></Declaration>
       <Implementation>
         <ST><![CDATA[plcStop(
 	NETID:= '', 
@@ -90,21 +134,35 @@ plcStop(
     <LineIds Name="FB_System">
       <LineId Id="9" Count="0" />
     </LineIds>
-    <LineIds Name="FB_System.resetRuntime">
+    <LineIds Name="FB_System.configTC">
+      <LineId Id="6" Count="5" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="12" Count="0" />
+      <LineId Id="14" Count="5" />
+      <LineId Id="13" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_System.resetPLC">
       <LineId Id="9" Count="6" />
       <LineId Id="5" Count="0" />
       <LineId Id="16" Count="0" />
       <LineId Id="18" Count="6" />
       <LineId Id="17" Count="0" />
     </LineIds>
-    <LineIds Name="FB_System.startRuntime">
+    <LineIds Name="FB_System.restartTC">
+      <LineId Id="7" Count="5" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="13" Count="0" />
+      <LineId Id="15" Count="5" />
+      <LineId Id="14" Count="0" />
+    </LineIds>
+    <LineIds Name="FB_System.startPLC">
       <LineId Id="7" Count="6" />
       <LineId Id="5" Count="0" />
       <LineId Id="14" Count="0" />
       <LineId Id="16" Count="6" />
       <LineId Id="15" Count="0" />
     </LineIds>
-    <LineIds Name="FB_System.stopRuntime">
+    <LineIds Name="FB_System.stopPLC">
       <LineId Id="7" Count="6" />
       <LineId Id="5" Count="0" />
       <LineId Id="15" Count="0" />

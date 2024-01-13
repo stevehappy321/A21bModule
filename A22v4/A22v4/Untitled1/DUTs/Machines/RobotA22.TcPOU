@@ -3,7 +3,7 @@
   <POU Name="RobotA22" Id="{870b17d8-8fed-45ea-b532-f3f727b3e8ec}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK RobotA22 EXTENDS KukaRobot
 VAR_OUTPUT //from outputs array
-	taskID : A22;
+	taskID : TaskA22;
 	param1 : INT;
 	param2 : INT;
 	Xmm : INT;
@@ -17,7 +17,7 @@ VAR_OUTPUT //from inputs array
 	tool : SectionEnum := SectionEnum.CARDBOARD_CORNERGUARD;
 	suspendedMaterial : STRING;
 	
-	completedTask : A22;
+	completedTask : TaskA22;
 	eoatDistance : INT;
 	cardboardAvailability : INT;
 	cornerGuardAvailability : INT;
@@ -184,8 +184,7 @@ strapSafetyIn := inputs[4].15;
 VAR_INPUT
 	group : INT;
 	value : INT;
-END_VAR
-]]></Declaration>
+END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[SUPER^.setGroup(group := group, value := value);
 
@@ -209,20 +208,20 @@ VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[setGroup(group := 1, value := newTaskID);
-setGroup(group := 2, value := newParam1);
-setGroup(group := 3, value := newParam2);
-setGroup(group := 4, value := newXmm);
-setGroup(group := 5, value := newYmm);
-setGroup(group := 6, value := newZmm);
-setGroup(group := 7, value := newAngle);
+        <ST><![CDATA[super^.setGroup(group := 1, value := newTaskID);
+super^.setGroup(group := 2, value := newParam1);
+super^.setGroup(group := 3, value := newParam2);
+super^.setGroup(group := 4, value := newXmm);
+super^.setGroup(group := 5, value := newYmm);
+super^.setGroup(group := 6, value := newZmm);
+super^.setGroup(group := 7, value := newAngle);
 
 newStagingOccupancy.15 := NOT wrapperA22.enable AND NOT wrapperA22.execute;
-setGroup(group := 8, value := newStagingOccupancy);
+super^.setGroup(group := 8, value := newStagingOccupancy);
 
-setGroup(group := 9, value := newInsertionSuctionStatus);
-setGroup(group := 10, value := newMagazineStatus);
-setGroup(group := 11, value := newInspectionValue);
+super^.setGroup(group := 9, value := newInsertionSuctionStatus);
+super^.setGroup(group := 10, value := newMagazineStatus);
+super^.setGroup(group := 11, value := newInspectionValue);
 
 refreshParameters();]]></ST>
       </Implementation>

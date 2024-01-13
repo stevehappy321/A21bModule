@@ -15,19 +15,49 @@ magazineA22Right(slots := magazineHmiA22Right);
 wrapperA22();
 benderA22Left();
 
-horizontalDriveA22Left();
-horizontalDriveA22Right();
-
 verticalDriveA22Left();
 verticalDriveA22Right();
 
-pistonA22Bottom();]]></ST>
+horizontalDriveA22Left();
+horizontalDriveA22Right();
+
+pistonA22Bottom();
+
+insertionA22Left(
+	enable:= TRUE, 
+	slider:= verticalDriveA22Left, 
+	screw:= horizontalDriveA22Left, 
+	contact=> , 
+	active=> , 
+	error=> , 
+	home=> , 
+	homingComplete=> , 
+	sliderPos=> );
+	
+insertionA22Right(
+	enable:= TRUE, 
+	slider:= verticalDriveA22Right, 
+	screw:= horizontalDriveA22Right, 
+	contact=> , 
+	active=> , 
+	error=> , 
+	home=> , 
+	homingComplete=> , 
+	sliderPos=> );]]></ST>
     </Implementation>
     <LineIds Name="CallHardwareModules">
       <LineId Id="57" Count="9" />
       <LineId Id="75" Count="0" />
-      <LineId Id="68" Count="6" />
+      <LineId Id="99" Count="1" />
+      <LineId Id="98" Count="0" />
+      <LineId Id="68" Count="2" />
+      <LineId Id="74" Count="0" />
       <LineId Id="30" Count="0" />
+      <LineId Id="77" Count="9" />
+      <LineId Id="76" Count="0" />
+      <LineId Id="87" Count="0" />
+      <LineId Id="89" Count="8" />
+      <LineId Id="88" Count="0" />
     </LineIds>
   </POU>
 </TcPlcObject>

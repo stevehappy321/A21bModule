@@ -6,9 +6,10 @@
 TYPE Homing :
 (
 	IDLE,
-	IN,
-	OUT,
-	OUT_FINAL,
+	
+	START,
+	RETRY,
+	
 	STOP,
 	SET,
 	DONE,
@@ -16,6 +17,12 @@ TYPE Homing :
 	size
 );
 END_TYPE
-]]></Declaration>
+(*
+general homing sequence:
+	on drive.homingSequence() call, home towards home sensor
+	if home reached, set position and finish homing as usual
+	if outer limit reached, traverse towards inner limit
+		when inner limit reached, retry homing
+*)]]></Declaration>
   </DUT>
 </TcPlcObject>

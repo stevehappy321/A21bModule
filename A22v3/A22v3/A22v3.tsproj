@@ -1802,19 +1802,11 @@ External Setpoint Generation:
 		</Motion>
 		<Plc>
 			<Project GUID="{9EBFE716-1EFF-4899-8C57-2D56B56C6F29}" Name="Untitled1" PrjFilePath="Untitled1\Untitled1.plcproj" TmcFilePath="Untitled1\Untitled1.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{03329EE5-805C-8417-3373-2ED43A21EF92}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{43764ADC-93BB-FA39-80D0-50864A622F0B}">
 					<Name>Untitled1 Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
 						<Name>PlcTask Inputs</Name>
-						<Var>
-							<Name>MAIN.moduleA22.insertionLeft.contact</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.moduleA22.insertionRight.contact</Name>
-							<Type>BOOL</Type>
-						</Var>
 						<Var>
 							<Name>ContainerArrays.skidHmiA22Left[1].occupied</Name>
 							<Type>BOOL</Type>
@@ -1969,14 +1961,16 @@ External Setpoint Generation:
 						</Var>
 						<Var>
 							<Name>Hardware.horizontalDriveA22Left.outerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.horizontalDriveA22Left.home</Name>
+							<Comment><![CDATA[replacable with traverseLimit]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>Hardware.horizontalDriveA22Left.innerLimit</Name>
+							<Comment><![CDATA[replacable with homeLimit]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.horizontalDriveA22Left.home</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
@@ -1989,14 +1983,16 @@ External Setpoint Generation:
 						</Var>
 						<Var>
 							<Name>Hardware.horizontalDriveA22Right.outerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.horizontalDriveA22Right.home</Name>
+							<Comment><![CDATA[replacable with traverseLimit]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>Hardware.horizontalDriveA22Right.innerLimit</Name>
+							<Comment><![CDATA[replacable with homeLimit]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.horizontalDriveA22Right.home</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
@@ -2009,14 +2005,16 @@ External Setpoint Generation:
 						</Var>
 						<Var>
 							<Name>Hardware.verticalDriveA22Left.outerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA22Left.home</Name>
+							<Comment><![CDATA[replacable with traverseLimit]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>Hardware.verticalDriveA22Left.innerLimit</Name>
+							<Comment><![CDATA[replacable with homeLimit]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA22Left.home</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
@@ -2030,6 +2028,12 @@ External Setpoint Generation:
 						</Var>
 						<Var>
 							<Name>Hardware.verticalDriveA22Right.outerLimit</Name>
+							<Comment><![CDATA[replacable with traverseLimit]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA22Right.innerLimit</Name>
+							<Comment><![CDATA[replacable with homeLimit]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
@@ -2037,13 +2041,17 @@ External Setpoint Generation:
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.verticalDriveA22Right.innerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
 							<Name>Hardware.verticalDriveA22Right.hlfb</Name>
 							<Comment><![CDATA[high level feedback, if -9999 then servo is idle]]></Comment>
 							<Type>REAL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.insertionA22Left.contact</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.insertionA22Right.contact</Name>
+							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>Hardware.pistonA22Bottom.extended</Name>
@@ -2196,12 +2204,12 @@ reset AT %Q* : BOOL;]]></Comment>
 							<Type>INT</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.verticalDriveA22Left.outputRegister</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
 							<Name>Hardware.verticalDriveA22Left.brakeRelease</Name>
 							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA22Left.outputRegister</Name>
+							<Type>INT</Type>
 						</Var>
 						<Var>
 							<Name>Hardware.verticalDriveA22Right.pulse</Name>
@@ -2209,12 +2217,12 @@ reset AT %Q* : BOOL;]]></Comment>
 							<Type>INT</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.verticalDriveA22Right.outputRegister</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
 							<Name>Hardware.verticalDriveA22Right.brakeRelease</Name>
 							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA22Right.outputRegister</Name>
+							<Type>INT</Type>
 						</Var>
 						<Var>
 							<Name>Hardware.pistonA22Bottom.pistonExtend</Name>

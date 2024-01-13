@@ -15,19 +15,17 @@ VAR_GLOBAL
 	
 	wrapperA22 : WrapMachine;
 	
-	verticalDriveA22Left : ClearLinkMC := (
-		homingDirection := TRUE, 
-		maxSeparation := 1000, 
-		limitSensorDefaultState := TRUE);
-	horizontalDriveA22Left : ServoNC := (
+	horizontalDriveA22Left, horizontalDriveA22Right : ServoNC := (
 		limitSensorDefaultState := TRUE);
 		
-	verticalDriveA22Right : ClearLinkMC := (
-		homingDirection := TRUE, 
-		maxSeparation := 1000, 
-		limitSensorDefaultState := TRUE);
-	horizontalDriveA22Right : ServoNC := (
-		limitSensorDefaultState := TRUE);
+	verticalDriveA22Left, verticalDriveA22Right : ClearLinkMC := (
+		limitSensorDefaultState := TRUE, 
+		homingDirectionOut := TRUE, //outwards (up)
+		minPosition := (26*5 * 25.4),
+		displacementPerRotation := 5,
+		unitsPerPulse := 800); //800 counts = 1 rotation
+		
+	insertionA22Left, insertionA22Right : Insertion;
 		
 	pistonA22Bottom : SimplePiston;
 	

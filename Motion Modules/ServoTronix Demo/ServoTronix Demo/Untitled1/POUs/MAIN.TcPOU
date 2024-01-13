@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="MAIN" Id="{1f5f61ca-3148-4cc9-a992-52c18d091d4f}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR_INPUT
+	enable : BOOL;
+	reset : BOOL;
+	
+	positive : BOOL;
+	negative : BOOL;
+	
+	target : LREAL := 1;
+END_VAR
+VAR
+	servo : ServoNC;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[servo(
+	bEnable:= enable, 
+	home=> , 
+	outerLimit=> , 
+	innerLimit=> , 
+	ready=> , 
+	busy=> , 
+	error=> , 
+	homeSet=> , 
+	position=> );
+
+IF NOT servo.homeSet THEN
+	servo.homingSequence();
+	RETURN;
+END_IF
+
+servo.stop();
+
+IF positive THEN
+	servo.moveContinuous(direction:= MC_Positive_Direction);
+	negative := FALSE;
+END_IF
+
+IF negative THEN
+	servo.moveContinuous(direction:= MC_Negative_Direction);
+	positive := FALSE;
+END_IF
+
+IF target < 0 THEN
+	servo.moveAbsolute(target);
+END_IF
+
+IF reset THEN
+	servo.reset();
+	reset := FALSE;
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="14" Count="8" />
+      <LineId Id="12" Count="1" />
+      <LineId Id="2" Count="0" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="8" Count="0" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="39" Count="0" />
+      <LineId Id="38" Count="0" />
+      <LineId Id="40" Count="0" />
+      <LineId Id="42" Count="0" />
+      <LineId Id="41" Count="0" />
+      <LineId Id="44" Count="3" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="49" Count="0" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="50" Count="1" />
+      <LineId Id="56" Count="0" />
+      <LineId Id="55" Count="0" />
+      <LineId Id="57" Count="0" />
+      <LineId Id="59" Count="0" />
+      <LineId Id="58" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

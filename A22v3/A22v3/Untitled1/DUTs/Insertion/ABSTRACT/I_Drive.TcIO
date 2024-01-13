@@ -3,6 +3,13 @@
   <Itf Name="I_Drive" Id="{e1eb8c48-7b7b-492d-8b70-2ec679581052}">
     <Declaration><![CDATA[INTERFACE I_Drive
 ]]></Declaration>
+    <Property Name="Active" Id="{b9f317c0-8d70-497e-b1c4-c9ce1c341d8c}">
+      <Declaration><![CDATA[{attribute 'monitoring':='call'}
+PROPERTY ABSTRACT Active : BOOL]]></Declaration>
+      <Get Name="Get" Id="{542f606a-6965-47b8-a90c-0987a4a5aa56}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
     <Property Name="AtHome" Id="{d3367613-6051-45a7-bb4e-d3da08972b02}">
       <Declaration><![CDATA[{attribute 'monitoring':='call'}
 PROPERTY ABSTRACT AtHome : BOOL]]></Declaration>
@@ -21,13 +28,6 @@ PROPERTY ABSTRACT AtInnerLimit : BOOL]]></Declaration>
       <Declaration><![CDATA[{attribute 'monitoring':='call'}
 PROPERTY ABSTRACT AtOuterLimit : BOOL]]></Declaration>
       <Get Name="Get" Id="{81944ceb-b046-4f70-b15f-6c1788f26dfd}">
-        <Declaration><![CDATA[]]></Declaration>
-      </Get>
-    </Property>
-    <Property Name="Busy" Id="{b9f317c0-8d70-497e-b1c4-c9ce1c341d8c}">
-      <Declaration><![CDATA[{attribute 'monitoring':='call'}
-PROPERTY ABSTRACT Busy : BOOL]]></Declaration>
-      <Get Name="Get" Id="{542f606a-6965-47b8-a90c-0987a4a5aa56}">
         <Declaration><![CDATA[]]></Declaration>
       </Get>
     </Property>

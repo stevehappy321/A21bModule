@@ -31,7 +31,7 @@ an Insertion instance should be called in the scope it is declared in
 
 homingComplete := slider.HomeSet AND screw.HomeSet;
 
-busy := slider.Busy OR screw.Busy;
+busy := slider.Active OR screw.Active;
 error := slider.Error OR screw.Error;
 home := slider.AtHome AND screw.AtHome;
 

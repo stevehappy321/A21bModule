@@ -1,0 +1,192 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="DriverSequence" Id="{a3f9ba0a-2ad0-41b4-9a6e-1a63d7120b1c}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK DriverSequence
+VAR_IN_OUT
+	enable : BOOL;
+	contUp : BOOL;
+	contDown : BOOL;
+	target : REAL;
+END_VAR
+VAR_OUTPUT
+	ready : BOOL;
+	
+	busy : BOOL;
+	position : REAL;
+END_VAR
+VAR
+	servo : ClearLinkEIP;
+	
+	step : INT;
+	timer : TON;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[servo(
+	bEnable:= enable,
+	pulse=> , 
+	outputRegister=> , 
+	brakeRelease=> , 
+	A=> , 
+	B=> , 
+	clear=> , 
+	contact=> , 
+	home=> , 
+	outerLimit=> , 
+	innerLimit=> , 
+	hlfb=> , 
+	homeSet=> , 
+	busy=> , 
+	error=> , 
+	position=> , 
+	targetPos=> );
+
+IF NOT servo.homeSet THEN
+	servo.homingSequence(); //homing will overwrite the bEnable input, but it must be true for homing to proceed
+	RETURN;
+END_IF
+
+servo.stop();
+IF contUp THEN
+	servo.moveContinuous(direction := MC_Positive_Direction);
+	contDown := FALSE;
+END_IF
+
+IF contDown THEN
+	servo.moveContinuous(direction := MC_Negative_Direction);
+	contUp := FALSE;
+END_IF
+
+
+IF target >= 0 THEN
+	servo.moveAbsolute(newTarget := target);
+	//target := 0;
+END_IF
+
+
+IF servo.innerLimit THEN
+	contDown := FALSE;
+END_IF
+IF servo.home THEN
+	contUp := FALSE;
+END_IF
+
+position := servo.position;
+busy := servo.busy;]]></ST>
+    </Implementation>
+    <Method Name="autoSequence" Id="{ca498a70-55ce-48ed-a3ae-c5c08cfeb800}">
+      <Declaration><![CDATA[METHOD autoSequence : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[timer(IN:= , PT:= , Q=> , ET=> );
+
+CASE step OF
+	0: //+continuous for 5s
+		timer.IN := TRUE;
+		timer.PT := T#5S;
+		
+		contUp := TRUE;
+		
+		IF timer.Q THEN
+			timer.IN := FALSE;
+			contUp := FALSE;
+			step := 10;
+		END_IF
+		
+	10: //target
+		IF position = 150 AND NOT busy THEN
+			target := -1;
+			step := 20;
+			RETURN;
+		END_IF
+		
+		target := 150;
+		
+		IF busy THEN
+			//step := 11;
+		END_IF
+		
+	11:
+		//paste top part of 10 if does not work
+	
+	20: //-continuous 2s
+		timer.IN := TRUE;
+		timer.PT := T#2S;
+		
+		contDown := TRUE;
+		
+		IF timer.Q THEN
+			timer.IN := FALSE;
+			contDown := FALSE;
+			step := 30;
+		END_IF
+	
+	
+	30: //target 0
+		target := 0;
+		
+		IF busy THEN
+			step := 31;
+		END_IF
+		
+	31:
+		IF position = 0 AND NOT busy THEN
+			target := -1;
+			step := 40;
+			RETURN;
+		END_IF
+		
+	40:
+		timer.IN := TRUE;
+		timer.PT := T#1S;
+		
+		IF timer.Q THEN
+			timer.IN := FALSE;
+			step := 0;
+		END_IF
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="DriverSequence">
+      <LineId Id="196" Count="17" />
+      <LineId Id="216" Count="31" />
+      <LineId Id="119" Count="0" />
+    </LineIds>
+    <LineIds Name="DriverSequence.autoSequence">
+      <LineId Id="16" Count="1" />
+      <LineId Id="5" Count="1" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="19" Count="0" />
+      <LineId Id="24" Count="1" />
+      <LineId Id="20" Count="1" />
+      <LineId Id="51" Count="0" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="22" Count="1" />
+      <LineId Id="50" Count="0" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="102" Count="3" />
+      <LineId Id="101" Count="0" />
+      <LineId Id="106" Count="0" />
+      <LineId Id="67" Count="0" />
+      <LineId Id="75" Count="3" />
+      <LineId Id="72" Count="2" />
+      <LineId Id="10" Count="1" />
+      <LineId Id="34" Count="5" />
+      <LineId Id="52" Count="0" />
+      <LineId Id="40" Count="1" />
+      <LineId Id="32" Count="1" />
+      <LineId Id="12" Count="1" />
+      <LineId Id="86" Count="3" />
+      <LineId Id="69" Count="0" />
+      <LineId Id="83" Count="1" />
+      <LineId Id="90" Count="3" />
+      <LineId Id="85" Count="0" />
+      <LineId Id="47" Count="2" />
+      <LineId Id="53" Count="3" />
+      <LineId Id="58" Count="0" />
+      <LineId Id="57" Count="0" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

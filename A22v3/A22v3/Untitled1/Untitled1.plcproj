@@ -126,7 +126,7 @@
     <Compile Include="POUs\A22 - Cardboard-Corner Guard\AOIs\AOI_LoadFlatCardboard.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\A22 - Cardboard-Corner Guard\CorCarEx.TcPOU">
+    <Compile Include="POUs\A22 - Cardboard-Corner Guard\FiberboardEx.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\FB_System.TcPOU">

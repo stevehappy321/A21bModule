@@ -17,8 +17,12 @@ VAR_GLOBAL //complete modules
 		
 	verticalDriveA22Left, verticalDriveA22Right : ClearLinkMC := (
 		limitSensorDefaultState := TRUE, 
-		homingDirection := TRUE, 
-		maxSeparation := 1000);
+		homingDirection := TRUE, //outwards (up)
+		minPosition := 0,
+		displacementPerRotation := 1,
+		unitsPerPulse := 800); //800 counts = 1 rotation
+		
+	insertionA22Left, insertionA22Right : Insertion;
 		
 	pistonA22Bottom : SimplePiston;
 	

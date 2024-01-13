@@ -1480,7 +1480,7 @@ External Setpoint Generation:
 		<ImageData Id="1007">424de6000000000000007600000028000000100000000e000000010004000000000070000000120b0000120b0000100000001000000000000000000080000080000000808000800000008000800080800000c0c0c000808080000000ff0000ff000000ffff00ff000000ff00ff00ffff0000ffffff009d9dd99dd9ddd9dd9d9d9dd9d9ddd9dd999d9dd9d999d9999d9d9dd9d9ddd9dd9d9dd99dd999d999dddddddddddddddd88888888888888888888888888888888dddddddddddddddd999d999dd99dd9d99d9d9ddd9dd9d9d999dd999d9dddd99d9d9d9ddd9dd9d99d999d999dd99dd9d9</ImageData>
 		<ImageData Id="1008">424dba000000000000004a00000028000000100000000e000000010004000000000070000000c30e0000c30e0000050000000500000000000000ff00ff0080808000007fff0000ff000011111111111111110000000000000000020202020000044004040404000004400000000000000000000000000000000002020202000004400404040400000440000000000000000033333311111111113333331111111111333333111111111133333311111111113333331111111111</ImageData>
 	</ImageDatas>
-	<Project ProjectGUID="{D723D7DE-E802-47A2-8910-2070A7BDB727}" TargetNetId="5.131.216.41.1.1" Target64Bit="true" ShowHideConfigurations="#x106">
+	<Project ProjectGUID="{D723D7DE-E802-47A2-8910-2070A7BDB727}" Target64Bit="true" ShowHideConfigurations="#x106">
 		<System>
 			<Tasks>
 				<Task Id="3" Priority="20" CycleTime="100000" AmsPort="350" AdtTasks="true">
@@ -1787,83 +1787,11 @@ External Setpoint Generation:
 		</Motion>
 		<Plc>
 			<Project GUID="{9EBFE716-1EFF-4899-8C57-2D56B56C6F29}" Name="Untitled1" PrjFilePath="Untitled1\Untitled1.plcproj" TmcFilePath="Untitled1\Untitled1.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{947714DF-566B-222C-94B6-23381D538425}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{B2557E37-0183-C9F7-37E9-8BAB1EBB9163}">
 					<Name>Untitled1 Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
 						<Name>PlcTask Inputs</Name>
-						<Var>
-							<Name>MAIN.moduleA22.insertionLeft.contact</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.moduleA22.insertionRight.contact</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>ContainerArrays.skidHmiA22Left[1].occupied</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>ContainerArrays.skidHmiA22Left[2].occupied</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>ContainerArrays.skidHmiA22Left[3].occupied</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>ContainerArrays.skidHmiA22Left[4].occupied</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>ContainerArrays.skidHmiA22Left[5].occupied</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>ContainerArrays.skidHmiA22Left[6].occupied</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>ContainerArrays.skidHmiA22Right[1].occupied</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>ContainerArrays.skidHmiA22Right[2].occupied</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>ContainerArrays.skidHmiA22Right[3].occupied</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>ContainerArrays.skidHmiA22Right[4].occupied</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>ContainerArrays.skidHmiA22Right[5].occupied</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>ContainerArrays.skidHmiA22Right[6].occupied</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>ContainerArrays.magazineHmiA22Left[1].occupied</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>ContainerArrays.magazineHmiA22Left[2].occupied</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>ContainerArrays.magazineHmiA22Right[1].occupied</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>ContainerArrays.magazineHmiA22Right[2].occupied</Name>
-							<Type>BOOL</Type>
-						</Var>
 						<Var>
 							<Name>Hardware.robot3.offline</Name>
 							<Type>BOOL</Type>
@@ -1945,7 +1873,93 @@ External Setpoint Generation:
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.wrapperA22.overheadOccupied</Name>
+							<Name>Hardware.wrapperA22.overheadTray.occupied</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.horizontalDriveA22Left.innerLimit</Name>
+							<Comment><![CDATA[replacable with homeLimit]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.horizontalDriveA22Left.home</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.horizontalDriveA22Left.outerLimit</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.horizontalDriveA22Left.axis.NcToPlc</Name>
+							<Type GUID="{10036166-C9D3-404B-BDD3-323034AAA7F4}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.horizontalDriveA22Right.innerLimit</Name>
+							<Comment><![CDATA[replacable with homeLimit]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.horizontalDriveA22Right.home</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.horizontalDriveA22Right.outerLimit</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.horizontalDriveA22Right.axis.NcToPlc</Name>
+							<Type GUID="{10036166-C9D3-404B-BDD3-323034AAA7F4}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA22Left.innerLimit</Name>
+							<Comment><![CDATA[replacable with homeLimit]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA22Left.home</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA22Left.outerLimit</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA22Left.hlfb</Name>
+							<Comment><![CDATA[high level feedback, if -9999 then servo is idle]]></Comment>
+							<Type>REAL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA22Right.innerLimit</Name>
+							<Comment><![CDATA[replacable with homeLimit]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA22Right.home</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA22Right.outerLimit</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA22Right.hlfb</Name>
+							<Comment><![CDATA[high level feedback, if -9999 then servo is idle]]></Comment>
+							<Type>REAL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.insertionA22Left.contact</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.insertionA22Right.contact</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.pistonA22Bottom.extended</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.pistonA22Bottom.retracted</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
@@ -1958,96 +1972,6 @@ External Setpoint Generation:
 						</Var>
 						<Var>
 							<Name>Hardware.suctionA22TopLeft[3].occupied</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.horizontalDriveA22Left.contactSensor</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.horizontalDriveA22Left.outerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.horizontalDriveA22Left.home</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.horizontalDriveA22Left.innerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.horizontalDriveA22Left.axis.NcToPlc</Name>
-							<Type GUID="{10036166-C9D3-404B-BDD3-323034AAA7F4}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.horizontalDriveA22Right.contactSensor</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.horizontalDriveA22Right.outerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.horizontalDriveA22Right.home</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.horizontalDriveA22Right.innerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.horizontalDriveA22Right.axis.NcToPlc</Name>
-							<Type GUID="{10036166-C9D3-404B-BDD3-323034AAA7F4}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA22Left.contactSensor</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA22Left.outerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA22Left.home</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA22Left.innerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA22Left.hlfb</Name>
-							<Comment><![CDATA[high level feedback, if -9999 then servo is idle]]></Comment>
-							<Type>REAL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA22Right.contactSensor</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA22Right.outerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA22Right.home</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA22Right.innerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA22Right.hlfb</Name>
-							<Comment><![CDATA[high level feedback, if -9999 then servo is idle]]></Comment>
-							<Type>REAL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.pistonA22Bottom.extended</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.pistonA22Bottom.retracted</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
@@ -2168,18 +2092,6 @@ reset AT %Q* : BOOL;]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.suctionA22TopLeft[1].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.suctionA22TopLeft[2].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.suctionA22TopLeft[3].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
 							<Name>Hardware.horizontalDriveA22Left.axis.PlcToNc</Name>
 							<Type GUID="{63A84524-72E3-41C8-BEAB-4CCE44690A13}" Namespace="MC">PLCTONC_AXIS_REF</Type>
 						</Var>
@@ -2189,11 +2101,6 @@ reset AT %Q* : BOOL;]]></Comment>
 						</Var>
 						<Var>
 							<Name>Hardware.verticalDriveA22Left.pulse</Name>
-							<Comment><![CDATA[num pulses]]></Comment>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA22Left.outputRegister</Name>
 							<Type>INT</Type>
 						</Var>
 						<Var>
@@ -2201,12 +2108,11 @@ reset AT %Q* : BOOL;]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.verticalDriveA22Right.pulse</Name>
-							<Comment><![CDATA[num pulses]]></Comment>
+							<Name>Hardware.verticalDriveA22Left.outputRegister</Name>
 							<Type>INT</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.verticalDriveA22Right.outputRegister</Name>
+							<Name>Hardware.verticalDriveA22Right.pulse</Name>
 							<Type>INT</Type>
 						</Var>
 						<Var>
@@ -2214,11 +2120,27 @@ reset AT %Q* : BOOL;]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
+							<Name>Hardware.verticalDriveA22Right.outputRegister</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
 							<Name>Hardware.pistonA22Bottom.pistonExtend</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>Hardware.pistonA22Bottom.pistonRetract</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.suctionA22TopLeft[1].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.suctionA22TopLeft[2].enable</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.suctionA22TopLeft[3].enable</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
@@ -2284,7 +2206,7 @@ reset AT %Q* : BOOL;]]></Comment>
 			</Project>
 		</Plc>
 		<Io>
-			<Device Id="1" DevType="111" DevFlags="#x0003" AmsPort="28673" AmsNetId="5.131.216.41.2.1" RemoteName="Device 1 (EtherCAT)" InfoImageId="7">
+			<Device Id="1" Disabled="true" DevType="111" DevFlags="#x0003" AmsPort="28673" AmsNetId="192.168.101.188.2.1" RemoteName="Device 1 (EtherCAT)" InfoImageId="7">
 				<Name>Device 1 (EtherCAT)</Name>
 				<AddressInfo>
 					<Ccat>
@@ -6387,7 +6309,7 @@ reset AT %Q* : BOOL;]]></Comment>
 				</Box>
 				<EtherCAT DcSyncMode="3" EnableVirtualSwitch="true" MaxSwitchPorts="5" MaxSwitchFrames="180"/>
 			</Device>
-			<Device Id="2" DevType="133" AmsPort="28674" AmsNetId="5.131.216.41.3.1" RemoteName="Device 2 (TC3 EIP Scanner)">
+			<Device Id="2" Disabled="true" DevType="133" AmsPort="28674" AmsNetId="192.168.101.188.3.1" RemoteName="Device 2 (TC3 EIP Scanner)">
 				<Name>Device 2 (TC3 EIP Scanner)</Name>
 				<AddressInfo>
 					<Pnp>
@@ -6397,7 +6319,7 @@ reset AT %Q* : BOOL;]]></Comment>
 					</Pnp>
 				</AddressInfo>
 				<Image Id="4" AddrType="1" ImageType="3">
-					<Name>Image</Name>
+					<Name>Device 2 (TC3 EIP Scanner)-Image</Name>
 				</Image>
 				<Box Id="59" BoxType="9134">
 					<Name>ClearLink_A22</Name>
@@ -8173,10 +8095,6 @@ C:\TwinCAT\3.1\Config\Io\EtherNetIP\clearlink_2.92.eds
 		</Io>
 	</Project>
 	<Mappings>
-		<MappingInfo Identifier="{00000000-2001-0850-0020-500811000403}" Id="#x02030030"/>
-		<MappingInfo Identifier="{00000000-2001-0850-0020-500840000403}" Id="#x02030010"/>
-		<MappingInfo Identifier="{00000000-0020-0304-3000-040320000403}" Id="#x02030020"/>
-		<MappingInfo Identifier="{00000000-0070-0304-3000-040372000403}" Id="#x02030040"/>
 		<MappingInfo Identifier="{05000010-2001-0850-3000-040300205008}" Id="#x02030050" Watchdog="14000000040000000400000004000000"/>
 		<OwnerA Name="TINC^NC-Task 1 SAF^Axes^A22_IM_HS_R">
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^EK1200^JUNC_2^A22_C1^A22_C1_JUNC^A22_C4_NC2">

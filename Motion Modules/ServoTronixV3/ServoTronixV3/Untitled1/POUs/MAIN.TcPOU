@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.11">
+  <POU Name="MAIN" Id="{e81a1fb7-6f36-470e-826c-e121b98d210e}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	test : ServoNC;
+	
+	home : BOOL;
+	
+	target : LREAL;
+	
+	pos, neg : BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[test();
+
+test.bEnable := TRUE;
+
+IF NOT test.HomeSet THEN
+	test.homingSequence();
+	RETURN;
+END_IF
+
+test.stop();
+
+IF pos THEN
+	test.moveContinuous(direction := MC_Positive_Direction);
+END_IF
+
+IF neg THEN
+	test.moveContinuous(direction := MC_Negative_Direction);
+END_IF
+
+IF target > -1000 AND target < -10 THEN
+	test.moveAbsolute(newTarget := target);
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="30" Count="1" />
+      <LineId Id="28" Count="1" />
+      <LineId Id="2" Count="0" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="42" Count="0" />
+      <LineId Id="10" Count="0" />
+      <LineId Id="44" Count="0" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="12" Count="0" />
+      <LineId Id="11" Count="0" />
+      <LineId Id="17" Count="1" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="22" Count="1" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="26" Count="1" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

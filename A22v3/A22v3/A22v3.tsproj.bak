@@ -1802,19 +1802,11 @@ External Setpoint Generation:
 		</Motion>
 		<Plc>
 			<Project GUID="{9EBFE716-1EFF-4899-8C57-2D56B56C6F29}" Name="Untitled1" PrjFilePath="Untitled1\Untitled1.plcproj" TmcFilePath="Untitled1\Untitled1.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{74C384A6-C4F6-3526-A0B9-80FA4556BAD0}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Untitled1\Untitled1.tmc" TmcHash="{1AF0C742-3D75-D8F1-DE58-458480001B92}">
 					<Name>Untitled1 Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
 						<Name>PlcTask Inputs</Name>
-						<Var>
-							<Name>MAIN.moduleA22.insertionLeft.contact</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.moduleA22.insertionRight.contact</Name>
-							<Type>BOOL</Type>
-						</Var>
 						<Var>
 							<Name>ContainerArrays.skidHmiA22Left[1].occupied</Name>
 							<Type>BOOL</Type>
@@ -1964,16 +1956,48 @@ External Setpoint Generation:
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.suctionA22TopLeft[1].occupied</Name>
+							<Name>Hardware.horizontalDriveA22Left.contactSensor</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.suctionA22TopLeft[2].occupied</Name>
+							<Name>Hardware.horizontalDriveA22Left.outerLimit</Name>
+							<Comment><![CDATA[replacable with traverseLimit]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.suctionA22TopLeft[3].occupied</Name>
+							<Name>Hardware.horizontalDriveA22Left.innerLimit</Name>
+							<Comment><![CDATA[replacable with homeLimit]]></Comment>
 							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.horizontalDriveA22Left.home</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.horizontalDriveA22Left.axis.NcToPlc</Name>
+							<Type GUID="{10036166-C9D3-404B-BDD3-323034AAA7F4}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.horizontalDriveA22Right.contactSensor</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.horizontalDriveA22Right.outerLimit</Name>
+							<Comment><![CDATA[replacable with traverseLimit]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.horizontalDriveA22Right.innerLimit</Name>
+							<Comment><![CDATA[replacable with homeLimit]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.horizontalDriveA22Right.home</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.horizontalDriveA22Right.axis.NcToPlc</Name>
+							<Type GUID="{10036166-C9D3-404B-BDD3-323034AAA7F4}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
 						</Var>
 						<Var>
 							<Name>Hardware.verticalDriveA22Left.contactSensor</Name>
@@ -1981,14 +2005,16 @@ External Setpoint Generation:
 						</Var>
 						<Var>
 							<Name>Hardware.verticalDriveA22Left.outerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA22Left.home</Name>
+							<Comment><![CDATA[replacable with traverseLimit]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>Hardware.verticalDriveA22Left.innerLimit</Name>
+							<Comment><![CDATA[replacable with homeLimit]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA22Left.home</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
@@ -2002,14 +2028,16 @@ External Setpoint Generation:
 						</Var>
 						<Var>
 							<Name>Hardware.verticalDriveA22Right.outerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA22Right.home</Name>
+							<Comment><![CDATA[replacable with traverseLimit]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
 							<Name>Hardware.verticalDriveA22Right.innerLimit</Name>
+							<Comment><![CDATA[replacable with homeLimit]]></Comment>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA22Right.home</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
@@ -2023,6 +2051,18 @@ External Setpoint Generation:
 						</Var>
 						<Var>
 							<Name>Hardware.pistonA22Bottom.retracted</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.suctionA22TopLeft[1].occupied</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.suctionA22TopLeft[2].occupied</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.suctionA22TopLeft[3].occupied</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
@@ -2070,44 +2110,12 @@ External Setpoint Generation:
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.horizontalDriveA22Left.contactSensor</Name>
+							<Name>Hardware.insertionA22Left.contact</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
-							<Name>Hardware.horizontalDriveA22Left.outerLimit</Name>
+							<Name>Hardware.insertionA22Right.contact</Name>
 							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.horizontalDriveA22Left.home</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.horizontalDriveA22Left.innerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.horizontalDriveA22Left.axis.NcToPlc</Name>
-							<Type GUID="{10036166-C9D3-404B-BDD3-323034AAA7F4}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.horizontalDriveA22Right.contactSensor</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.horizontalDriveA22Right.outerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.horizontalDriveA22Right.home</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.horizontalDriveA22Right.innerLimit</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.horizontalDriveA22Right.axis.NcToPlc</Name>
-							<Type GUID="{10036166-C9D3-404B-BDD3-323034AAA7F4}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
 						</Var>
 					</Vars>
 					<Vars VarGrpType="2" AreaNo="1">
@@ -2183,6 +2191,48 @@ reset AT %Q* : BOOL;]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
+							<Name>Hardware.horizontalDriveA22Left.axis.PlcToNc</Name>
+							<Type GUID="{63A84524-72E3-41C8-BEAB-4CCE44690A13}" Namespace="MC">PLCTONC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.horizontalDriveA22Right.axis.PlcToNc</Name>
+							<Type GUID="{63A84524-72E3-41C8-BEAB-4CCE44690A13}" Namespace="MC">PLCTONC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA22Left.pulse</Name>
+							<Comment><![CDATA[num pulses]]></Comment>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA22Left.brakeRelease</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA22Left.outputRegister</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA22Right.pulse</Name>
+							<Comment><![CDATA[num pulses]]></Comment>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA22Right.brakeRelease</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.verticalDriveA22Right.outputRegister</Name>
+							<Type>INT</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.pistonA22Bottom.pistonExtend</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
+							<Name>Hardware.pistonA22Bottom.pistonRetract</Name>
+							<Type>BOOL</Type>
+						</Var>
+						<Var>
 							<Name>Hardware.suctionA22TopLeft[1].enable</Name>
 							<Type>BOOL</Type>
 						</Var>
@@ -2192,40 +2242,6 @@ reset AT %Q* : BOOL;]]></Comment>
 						</Var>
 						<Var>
 							<Name>Hardware.suctionA22TopLeft[3].enable</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA22Left.pulse</Name>
-							<Comment><![CDATA[num pulses]]></Comment>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA22Left.outputRegister</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA22Left.brakeRelease</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA22Right.pulse</Name>
-							<Comment><![CDATA[num pulses]]></Comment>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA22Right.outputRegister</Name>
-							<Type>INT</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.verticalDriveA22Right.brakeRelease</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.pistonA22Bottom.pistonExtend</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.pistonA22Bottom.pistonRetract</Name>
 							<Type>BOOL</Type>
 						</Var>
 						<Var>
@@ -2271,14 +2287,6 @@ reset AT %Q* : BOOL;]]></Comment>
 						<Var>
 							<Name>Hardware.suctionA22Bottom[2].enable</Name>
 							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.horizontalDriveA22Left.axis.PlcToNc</Name>
-							<Type GUID="{63A84524-72E3-41C8-BEAB-4CCE44690A13}" Namespace="MC">PLCTONC_AXIS_REF</Type>
-						</Var>
-						<Var>
-							<Name>Hardware.horizontalDriveA22Right.axis.PlcToNc</Name>
-							<Type GUID="{63A84524-72E3-41C8-BEAB-4CCE44690A13}" Namespace="MC">PLCTONC_AXIS_REF</Type>
 						</Var>
 					</Vars>
 					<Contexts>
